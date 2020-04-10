@@ -24,7 +24,7 @@ const int Width = 800;
 const int Height = 600;
 
 bool InitDirectX(HINSTANCE hInstance);
-void CleanUp();
+void Destroy();
 bool InitScene();
 void UpdateScene();
 void DrawScene();
@@ -39,7 +39,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg,
 
 struct Vertex  
 {
-    Vertex() {}
     Vertex(float x, float y, float z, 
         float r, float g, float b)
         : x(x), y(y), z(z), 
@@ -83,9 +82,7 @@ int WINAPI WinMain(HINSTANCE hInstance,    //Main windows function
         return 0;
     }
     messageloop();
-
-    CleanUp();
-
+    Destroy();
     return 0;
 }
 
@@ -166,14 +163,12 @@ bool InitDirectX(HINSTANCE hInstance)
     sd.Windowed = TRUE;
     sd.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
 
-
     //Create our SwapChain
     hr = D3D11CreateDeviceAndSwapChain(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, 
         NULL, nullptr, NULL, D3D11_SDK_VERSION, &sd, &pSwapChain, 
         &pDevice, nullptr, &pContext);
 
-    //Create our BackBuffer
-    ID3D11Texture2D* BackBuffer;
+    ID3D11Texture2D* BackBuffer; //Create our BackBuffer
     hr = pSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&BackBuffer));
 
     //Create our Render Target
@@ -186,9 +181,8 @@ bool InitDirectX(HINSTANCE hInstance)
     return true;
 }
 
-void CleanUp()
+void Destroy()
 {
-    //Release the COM Objects we created
     pSwapChain->Release();
     pDevice->Release();
     pContext->Release();
@@ -206,7 +200,7 @@ bool InitScene()
     HRESULT hr;
 
     hr = D3DReadFileToBlob(L"VertexShader.cso", &pVertexBlob);
-    hr = D3DReadFileToBlob(L"PixelShader.cso", &pVertexBlob);
+    hr = D3DReadFileToBlob(L"PixelShader.cso", &pPixelBlob);
     //Create the Shader Objects
     hr = pDevice->CreateVertexShader(pVertexBlob->GetBufferPointer(), 
         pVertexBlob->GetBufferSize(), nullptr, &pVertexShader);
@@ -250,7 +244,7 @@ bool InitScene()
     //Set Primitive Topology
     pContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-    //Create the Viewport
+    //Create and set the Viewport
     D3D11_VIEWPORT viewport = {};
 
     viewport.TopLeftX = 0;
@@ -258,7 +252,6 @@ bool InitScene()
     viewport.Width = Width;
     viewport.Height = Height;
 
-    //Set the Viewport
     pContext->RSSetViewports(1u, &viewport);
 
     return true;
@@ -294,8 +287,7 @@ int messageloop()
             DispatchMessage(&msg);
         }
         else 
-        {
-            // run game code            
+        {          
             UpdateScene();
             DrawScene();
         }
@@ -311,11 +303,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
         if (wParam == VK_ESCAPE) {
             DestroyWindow(hWnd);
         }
-        return 0;
-
+        break;
     case WM_DESTROY:
         PostQuitMessage(0);
-        return 0;
+        break;
     }
     return DefWindowProc(hWnd, Msg, wParam, lParam);
 }
