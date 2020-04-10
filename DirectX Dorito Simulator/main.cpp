@@ -4,6 +4,8 @@
 #include <windows.h>
 #include <d3d11.h>
 #include <d3dcompiler.h>
+#include <Keyboard.h>
+#include <memory>
 
 IDXGISwapChain* pSwapChain = nullptr;
 ID3D11Device* pDevice = nullptr;
@@ -16,6 +18,10 @@ ID3D11PixelShader* pPixelShader = nullptr;
 ID3DBlob* pVertexBlob = nullptr;
 ID3DBlob* pPixelBlob = nullptr;
 ID3D11InputLayout* vertexLayout = nullptr;
+
+
+std::unique_ptr<DirectX::Keyboard> keyboard;
+
 
 LPCTSTR WndClassName = L"window";
 HWND hWnd = nullptr;
@@ -69,6 +75,7 @@ int WINAPI WinMain(HINSTANCE hInstance,    //Main windows function
             L"Error", MB_OK | MB_ICONERROR);
         return 0;
     }
+    keyboard = std::make_unique<DirectX::Keyboard>();
     if (!InitDirectX(hInstance))    //Initialize Direct3D
     {
         MessageBox(0, L"Direct3D Initialization - Failed",
@@ -259,7 +266,11 @@ bool InitScene()
 
 void UpdateScene()
 {
-
+    auto kb = keyboard->GetState();
+    if (kb.A)
+    {
+        MessageBox(nullptr, L"Lol you pressed A button", L"LOL", MB_OK | MB_ICONWARNING);
+    }
 }
 
 void DrawScene()
@@ -299,13 +310,37 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
 {
     switch (Msg)
     {
+    case WM_DESTROY:
+        PostQuitMessage(0);
+        break;
+    case WM_ACTIVATEAPP:
+
+        DirectX::Keyboard::ProcessMessage(Msg, wParam, lParam);     
+        break;
+
+    case WM_INPUT:
+    case WM_MOUSEMOVE:
+    case WM_LBUTTONDOWN:
+    case WM_LBUTTONUP:
+    case WM_RBUTTONDOWN:
+    case WM_RBUTTONUP:
+    case WM_MBUTTONDOWN:
+    case WM_MBUTTONUP:
+    case WM_MOUSEWHEEL:
+    case WM_XBUTTONDOWN:
+    case WM_XBUTTONUP:
+    case WM_MOUSEHOVER:
+        //Mouse::ProcessMessage(message, wParam, lParam);
+        break;
+
     case WM_KEYDOWN:
+    case WM_SYSKEYDOWN:
+    case WM_KEYUP:
+    case WM_SYSKEYUP:
+        DirectX::Keyboard::ProcessMessage(Msg, wParam, lParam);
         if (wParam == VK_ESCAPE) {
             DestroyWindow(hWnd);
         }
-        break;
-    case WM_DESTROY:
-        PostQuitMessage(0);
         break;
     }
     return DefWindowProc(hWnd, Msg, wParam, lParam);
