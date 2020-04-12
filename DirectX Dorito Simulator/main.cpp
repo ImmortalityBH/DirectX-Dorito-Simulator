@@ -1,4 +1,14 @@
-#pragma comment(lib, "d3d11.lib")
+#include "Game.h"
+
+int WINAPI WinMain(HINSTANCE hInstance,   
+    HINSTANCE hPrevInstance,
+    LPSTR lpCmdLine,
+    int nShowCmd)
+{
+    return Game{}.run(hInstance);
+}
+
+/*#pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "d3dcompiler.lib")
 
 #include <windows.h>
@@ -344,4 +354,4 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
         break;
     }
     return DefWindowProc(hWnd, Msg, wParam, lParam);
-}
+}*/
