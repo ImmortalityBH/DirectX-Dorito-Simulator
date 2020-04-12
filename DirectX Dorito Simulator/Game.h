@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Window.h"
+#include "Timer.h"
 #include "Triangle.h"
 
 class Game
@@ -15,6 +16,7 @@ public:
 
 private:
 	Window wnd;
+	Timer timer;
 	std::unique_ptr<Triangle> tri;
 };
 

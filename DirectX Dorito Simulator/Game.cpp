@@ -1,4 +1,5 @@
 #include "Game.h"
+#include <string>
 
 Game::Game()
 	: wnd(800, 600, L"DirectX Dorito Simulator")
@@ -32,15 +33,33 @@ int Game::run(HINSTANCE hInstance)
 void Game::UpdateScene()
 {
 	auto kb = wnd.kbd->GetState();
-	if (kb.A)
+	if (kb.W)
 	{
-		MessageBox(nullptr, L"Pressed a button", L"Alert", MB_OK);
+
 	}
+	else if (kb.S)
+	{
+
+	}
+	else if (kb.A)
+	{
+
+	}
+	else if (kb.D)
+	{
+
+	}
+	if (timer.Peek() > 6.0f)
+	{
+		timer.Reset();
+	}
+	std::wstring title =  L"Elapsed Time: " + std::to_wstring((int)round(timer.Peek()));
+	wnd.setTitle(title.c_str());
 }
 
 void Game::DrawScene()
 {
-	wnd.Gfx().Begin(1.0f, 0.0f, 0.0f);
+	wnd.Gfx().Begin(0.0f, 0.0f, 0.5f);
 	tri->Draw();
 	wnd.Gfx().End();
 }
