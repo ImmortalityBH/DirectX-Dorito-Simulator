@@ -6,6 +6,7 @@
 #include "Win.h"
 #include <d3d11.h>
 #include <d3dcompiler.h>
+#include <DirectXMath.h>
 
 struct Vertex
 {

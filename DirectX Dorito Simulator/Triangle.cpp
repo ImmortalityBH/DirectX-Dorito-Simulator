@@ -1,5 +1,7 @@
 #include "Triangle.h"
 
+using namespace DirectX;
+
 Triangle::Triangle(Graphics &gfx)
 {
 	pGfx = &gfx;
@@ -11,6 +13,10 @@ Triangle::~Triangle()
 	{
 		pVertexBuffer->Release();
 	}
+    if (pConstantBuffer != nullptr)
+    {
+        pConstantBuffer->Release();
+    }
 	if (pVertexShader != nullptr)
 	{
 		pVertexShader->Release();
@@ -74,7 +80,7 @@ void Triangle::Create()
     //Create the Input Layout
     hr = pGfx->getDevice()->CreateInputLayout(layout, numElements, pVertexBlob->GetBufferPointer(),
         pVertexBlob->GetBufferSize(), &vertexLayout);
-
+  
     //Set the Input Layout
     pGfx->getContext()->IASetInputLayout(vertexLayout);
     vertexLayout->Release();
@@ -83,9 +89,49 @@ void Triangle::Create()
     //Set Primitive Topology
     pGfx->getContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
+    D3D11_BUFFER_DESC cbd = {};
+    cbd.Usage = D3D11_USAGE_DYNAMIC;
+    cbd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+    cbd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+    cbd.MiscFlags = 0;
+    cbd.ByteWidth = sizeof(ConstantBuffer);
+    cbd.StructureByteStride = 0u;
+
+    D3D11_SUBRESOURCE_DATA csd = {};
+    csd.pSysMem = &cbd;
+    hr = pGfx->getDevice()->CreateBuffer(&cbd, &csd, &pConstantBuffer);
+}
+
+void Triangle::Update()
+{
+    //cb.transform = XMMatrixIdentity();
+    //cb.transform = XMMatrixTranspose(scale * rotation);
+   // pGfx->getContext()->UpdateSubresource(pConstantBuffer, 0u, nullptr, &cb, 0u, 0u);
+    //pGfx->getContext()->VSSetConstantBuffers(0u, 1u, &pConstantBuffer);
 }
 
 void Triangle::Draw()
 {
+    transform = XMMatrixIdentity();
+    transform = scale * rotation * translation;
+    cb.transform = XMMatrixTranspose(transform);
+    pGfx->getContext()->UpdateSubresource(pConstantBuffer, 0u, nullptr, &cb, 0u, 0u);
+    pGfx->getContext()->VSSetConstantBuffers(0u, 1u, &pConstantBuffer);
 	pGfx->getContext()->Draw(3u, 0u);
 }
+
+void Triangle::Scale(float x, float y, float z)
+{
+    scale = XMMatrixScaling(x, y, z);
+}
+void Triangle::Rotate(float angle)
+{
+    rotation = XMMatrixRotationZ(angle);
+}
+
+void Triangle::Move(float x, float y, float z)
+{
+    transform = XMMatrixTranslation(x, y, z);
+}
+
+

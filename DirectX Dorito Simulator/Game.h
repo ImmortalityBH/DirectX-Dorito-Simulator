@@ -15,8 +15,11 @@ public:
 	void DrawScene();
 
 private:
-	Window wnd;
+	Window wnd; 
 	Timer timer;
 	std::unique_ptr<Triangle> tri;
+	int randomNum;
+	int taskNum;
+	bool didRequest = true;
 };
 
