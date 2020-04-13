@@ -34,13 +34,19 @@ bool Window::init(HINSTANCE hInstance)
         return 1;
     }
 
+    RECT wr;
+    wr.left = 100;
+    wr.right = width + wr.left;
+    wr.top = 100;
+    wr.bottom = height + wr.top;
+    AdjustWindowRect(&wr, WS_CAPTION | WS_MINIMIZEBOX | WS_SYSMENU, FALSE);
     hWnd = CreateWindowEx(
         NULL,
         WndClassName,
         L"DirectX Dorito Simulator",
         WS_OVERLAPPEDWINDOW,
         CW_USEDEFAULT, CW_USEDEFAULT,
-        width, height,
+        wr.right - wr.left, wr.bottom - wr.top,
         nullptr,
         nullptr,
         hInstance,

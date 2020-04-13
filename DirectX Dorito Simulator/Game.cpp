@@ -140,12 +140,13 @@ void Game::UpdateScene()
 	}
 	//std::wstring title =  L"Elapsed Time: " + std::to_wstring((int)round(timer.Peek()));
 	//wnd.setTitle(title.c_str());
-	tri->Update();
+	
 }
 
 void Game::DrawScene()
 {
 	wnd.Gfx().Begin(0.0f, 0.0f, 0.5f);
+	tri->Update();
 	tri->Draw();
 	wnd.Gfx().End();
 }

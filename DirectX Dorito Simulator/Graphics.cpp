@@ -43,15 +43,36 @@ Graphics::Graphics(int width, int height, HWND hWnd)
 	hr = pDevice->CreateRenderTargetView(BackBuffer, nullptr, &pTarget);
 	BackBuffer->Release();
 
-	//Set our Render Target
-	pContext->OMSetRenderTargets(1, &pTarget, nullptr);
+	
 
+	D3D11_TEXTURE2D_DESC ds = {};
+
+	ds.Width = width;
+	ds.Height = height;
+	ds.MipLevels = 1;
+	ds.ArraySize = 1;
+	ds.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	ds.SampleDesc.Count = 1;
+	ds.SampleDesc.Quality = 0;
+	ds.Usage = D3D11_USAGE_DEFAULT;
+	ds.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+	ds.CPUAccessFlags = 0;
+	ds.MiscFlags = 0;
+
+	hr = pDevice->CreateTexture2D(&ds, nullptr, &pDepthStencilBuffer);
+	hr = pDevice->CreateDepthStencilView(pDepthStencilBuffer, nullptr, &pDepthStencilView);
+	
+	//Set our Render Target
+	pContext->OMSetRenderTargets(1, &pTarget, pDepthStencilView);
+	
 	D3D11_VIEWPORT viewport = {};
 
 	viewport.TopLeftX = 0;
 	viewport.TopLeftY = 0;
 	viewport.Width = width;
 	viewport.Height = height;
+	viewport.MinDepth = 0.0f;
+	viewport.MaxDepth = 1.0f;
 
 	pContext->RSSetViewports(1u, &viewport);
 }
@@ -73,6 +94,14 @@ Graphics::~Graphics()
 	if (pTarget != nullptr)
 	{
 		pTarget->Release();
+	}
+	if (pDepthStencilBuffer != nullptr)
+	{
+		pDepthStencilBuffer->Release();
+	}
+	if (pDepthStencilView != nullptr)
+	{
+		pDepthStencilView->Release();
 	}
 }
 
@@ -118,7 +147,7 @@ void Graphics::Begin(float r, float g, float b)
 {
 	float color[4] = { r, g, b, 1.0f };
 	pContext->ClearRenderTargetView(pTarget, color);
-
+	pContext->ClearDepthStencilView(pDepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 }
 
 void Graphics::End()

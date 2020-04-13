@@ -7,7 +7,6 @@
 #include <Keyboard.h>
 #include <Mouse.h>
 #include <GamePad.h>
-#include <optional>
 
 class Window
 {

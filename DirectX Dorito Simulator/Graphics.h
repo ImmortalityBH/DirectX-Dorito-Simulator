@@ -39,5 +39,7 @@ private:
 	ID3D11Device* pDevice;
 	ID3D11DeviceContext* pContext;
 	ID3D11RenderTargetView* pTarget;
+	ID3D11DepthStencilView* pDepthStencilView;
+	ID3D11Texture2D* pDepthStencilBuffer;
 };
 

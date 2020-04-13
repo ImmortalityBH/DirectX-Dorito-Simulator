@@ -48,9 +48,9 @@ void Triangle::Create()
 
     Vertex vertices[] =
     {
-        Vertex(0.0f, 0.5f, 0.5f, 1.0f, 0.0f, 0.0f),
-        Vertex(0.5f, -0.5f, 0.5f, 0.0f, 1.0f, 0.0f),
-        Vertex(-0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f),
+        Vertex(0.0f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f),
+        Vertex(0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f),
+        Vertex(-0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f),
     };
 
     D3D11_INPUT_ELEMENT_DESC layout[] =
@@ -62,7 +62,8 @@ void Triangle::Create()
 
     D3D11_BUFFER_DESC bd = {};
     bd.Usage = D3D11_USAGE_DEFAULT;
-    bd.ByteWidth = sizeof(Vertex) * 3;
+    bd.ByteWidth = sizeof(vertices);
+    bd.StructureByteStride = sizeof(Vertex);
     bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
     bd.CPUAccessFlags = 0;
     bd.MiscFlags = 0;
@@ -80,26 +81,31 @@ void Triangle::Create()
     //Create the Input Layout
     hr = pGfx->getDevice()->CreateInputLayout(layout, numElements, pVertexBlob->GetBufferPointer(),
         pVertexBlob->GetBufferSize(), &vertexLayout);
-  
+
     //Set the Input Layout
     pGfx->getContext()->IASetInputLayout(vertexLayout);
-    vertexLayout->Release();
-    pVertexBlob->Release();
-    pPixelBlob->Release();
     //Set Primitive Topology
     pGfx->getContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
     D3D11_BUFFER_DESC cbd = {};
-    cbd.Usage = D3D11_USAGE_DYNAMIC;
     cbd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+    cbd.Usage = D3D11_USAGE_DYNAMIC;
     cbd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-    cbd.MiscFlags = 0;
-    cbd.ByteWidth = sizeof(ConstantBuffer);
+    cbd.MiscFlags = 0u;
+    cbd.ByteWidth = sizeof(cb);
     cbd.StructureByteStride = 0u;
-
     D3D11_SUBRESOURCE_DATA csd = {};
-    csd.pSysMem = &cbd;
+    csd.pSysMem = &cb;
     hr = pGfx->getDevice()->CreateBuffer(&cbd, &csd, &pConstantBuffer);
+
+    
+  
+   
+    vertexLayout->Release();
+    pVertexBlob->Release();
+    pPixelBlob->Release();
+    
+
 }
 
 void Triangle::Update()
@@ -133,5 +139,3 @@ void Triangle::Move(float x, float y, float z)
 {
     transform = XMMatrixTranslation(x, y, z);
 }
-
-
