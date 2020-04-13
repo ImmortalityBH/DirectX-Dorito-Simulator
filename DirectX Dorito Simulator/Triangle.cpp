@@ -25,26 +25,15 @@ Triangle::~Triangle()
 	{
 		pPixelShader->Release();
 	}
+    if (pVertexLayout != nullptr)
+    {
+        pVertexLayout->Release();
+    }
 }
 
 void Triangle::Create()
 {
     HRESULT hr;
-
-    ID3DBlob* pVertexBlob;
-    ID3DBlob* pPixelBlob;
-    ID3D11InputLayout* vertexLayout;
-
-    hr = D3DReadFileToBlob(L"VertexShader.cso", &pVertexBlob);
-    hr = D3DReadFileToBlob(L"PixelShader.cso", &pPixelBlob);
-    //Create the Shader Objects
-    hr = pGfx->getDevice()->CreateVertexShader(pVertexBlob->GetBufferPointer(),
-        pVertexBlob->GetBufferSize(), nullptr, &pVertexShader);
-    hr = pGfx->getDevice()->CreatePixelShader(pPixelBlob->GetBufferPointer(),
-        pPixelBlob->GetBufferSize(), nullptr, &pPixelShader);
-
-    pGfx->getContext()->VSSetShader(pVertexShader, nullptr, 0u);
-    pGfx->getContext()->PSSetShader(pPixelShader, nullptr, 0u);
 
     Vertex vertices[] =
     {
@@ -52,14 +41,7 @@ void Triangle::Create()
         Vertex(0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f),
         Vertex(-0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f),
     };
-
-    D3D11_INPUT_ELEMENT_DESC layout[] =
-    {
-        { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-        { "COLOR", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-    };
-    UINT numElements = ARRAYSIZE(layout);
-
+    
     D3D11_BUFFER_DESC bd = {};
     bd.Usage = D3D11_USAGE_DEFAULT;
     bd.ByteWidth = sizeof(vertices);
@@ -77,17 +59,9 @@ void Triangle::Create()
     UINT offset = 0;
 
     pGfx->getContext()->IASetVertexBuffers(0u, 1u, &pVertexBuffer, &stride, &offset);
-
-    //Create the Input Layout
-    hr = pGfx->getDevice()->CreateInputLayout(layout, numElements, pVertexBlob->GetBufferPointer(),
-        pVertexBlob->GetBufferSize(), &vertexLayout);
-
-    //Set the Input Layout
-    pGfx->getContext()->IASetInputLayout(vertexLayout);
-    //Set Primitive Topology
-    pGfx->getContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-    D3D11_BUFFER_DESC cbd = {};
+    
+    
+    D3D11_BUFFER_DESC cbd;
     cbd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
     cbd.Usage = D3D11_USAGE_DYNAMIC;
     cbd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
@@ -96,16 +70,49 @@ void Triangle::Create()
     cbd.StructureByteStride = 0u;
     D3D11_SUBRESOURCE_DATA csd = {};
     csd.pSysMem = &cb;
-    hr = pGfx->getDevice()->CreateBuffer(&cbd, &csd, &pConstantBuffer);
-
+    pGfx->getDevice()->CreateBuffer(&cbd, &csd, &pConstantBuffer);
+    pGfx->getContext()->VSSetConstantBuffers(0u, 1u, &pConstantBuffer);
     
-  
-   
-    vertexLayout->Release();
+    ID3DBlob* pVertexBlob;
+    ID3DBlob* pPixelBlob;
+
+    hr = D3DReadFileToBlob(L"VertexShader.cso", &pVertexBlob);
+    hr = D3DReadFileToBlob(L"PixelShader.cso", &pPixelBlob);
+    //Create the Shader Objects
+    hr = pGfx->getDevice()->CreateVertexShader(pVertexBlob->GetBufferPointer(),
+        pVertexBlob->GetBufferSize(), nullptr, &pVertexShader);
+    hr = pGfx->getDevice()->CreatePixelShader(pPixelBlob->GetBufferPointer(),
+        pPixelBlob->GetBufferSize(), nullptr, &pPixelShader);
+
+    pGfx->getContext()->VSSetShader(pVertexShader, nullptr, 0u);
+    pGfx->getContext()->PSSetShader(pPixelShader, nullptr, 0u);
+
+
+    D3D11_INPUT_ELEMENT_DESC layout[] =
+    {
+        { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+        { "COLOR", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+    };
+    UINT numElements = ARRAYSIZE(layout);
+
+    //Create the Input Layout
+    hr = pGfx->getDevice()->CreateInputLayout(layout, numElements, pVertexBlob->GetBufferPointer(),
+        pVertexBlob->GetBufferSize(), &pVertexLayout);
+
+    //Set the Input Layout
+    pGfx->getContext()->IASetInputLayout(pVertexLayout);
+
+    //Set Primitive Topology
+    pGfx->getContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
     pVertexBlob->Release();
     pPixelBlob->Release();
-    
 
+    transform = XMMatrixIdentity();
+    transform = scale * rotation * translation;
+    cb.transform = XMMatrixTranspose(transform);
+    pGfx->getContext()->UpdateSubresource(pConstantBuffer, 0u, nullptr, &cb, 0u, 0u);
+    pGfx->getContext()->VSSetConstantBuffers(0u, 1u, &pConstantBuffer);
 }
 
 void Triangle::Update()
@@ -118,11 +125,7 @@ void Triangle::Update()
 
 void Triangle::Draw()
 {
-    transform = XMMatrixIdentity();
-    transform = scale * rotation * translation;
-    cb.transform = XMMatrixTranspose(transform);
-    pGfx->getContext()->UpdateSubresource(pConstantBuffer, 0u, nullptr, &cb, 0u, 0u);
-    pGfx->getContext()->VSSetConstantBuffers(0u, 1u, &pConstantBuffer);
+   
 	pGfx->getContext()->Draw(3u, 0u);
 }
 

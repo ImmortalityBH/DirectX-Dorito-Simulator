@@ -1,7 +1,7 @@
 
-cbuffer cbObj
+cbuffer ConstantBuffer
 {
-	matrix transform;
+	float4x4 transform;
 };
 
 struct VS_OUT

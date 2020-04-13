@@ -22,7 +22,13 @@ Graphics::Graphics(int width, int height, HWND hWnd)
 	//Describe our SwapChain
 	DXGI_SWAP_CHAIN_DESC sd = {};
 
-	sd.BufferDesc = bd;
+	sd.BufferDesc.Width = width;
+	sd.BufferDesc.Height = height;
+	sd.BufferDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
+	sd.BufferDesc.RefreshRate.Numerator = 60;
+	sd.BufferDesc.RefreshRate.Denominator = 1;
+	sd.BufferDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
+	sd.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
 	sd.SampleDesc.Count = 1;
 	sd.SampleDesc.Quality = 0;
 	sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
@@ -30,7 +36,7 @@ Graphics::Graphics(int width, int height, HWND hWnd)
 	sd.OutputWindow = hWnd;
 	sd.Windowed = TRUE;
 	sd.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
-
+	sd.Flags = 0;
 	//Create our SwapChain
 	hr = D3D11CreateDeviceAndSwapChain(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr,
 		NULL, nullptr, NULL, D3D11_SDK_VERSION, &sd, &pSwap,
@@ -45,7 +51,7 @@ Graphics::Graphics(int width, int height, HWND hWnd)
 
 	
 
-	D3D11_TEXTURE2D_DESC ds = {};
+	/*D3D11_TEXTURE2D_DESC ds = {};
 
 	ds.Width = width;
 	ds.Height = height;
@@ -61,9 +67,9 @@ Graphics::Graphics(int width, int height, HWND hWnd)
 
 	hr = pDevice->CreateTexture2D(&ds, nullptr, &pDepthStencilBuffer);
 	hr = pDevice->CreateDepthStencilView(pDepthStencilBuffer, nullptr, &pDepthStencilView);
-	
+	*/
 	//Set our Render Target
-	pContext->OMSetRenderTargets(1, &pTarget, pDepthStencilView);
+	pContext->OMSetRenderTargets(1, &pTarget, nullptr);
 	
 	D3D11_VIEWPORT viewport = {};
 

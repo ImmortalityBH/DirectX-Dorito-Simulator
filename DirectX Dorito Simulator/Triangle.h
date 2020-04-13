@@ -27,6 +27,7 @@ private:
 	ID3D11Buffer* pConstantBuffer;
 	ConstantBuffer cb;
 
+	ID3D11InputLayout* pVertexLayout;
 	ID3D11VertexShader* pVertexShader;
 	ID3D11PixelShader* pPixelShader;
 	Graphics* pGfx;
