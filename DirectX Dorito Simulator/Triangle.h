@@ -19,7 +19,7 @@ public:
 
 	void Scale(float x, float y, float z);
 	void Rotate(float angle);
-	void Move(float x, float y, float z);
+	void Move(float x, float y);
 
 private:
 	ID3D11Buffer* pVertexBuffer;

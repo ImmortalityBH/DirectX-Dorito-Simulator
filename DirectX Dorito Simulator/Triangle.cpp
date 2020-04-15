@@ -1,4 +1,5 @@
 #include "Triangle.h"
+#include "Error.h"
 
 using namespace DirectX;
 
@@ -54,24 +55,23 @@ void Triangle::Create()
     sd.pSysMem = vertices;
 
     hr = pGfx->getDevice()->CreateBuffer(&bd, &sd, &pVertexBuffer);
-
+    DisplayError(hr, L"Create vertex buffer failed");
     UINT stride = sizeof(Vertex);
     UINT offset = 0;
 
     pGfx->getContext()->IASetVertexBuffers(0u, 1u, &pVertexBuffer, &stride, &offset);
     
-    
     D3D11_BUFFER_DESC cbd;
     cbd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-    cbd.Usage = D3D11_USAGE_DYNAMIC;
-    cbd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+    cbd.Usage = D3D11_USAGE_DEFAULT;
+    cbd.CPUAccessFlags = 0u;
     cbd.MiscFlags = 0u;
-    cbd.ByteWidth = sizeof(cb);
-    cbd.StructureByteStride = 0u;
+    cbd.ByteWidth = sizeof(ConstantBuffer);
     D3D11_SUBRESOURCE_DATA csd = {};
     csd.pSysMem = &cb;
-    pGfx->getDevice()->CreateBuffer(&cbd, &csd, &pConstantBuffer);
-    pGfx->getContext()->VSSetConstantBuffers(0u, 1u, &pConstantBuffer);
+    hr = pGfx->getDevice()->CreateBuffer(&cbd, &csd, &pConstantBuffer);
+    DisplayError(hr, L"create constant buffer failed");
+    //pGfx->getContext()->VSSetConstantBuffers(0u, 1u, &pConstantBuffer);
     
     ID3DBlob* pVertexBlob;
     ID3DBlob* pPixelBlob;
@@ -108,11 +108,6 @@ void Triangle::Create()
     pVertexBlob->Release();
     pPixelBlob->Release();
 
-    transform = XMMatrixIdentity();
-    transform = scale * rotation * translation;
-    cb.transform = XMMatrixTranspose(transform);
-    pGfx->getContext()->UpdateSubresource(pConstantBuffer, 0u, nullptr, &cb, 0u, 0u);
-    pGfx->getContext()->VSSetConstantBuffers(0u, 1u, &pConstantBuffer);
 }
 
 void Triangle::Update()
@@ -121,6 +116,20 @@ void Triangle::Update()
     //cb.transform = XMMatrixTranspose(scale * rotation);
    // pGfx->getContext()->UpdateSubresource(pConstantBuffer, 0u, nullptr, &cb, 0u, 0u);
     //pGfx->getContext()->VSSetConstantBuffers(0u, 1u, &pConstantBuffer);
+    transform = XMMatrixIdentity();
+
+    scale = XMMatrixIdentity();
+    rotation = XMMatrixIdentity();
+    translation = XMMatrixIdentity();
+
+    
+
+    transform = scale * rotation * translation;
+    translation = XMMatrixTranslation(0.0f, 0.0f, -0.01f);
+    cb.transform = XMMatrixTranspose(transform);
+    pGfx->getContext()->UpdateSubresource(pConstantBuffer, 0, NULL, &cb, 0, 0);
+
+    pGfx->getContext()->VSSetConstantBuffers(0, 1, &pConstantBuffer);
 }
 
 void Triangle::Draw()
@@ -138,7 +147,7 @@ void Triangle::Rotate(float angle)
     rotation = XMMatrixRotationZ(angle);
 }
 
-void Triangle::Move(float x, float y, float z)
+void Triangle::Move(float x, float y)
 {
-    transform = XMMatrixTranslation(x, y, z);
+    transform = XMMatrixTranslation(x, y, -0.01f);
 }

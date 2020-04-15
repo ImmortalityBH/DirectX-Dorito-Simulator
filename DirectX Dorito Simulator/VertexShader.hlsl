@@ -10,11 +10,11 @@ struct VS_OUT
 	float3 color : COLOR;
 };
 
-VS_OUT main( float3 pos : POSITION, float3 color : COLOR )
+VS_OUT main( float4 inPos : POSITION, float3 color : COLOR )
 {
 	VS_OUT vso;
 	//vso.pos = mul(float4(pos.x,pos.y,pos.z, 1.0f), transform);
-	vso.pos = mul(float4(pos.x, pos.y, 0.0f, 1.0f), transform);
+	vso.pos = mul(inPos, transform);
 	vso.color = color;
 	return vso;
 }

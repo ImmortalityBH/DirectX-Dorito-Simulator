@@ -2,7 +2,7 @@
 
 #pragma comment(lib, "d3dcompiler.lib")
 #include <d3dcompiler.h>
-
+#include "Error.h"
 using namespace DirectX;
 
 Graphics::Graphics(int width, int height, HWND hWnd)
@@ -41,12 +41,14 @@ Graphics::Graphics(int width, int height, HWND hWnd)
 	hr = D3D11CreateDeviceAndSwapChain(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr,
 		NULL, nullptr, NULL, D3D11_SDK_VERSION, &sd, &pSwap,
 		&pDevice, nullptr, &pContext);
+	DisplayError(hr, L"Create device and swapchain failed");
 
 	ID3D11Texture2D* BackBuffer; //Create our BackBuffer
 	hr = pSwap->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&BackBuffer));
-
+	DisplayError(hr, L"GetBuffer failed");
 	//Create our Render Target
 	hr = pDevice->CreateRenderTargetView(BackBuffer, nullptr, &pTarget);
+	DisplayError(hr, L"Create Render Target view failed");
 	BackBuffer->Release();
 
 	

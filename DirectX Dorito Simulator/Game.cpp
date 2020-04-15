@@ -6,6 +6,8 @@
 
 #define NUM_OF_SAYS 3
 
+#define SPEED 0.1f
+
 Game::Game()
 	: wnd(800, 600, L"DirectX Dorito Simulator")
 {
@@ -40,8 +42,14 @@ int Game::run(HINSTANCE hInstance)
 void Game::UpdateScene()
 {
 	auto kb = wnd.kbd->GetState();
+
+	float timeSinceStart = timer.Mark();
+	float dt = timeSinceStart - oldTimeSinceStart;
+	oldTimeSinceStart = timeSinceStart;
+
 	if (kb.Q)
 	{
+		tri->Move(timer.Mark(), 0);
 		if (randomNum == 0)
 		{
 			didRequest = true;
