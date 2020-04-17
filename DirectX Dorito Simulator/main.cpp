@@ -19,6 +19,8 @@ int WINAPI WinMain(HINSTANCE hInstance,
 #include <DirectXMath.h>
 #include "Timer.h"
 #include <string>
+#include "Error.h"
+#include "DDSTextureLoader.h"
 
 using namespace DirectX;
 
@@ -38,17 +40,16 @@ ID3DBlob* pVertexBlob = nullptr;
 ID3DBlob* pPixelBlob = nullptr;
 ID3D11InputLayout* vertexLayout = nullptr;
 
+ID3D11ShaderResourceView* pTexture;
+ID3D11SamplerState* pTexSamplerState;
 
 std::unique_ptr<DirectX::Keyboard> keyboard;
-
-Timer timer;
-
 
 LPCTSTR WndClassName = L"window";
 HWND hWnd = nullptr;
 
-const int Width = 800;
-const int Height = 600;
+int Width = 800;
+int Height = 600;
 
 bool InitDirectX(HINSTANCE hInstance);
 void Destroy();
@@ -69,11 +70,10 @@ float thing = 0;
 struct Vertex
 {
     Vertex(float x, float y, float z,
-        float r, float g, float b)
-        : x(x), y(y), z(z),
-        r(r), g(g), b(b) { }
-    float x, y, z;
-    float r, g, b;
+        float u, float v)
+        : pos(x, y, z), uv(u, v) {}
+    XMFLOAT3 pos;
+    XMFLOAT2 uv;
 };
 
 struct ConstantBuffer
@@ -89,9 +89,16 @@ XMMATRIX translation;
 D3D11_INPUT_ELEMENT_DESC layout[] =
 {
     { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-    { "COLOR", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+    { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 };
 UINT numElements = ARRAYSIZE(layout);
+
+//GAME GLOBALS
+int randomNum;
+int taskNum;
+bool didRequest = true;
+const float speed = 0.1f;
+Timer timer;
 
 void SetWindowTitle(LPCWSTR text) {
     SetWindowText(hWnd, text);
@@ -258,9 +265,9 @@ bool InitScene()
 
     Vertex vertices[] =
     {
-        Vertex(0.0f, 0.5f, 0.5f, 1.0f, 0.0f, 0.0f),
-        Vertex(0.5f, -0.5f, 0.5f, 0.0f, 1.0f, 0.0f),
-        Vertex(-0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f),
+        Vertex(0.0f, 0.5f, 0.5f, 0.5f, 1.0f),
+        Vertex(0.5f, -0.5f, 0.5f, 1.0f, 0.0f),
+        Vertex(-0.5f, -0.5f, 0.5f, 0.0f, 0.0f),
     };
 
     D3D11_BUFFER_DESC bd = {};
@@ -302,6 +309,22 @@ bool InitScene()
     csd.pSysMem = &cb;
     pDevice->CreateBuffer(&cbd, &csd, &pConstantBuffer);
 
+
+    hr = CreateDDSTextureFromFile(pDevice, L"res/img/dorito.dds", nullptr, &pTexture);
+    DisplayError(hr, L"Texture failed to load!");
+
+    D3D11_SAMPLER_DESC tsd = {};
+    tsd.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+    tsd.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+    tsd.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+    tsd.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+    tsd.ComparisonFunc = D3D11_COMPARISON_NEVER;
+    tsd.MinLOD = 0;
+    tsd.MaxLOD = D3D11_FLOAT32_MAX;
+
+    hr = pDevice->CreateSamplerState(&tsd, &pTexSamplerState);
+    DisplayError(hr, L"Create sampler state failed.");
+
     //Create and set the Viewport
     D3D11_VIEWPORT viewport = {};
 
@@ -314,38 +337,135 @@ bool InitScene()
 
     pContext->RSSetViewports(1u, &viewport);
 
+
     return true;
 }
 
 void UpdateScene()
 {
     auto kb = keyboard->GetState();
-    if (kb.A)
+
+    transform = XMMatrixIdentity();
+    scale = XMMatrixIdentity();
+    rotation = XMMatrixIdentity();
+    translation = XMMatrixIdentity();
+
+    thing += 0.01f;
+
+    if (kb.Q)
     {
-        MessageBox(nullptr, L"Lol you pressed A button", L"LOL", MB_OK | MB_ICONWARNING);
+        rotation = XMMatrixRotationZ(speed * thing);
+        if (randomNum == 0)
+        {
+            didRequest = true;
+        }
+    }
+    else if (kb.E)
+    {
+        rotation = XMMatrixRotationZ(-(speed * thing));
+        if (randomNum == 1)
+        {
+            didRequest = true;
+        }
+    }
+    else if (kb.W)
+    {
+        scale = XMMatrixScaling(speed * thing, speed * thing, 0.0f);
+        if (randomNum == 2)
+        {
+            didRequest = true;
+        }
+    }
+    else if (kb.S)
+    {
+        scale = XMMatrixScaling(-speed * thing, -speed * thing, 0.0f);
+        if (randomNum == 3)
+        {
+            didRequest = true;
+        }
+    }
+    else if (kb.A)
+    {
+        translation = XMMatrixTranslation(-speed * thing, 0.0f, 0.0f);
+        if (randomNum == 4)
+        {
+            didRequest = true;
+        }
+    }
+    else if (kb.D)
+    {
+        translation = XMMatrixTranslation(speed * thing, 0.0f, 0.0f);
+        if (randomNum == 5)
+        {
+            didRequest = true;
+        }
     }
 
+    if (timer.Peek() > 2.5f)
+    {
+        randomNum = rand() % 6;
+        switch (randomNum)
+        {
+        case 0:
+        {
+            std::wstring title = L"Dorito Says Rotate Left, Task Number:" + std::to_wstring(taskNum);
+            SetWindowTitle(title.c_str());
+        }
+        break;
+        case 1:
+        {
+            std::wstring title = L"Dorito Says Rotate Right, Score:" + std::to_wstring(taskNum);
+            SetWindowTitle(title.c_str());
+        }
+        break;
+        case 2:
+        {
+            std::wstring title = L"Dorito Says Scale Up, Score:" + std::to_wstring(taskNum);
+            SetWindowTitle(title.c_str());
+        }
+        break;
+        case 3:
+        {
+            std::wstring title = L"Dorito Says Scale Down, Score:" + std::to_wstring(taskNum);
+            SetWindowTitle(title.c_str());
+        }
+        break;
+        case 4:
+        {
+            std::wstring title = L"Dorito Says Move Left, Score:" + std::to_wstring(taskNum);
+            SetWindowTitle(title.c_str());
+        }
+        break;
+        case 5:
+        {
+            std::wstring title = L"Dorito Says Move Right, Score:" + std::to_wstring(taskNum);
+            SetWindowTitle(title.c_str());
+        }
+        break;
+        }
+        if (didRequest == false)
+        {
+            SetWindowTitle(L"YOU FAILED");
+            taskNum = 0;
+            didRequest = true;
+        }
+        else
+        {
+            didRequest = false;
+            taskNum++;
+        }
+        timer.Mark();
+    }
+
+    transform = scale * rotation * translation;
+
+    cb.transform = XMMatrixTranspose(transform);
 }
 
 void DrawScene()
 {
     const float color[4] = { 0.0f, 0.0f, 0.5f, 1.0f };
     pContext->ClearRenderTargetView(pTarget, color);
-
-    transform = XMMatrixIdentity();
-
-    scale = XMMatrixIdentity();
-    rotation = XMMatrixIdentity();
-    translation = XMMatrixIdentity();
-
-    thing += 0.005f;
-    rotation = XMMatrixRotationZ(thing);
-    translation = XMMatrixTranslation(thing, 0.0f, -0.01f);
-
-    transform = scale * rotation * translation;
-
-    cb.transform = XMMatrixTranspose(transform);
-
 
     /*D3D11_MAPPED_SUBRESOURCE mappedResource = {};
     mappedResource.pData = &cb;
@@ -357,6 +477,9 @@ void DrawScene()
     pContext->UpdateSubresource(pConstantBuffer, 0, NULL, &cb, 0, 0);
 
     pContext->VSSetConstantBuffers(0, 1, &pConstantBuffer);
+
+    pContext->PSSetShaderResources(0, 1, &pTexture);
+    pContext->PSSetSamplers(0, 1, &pTexSamplerState);
 
     pContext->Draw(3u, 0);
 
@@ -397,7 +520,30 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
 
         DirectX::Keyboard::ProcessMessage(Msg, wParam, lParam);
         break;
+    /*case WM_SIZE:
+    {
+        RECT rect;
+        if (GetWindowRect(hWnd, &rect))
+        {
+            Width = rect.right - rect.left;
+            Height = rect.bottom - rect.top;
+        }
+        D3D11_VIEWPORT viewport = {};
 
+        viewport.TopLeftX = 0;
+        viewport.TopLeftY = 0;
+        viewport.Width = Width;
+        viewport.Height = Height;
+        viewport.MinDepth = 0.0f;
+        viewport.MaxDepth = 1.0f;
+
+        if (pContext != nullptr)
+        {
+            pContext->RSSetViewports(1u, &viewport);
+        }
+        
+    }*/
+        //break;
     case WM_INPUT:
     case WM_MOUSEMOVE:
     case WM_LBUTTONDOWN:
