@@ -21,6 +21,9 @@ int WINAPI WinMain(HINSTANCE hInstance,
 #include <string>
 #include "Error.h"
 #include "DDSTextureLoader.h"
+#include "Audio.h"
+#include <random>
+#include <ctime>
 
 using namespace DirectX;
 
@@ -44,6 +47,9 @@ ID3D11ShaderResourceView* pTexture;
 ID3D11SamplerState* pTexSamplerState;
 
 std::unique_ptr<DirectX::Keyboard> keyboard;
+std::unique_ptr<DirectX::AudioEngine> audEngine;
+std::unique_ptr<DirectX::SoundEffect> soundEffect;
+std::unique_ptr<DirectX::SoundEffect> soundEffect2;
 
 LPCTSTR WndClassName = L"window";
 HWND hWnd = nullptr;
@@ -56,16 +62,11 @@ void Destroy();
 bool InitScene();
 void UpdateScene();
 void DrawScene();
-
 bool InitWindow(HINSTANCE hInstance, int ShowWnd,
     int width, int height, bool windowed);
-
 int messageloop();
-
 LRESULT CALLBACK WndProc(HWND hWnd, UINT msg,
     WPARAM wParam, LPARAM lParam);
-
-float thing = 0;
 
 struct Vertex
 {
@@ -94,9 +95,9 @@ D3D11_INPUT_ELEMENT_DESC layout[] =
 UINT numElements = ARRAYSIZE(layout);
 
 //GAME GLOBALS
-int randomNum;
-int taskNum;
-bool didRequest = true;
+int randomKey;
+bool isDead = false, isGameStart = false, didRequest = true, doOnce = false;
+int score = 0;
 const float speed = 0.1f;
 Timer timer;
 
@@ -109,13 +110,13 @@ int WINAPI WinMain(HINSTANCE hInstance,    //Main windows function
     LPSTR lpCmdLine,
     int nShowCmd)
 {
+    srand(time(NULL));
     if (!InitWindow(hInstance, nShowCmd, Width, Height, true))
     {
         MessageBox(0, L"Window Initialization - Failed",
             L"Error", MB_OK | MB_ICONERROR);
         return 0;
     }
-    keyboard = std::make_unique<DirectX::Keyboard>();
     if (!InitDirectX(hInstance))    //Initialize Direct3D
     {
         MessageBox(0, L"Direct3D Initialization - Failed",
@@ -135,7 +136,7 @@ int WINAPI WinMain(HINSTANCE hInstance,    //Main windows function
 
 bool InitWindow(HINSTANCE hInstance, int ShowWnd, int width, int height, bool windowed)
 {
-
+    HRESULT hr;
     WNDCLASSEX wc;
 
     wc.cbSize = sizeof(WNDCLASSEX);
@@ -177,9 +178,14 @@ bool InitWindow(HINSTANCE hInstance, int ShowWnd, int width, int height, bool wi
             L"Error", MB_OK | MB_ICONERROR);
         return 1;
     }
+    hr = CoInitializeEx(nullptr, COINIT_MULTITHREADED);
+    DisplayError(hr, L"something failed");
 
     ShowWindow(hWnd, ShowWnd);
     UpdateWindow(hWnd);
+
+    keyboard = std::make_unique<DirectX::Keyboard>();
+    audEngine = std::make_unique<DirectX::AudioEngine>();
 
     return true;
 }
@@ -252,14 +258,17 @@ bool InitScene()
 {
     HRESULT hr;
 
-    hr = D3DReadFileToBlob(L"VertexShader.cso", &pVertexBlob);
-    hr = D3DReadFileToBlob(L"PixelShader.cso", &pPixelBlob);
+    hr = D3DReadFileToBlob(L"res/shader/VertexShader.cso", &pVertexBlob);
+    DisplayError(hr, L"Vertex shader failed to load");
+    hr = D3DReadFileToBlob(L"res/shader/PixelShader.cso", &pPixelBlob);
+    DisplayError(hr, L"Pixel shader failed to load");
     //Create the Shader Objects
     hr = pDevice->CreateVertexShader(pVertexBlob->GetBufferPointer(),
         pVertexBlob->GetBufferSize(), nullptr, &pVertexShader);
+    DisplayError(hr, L"Vertex shader failed to create");
     hr = pDevice->CreatePixelShader(pPixelBlob->GetBufferPointer(),
         pPixelBlob->GetBufferSize(), nullptr, &pPixelShader);
-
+    DisplayError(hr, L"Pixel shader failed to create");
     pContext->VSSetShader(pVertexShader, nullptr, 0u);
     pContext->PSSetShader(pPixelShader, nullptr, 0u);
 
@@ -337,20 +346,64 @@ bool InitScene()
 
     pContext->RSSetViewports(1u, &viewport);
 
-
+    soundEffect = std::make_unique<SoundEffect>(audEngine.get(), L"res/audio/intro.wav");
+    soundEffect2 = std::make_unique<SoundEffect>(audEngine.get(), L"res/audio/outro.wav");
+    soundEffect->Play();
+    
     return true;
 }
 
 void UpdateScene()
 {
-    auto kb = keyboard->GetState();
+    if (!audEngine->Update())
+    {
 
+    }
+    
+    auto kb = keyboard->GetState();
+    
     transform = XMMatrixIdentity();
     scale = XMMatrixIdentity();
     rotation = XMMatrixIdentity();
     translation = XMMatrixIdentity();
 
-    thing += 0.01f;
+    if (timer.Peek() > 19.0f && !isGameStart)
+    {
+        isGameStart = true;
+    }
+
+    if (timer.Peek() > 1.5f && isGameStart)
+    {
+        if (didRequest)
+        {
+            const int min = 65;
+            const int max = 90;
+            randomKey = min + (rand() % static_cast<int>(max - min + 1));
+            std::wstring text = L"Press: ";
+            text.push_back((wchar_t)randomKey);
+            SetWindowTitle(text.c_str());
+            didRequest = false;
+            score++;
+        }
+        else
+        {
+            isDead = true;
+            std::wstring text = L"THE DORITO DIED!!!   Your Score: "  + std::to_wstring(score);
+            SetWindowTitle(text.c_str());
+            if (!doOnce)
+            {
+                soundEffect2->Play();
+                doOnce = true;
+            }
+        }
+        timer.Mark();
+    }
+    if (kb.IsKeyDown(static_cast<Keyboard::Keys>(randomKey)))
+    {
+        didRequest = true;
+        SetWindowTitle(L"GOOD");
+    }
+    /*thing += 0.01f;
 
     if (kb.Q)
     {
@@ -455,7 +508,7 @@ void UpdateScene()
             taskNum++;
         }
         timer.Mark();
-    }
+    }*/
 
     transform = scale * rotation * translation;
 
@@ -481,8 +534,14 @@ void DrawScene()
     pContext->PSSetShaderResources(0, 1, &pTexture);
     pContext->PSSetSamplers(0, 1, &pTexSamplerState);
 
-    pContext->Draw(3u, 0);
+    if (!isDead) 
+    {
+        pContext->Draw(3u, 0);
+    }
+    else
+    {
 
+    }
     //Present the backbuffer to the screen
     pSwapChain->Present(0, 0);
 }
