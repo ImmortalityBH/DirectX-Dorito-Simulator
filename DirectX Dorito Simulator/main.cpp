@@ -24,7 +24,7 @@ int WINAPI WinMain(HINSTANCE hInstance,
 #include "Audio.h"
 #include <random>
 #include <ctime>
-
+#include <vector>
 using namespace DirectX;
 
 IDXGISwapChain* pSwapChain = nullptr;
@@ -50,6 +50,8 @@ std::unique_ptr<DirectX::Keyboard> keyboard;
 std::unique_ptr<DirectX::AudioEngine> audEngine;
 std::unique_ptr<DirectX::SoundEffect> soundEffect;
 std::unique_ptr<DirectX::SoundEffect> soundEffect2;
+
+std::unique_ptr<DirectX::SoundEffect> effects[13];
 
 LPCTSTR WndClassName = L"window";
 HWND hWnd = nullptr;
@@ -96,7 +98,7 @@ UINT numElements = ARRAYSIZE(layout);
 
 //GAME GLOBALS
 int randomKey;
-bool isDead = false, isGameStart = false, didRequest = true, doOnce = false;
+bool isDead = false, isGameStart = false, didRequest = true, doOnce = false, playOnce = false;
 int score = 0;
 const float speed = 0.1f;
 Timer timer;
@@ -348,6 +350,22 @@ bool InitScene()
 
     soundEffect = std::make_unique<SoundEffect>(audEngine.get(), L"res/audio/intro.wav");
     soundEffect2 = std::make_unique<SoundEffect>(audEngine.get(), L"res/audio/outro.wav");
+    
+    effects[0] = std::make_unique<SoundEffect>(audEngine.get(), L"res/audio/amazing.wav");
+    effects[1] = std::make_unique<SoundEffect>(audEngine.get(), L"res/audio/awesome.wav");
+    effects[2] = std::make_unique<SoundEffect>(audEngine.get(), L"res/audio/delicious.wav");
+    effects[3] = std::make_unique<SoundEffect>(audEngine.get(), L"res/audio/good job.wav");
+    effects[4] = std::make_unique<SoundEffect>(audEngine.get(), L"res/audio/incredible.wav");
+    effects[5] = std::make_unique<SoundEffect>(audEngine.get(), L"res/audio/mom.wav");
+    effects[6] = std::make_unique<SoundEffect>(audEngine.get(), L"res/audio/nice one.wav");
+    effects[7] = std::make_unique<SoundEffect>(audEngine.get(), L"res/audio/oh my god.wav");
+    effects[8] = std::make_unique<SoundEffect>(audEngine.get(), L"res/audio/poop.wav");
+    effects[9] = std::make_unique<SoundEffect>(audEngine.get(), L"res/audio/right.wav");
+    effects[10] = std::make_unique<SoundEffect>(audEngine.get(), L"res/audio/un.wav");
+    effects[11] = std::make_unique<SoundEffect>(audEngine.get(), L"res/audio/fire.wav");
+    effects[12] = std::make_unique<SoundEffect>(audEngine.get(), L"res/audio/wow.wav");
+    
+    
     soundEffect->Play();
     
     return true;
@@ -398,10 +416,22 @@ void UpdateScene()
         }
         timer.Mark();
     }
-    if (kb.IsKeyDown(static_cast<Keyboard::Keys>(randomKey)))
+    if (kb.IsKeyDown(static_cast<Keyboard::Keys>(randomKey)) && !isDead)
     {
         didRequest = true;
         SetWindowTitle(L"GOOD");
+        if (!playOnce)
+        {
+            const int min = 0;
+            const int max = 12;
+            int index = min + (rand() % static_cast<int>(max - min + 1));
+            effects[index]->Play();
+            playOnce = true;
+        }   
+    }
+    else
+    {
+        playOnce = false;
     }
     /*thing += 0.01f;
 
