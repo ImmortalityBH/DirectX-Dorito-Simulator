@@ -1,4 +1,4 @@
-/*#include "Game.h"
+#include "Game.h"
 
 int WINAPI WinMain(HINSTANCE hInstance,   
     HINSTANCE hPrevInstance,
@@ -6,9 +6,9 @@ int WINAPI WinMain(HINSTANCE hInstance,
     int nShowCmd)
 {
     return Game{}.run(hInstance);
-}*/
+}
 
-#pragma comment(lib, "d3d11.lib")
+/*#pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "d3dcompiler.lib")
 
 #include <windows.h>
@@ -429,7 +429,7 @@ void UpdateScene()
             case 3:
                 translation = XMMatrixScaling(0.0f, -0.5f, 0.0f);
                 break;
-            }*/
+            }
         }
         else
         {
@@ -566,7 +566,7 @@ void UpdateScene()
             taskNum++;
         }
         timer.Mark();
-    }*/
+    }
 
     transform = scale * rotation * translation;
 
@@ -583,7 +583,7 @@ void DrawScene()
     //pContext->UpdateSubresource(pConstantBuffer, 0u, nullptr, &cb, 0u, 0u);
     pContext->Map(pConstantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
     pContext->VSSetConstantBuffers(0u, 1u, &pConstantBuffer);
-    pContext->Unmap(pConstantBuffer, 0);*/
+    pContext->Unmap(pConstantBuffer, 0);
 
     pContext->UpdateSubresource(pConstantBuffer, 0, NULL, &cb, 0, 0);
 
@@ -659,7 +659,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
             pContext->RSSetViewports(1u, &viewport);
         }
         
-    }*/
+    }
         //break;
     case WM_INPUT:
     case WM_MOUSEMOVE:
