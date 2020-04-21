@@ -1,4 +1,5 @@
 #include "Window.h"
+#include "Error.h"
 
 Window::Window(int width, int height, LPCWSTR title)
     : width(width), height(height), title(title), hWnd(nullptr)
@@ -12,6 +13,7 @@ Window::~Window()
 
 bool Window::init(HINSTANCE hInstance)
 {
+    HRESULT hr;
     WNDCLASSEX wc;
 
     wc.cbSize = sizeof(WNDCLASSEX);
@@ -64,8 +66,21 @@ bool Window::init(HINSTANCE hInstance)
     UpdateWindow(hWnd);
 
     kbd = std::make_unique<DirectX::Keyboard>();
+    if (!kbd) {
+        DisplayError(L"Keyboard object creation failed");
+    }
     mouse = std::make_unique<DirectX::Mouse>();
+    if (!mouse) {
+        DisplayError(L"Mouse object creation failed");
+    }
     pGfx = std::make_unique<Graphics>(this->getWidth(), this->getHeight(), hWnd);
+    if (pGfx == nullptr) {
+        DisplayError(L"Graphics object was nullptr");
+    }
+    aud = std::make_unique<DirectX::AudioEngine>();
+    if (!aud) {
+        DisplayError(L"audio engine creation failed");
+    }
     return true;
 }
 

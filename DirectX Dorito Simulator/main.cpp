@@ -1,10 +1,14 @@
 #include "Game.h"
 
+#include <random>
+#include <ctime>
+
 int WINAPI WinMain(HINSTANCE hInstance,   
     HINSTANCE hPrevInstance,
     LPSTR lpCmdLine,
     int nShowCmd)
 {
+    srand(time(NULL));
     return Game{}.run(hInstance);
 }
 

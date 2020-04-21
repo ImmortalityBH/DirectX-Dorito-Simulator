@@ -9,3 +9,8 @@ inline void DisplayError(HRESULT hr, LPCWSTR what)
 		MessageBox(nullptr, what, L"Error", MB_OK | MB_ICONERROR);
 	}
 }
+
+inline void DisplayError(LPCWSTR what) 
+{
+	MessageBox(nullptr, what, L"User Defined Error", MB_OK | MB_ICONERROR);
+}
