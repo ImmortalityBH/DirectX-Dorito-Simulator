@@ -2,22 +2,24 @@
 
 #include "Window.h"
 #include "Timer.h"
-#include "Triangle.h"
+#include "Model.h"
 
 class Game
 {
 public:
 	Game();
-
+	~Game();
 	int run(HINSTANCE hInstance);
 
+	void Init();
 	void UpdateScene();
 	void DrawScene();
 
 private:
 	Window wnd; 
 	Timer timer;
-	std::unique_ptr<Triangle> tri;
+private:
+	std::unique_ptr<Model> model;
 	int randomNum;
 	int taskNum;
 	bool didRequest = true;

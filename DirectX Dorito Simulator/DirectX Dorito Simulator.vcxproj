@@ -150,6 +150,7 @@
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="Graphics.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Model.cpp" />
     <ClCompile Include="Timer.cpp" />
     <ClCompile Include="Triangle.cpp" />
     <ClCompile Include="Window.cpp" />
@@ -191,11 +192,13 @@
     <ClInclude Include="Error.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="Graphics.h" />
+    <ClInclude Include="Model.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Timer.h" />
     <ClInclude Include="Triangle.h" />
     <ClInclude Include="Win.h" />
     <ClInclude Include="Window.h" />
+    <ClInclude Include="WVP.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DirectX Dorito Simulator.rc" />

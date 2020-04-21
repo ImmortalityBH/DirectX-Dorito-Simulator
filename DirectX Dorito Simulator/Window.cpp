@@ -1,6 +1,8 @@
 #include "Window.h"
 #include "Error.h"
 
+using namespace DirectX;
+
 Window::Window(int width, int height, LPCWSTR title)
     : width(width), height(height), title(title), hWnd(nullptr)
 {
@@ -106,7 +108,7 @@ LRESULT Window::WndProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
         break;
     case WM_ACTIVATEAPP:
 
-        DirectX::Keyboard::ProcessMessage(Msg, wParam, lParam);
+        Keyboard::ProcessMessage(Msg, wParam, lParam);
         break;
 
     case WM_INPUT:
@@ -121,14 +123,14 @@ LRESULT Window::WndProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
     case WM_XBUTTONDOWN:
     case WM_XBUTTONUP:
     case WM_MOUSEHOVER:
-        //Mouse::ProcessMessage(message, wParam, lParam);
+        Mouse::ProcessMessage(Msg, wParam, lParam);
         break;
 
     case WM_KEYDOWN:
     case WM_SYSKEYDOWN:
     case WM_KEYUP:
     case WM_SYSKEYUP:
-        DirectX::Keyboard::ProcessMessage(Msg, wParam, lParam);
+        Keyboard::ProcessMessage(Msg, wParam, lParam);
         if (wParam == VK_ESCAPE) {
             DestroyWindow(hWnd);
         }
