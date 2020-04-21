@@ -99,6 +99,7 @@ UINT numElements = ARRAYSIZE(layout);
 //GAME GLOBALS
 int randomKey;
 bool isDead = false, isGameStart = false, didRequest = true, doOnce = false, playOnce = false;
+float gameSpeed = 1.8f;
 int score = 0;
 const float speed = 0.1f;
 Timer timer;
@@ -187,8 +188,13 @@ bool InitWindow(HINSTANCE hInstance, int ShowWnd, int width, int height, bool wi
     UpdateWindow(hWnd);
 
     keyboard = std::make_unique<DirectX::Keyboard>();
+    if (!keyboard) {
+        DisplayError(hr, L"keyboard creation failed");
+    }
     audEngine = std::make_unique<DirectX::AudioEngine>();
-
+    if (!audEngine) {
+        DisplayError(hr, L"audio engine creation failed");
+    }
     return true;
 }
 
@@ -390,7 +396,7 @@ void UpdateScene()
         isGameStart = true;
     }
 
-    if (timer.Peek() > 1.5f && isGameStart)
+    if (timer.Peek() > gameSpeed && isGameStart)
     {
         if (didRequest)
         {
@@ -402,6 +408,28 @@ void UpdateScene()
             SetWindowTitle(text.c_str());
             didRequest = false;
             score++;
+            if (gameSpeed > 0.5f)
+            {
+                gameSpeed -= 0.05f;
+            }
+            /*const int min1 = 0;
+            const int max1 = 3;
+            int randPos = min1 + (rand() % static_cast<int>(max1 - min1 + 1));
+            switch (randPos)
+            {
+            case 0:
+                translation = XMMatrixScaling(-.5f, 0.0f, 0.0f);
+                break;
+            case 1:
+                translation = XMMatrixScaling(.5f, 0.0f, 0.0f);
+                break;
+            case 2:
+                translation = XMMatrixScaling(0.0f, 0.5f, 0.0f);
+                break;
+            case 3:
+                translation = XMMatrixScaling(0.0f, -0.5f, 0.0f);
+                break;
+            }*/
         }
         else
         {
