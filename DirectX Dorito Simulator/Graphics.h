@@ -11,11 +11,10 @@
 struct Vertex
 {
 	Vertex(float x, float y, float z,
-		float r, float g, float b)
-		: x(x), y(y), z(z),
-		r(r), g(g), b(b) { }
-	float x, y, z;
-	float r, g, b;
+		float u, float v)
+		: pos(x, y, z), uv(u, v) {}
+	DirectX::XMFLOAT3 pos;
+	DirectX::XMFLOAT2 uv;
 };
 
 class Graphics
@@ -40,6 +39,7 @@ private:
 	ID3D11DeviceContext* pContext;
 	ID3D11RenderTargetView* pTarget;
 	ID3D11DepthStencilView* pDepthStencilView;
+	ID3D11RasterizerState* pWireframeState;
 	ID3D11Texture2D* pDepthStencilBuffer;
 };
 

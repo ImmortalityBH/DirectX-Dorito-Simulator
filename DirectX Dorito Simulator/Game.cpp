@@ -1,5 +1,6 @@
 #include "Game.h"
 #include <string>
+#include <vector>
 
 Game::Game()
 	: wnd(800, 600, L"DirectX Dorito Simulator")
@@ -36,12 +37,23 @@ int Game::run(HINSTANCE hInstance)
 void Game::Init()
 {
 	model = std::make_unique<Model>(wnd.Gfx(), L"res/img/dorito.dds");
-	model->create();
+	std::vector<Vertex> vertices =
+	{
+		Vertex(0.0f, 0.5f, 0.0f, 0.5f, 1.0f),
+		Vertex(0.5f, -0.5f, 0.0f, 1.0f, 0.0f),
+		Vertex(-0.5f, -0.5f, 0.0f, 0.0f, 0.0f),
+	};
+	model->create(vertices, L"VertexShader.cso", L"PixelShader.cso");
 }
 
 void Game::UpdateScene()
 {
 	auto kb = wnd.kbd->GetState();
+
+	if (!wnd.aud->Update())
+	{
+		
+	}
 
 	float timeSinceStart = timer.Mark();
 	float dt = timeSinceStart - oldTimeSinceStart;
@@ -62,8 +74,8 @@ void Game::UpdateScene()
 void Game::DrawScene()
 {
 	wnd.Gfx().Begin(0.0f, 0.0f, 0.5f);
-	model->bindShaders();
+	model->bind();
 	model->draw();
-	model->unbindShaders();
+	model->unbind();
 	wnd.Gfx().End();
 }

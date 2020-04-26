@@ -38,9 +38,9 @@ void Triangle::Create()
 
     Vertex vertices[] =
     {
-        Vertex(0.0f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f),
-        Vertex(0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f),
-        Vertex(-0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f),
+        Vertex(0.0f, 0.5f, 0.0f, 1.0f, 0.0f),
+        Vertex(0.5f, -0.5f, 0.0f, 0.0f, 1.0f),
+        Vertex(-0.5f, -0.5f, 0.0f, 0.0f, 0.0f),
     };
     
     D3D11_BUFFER_DESC bd = {};

@@ -37,9 +37,14 @@ Graphics::Graphics(int width, int height, HWND hWnd)
 	sd.Windowed = TRUE;
 	sd.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
 	sd.Flags = 0;
-	//Create our SwapChain
+
+	UINT creationFlags = D3D11_CREATE_DEVICE_BGRA_SUPPORT;
+#if defined(_DEBUG)
+	// If the project is in a debug build, enable the debug layer.
+	creationFlags |= D3D11_CREATE_DEVICE_DEBUG;
+#endif
 	hr = D3D11CreateDeviceAndSwapChain(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr,
-		NULL, nullptr, NULL, D3D11_SDK_VERSION, &sd, &pSwap,
+		creationFlags, nullptr, NULL, D3D11_SDK_VERSION, &sd, &pSwap,
 		&pDevice, nullptr, &pContext);
 	DisplayError(hr, L"Create device and swapchain failed");
 
@@ -50,8 +55,6 @@ Graphics::Graphics(int width, int height, HWND hWnd)
 	hr = pDevice->CreateRenderTargetView(BackBuffer, nullptr, &pTarget);
 	DisplayError(hr, L"Create Render Target view failed");
 	BackBuffer->Release();
-
-	
 
 	/*D3D11_TEXTURE2D_DESC ds = {};
 
@@ -70,8 +73,15 @@ Graphics::Graphics(int width, int height, HWND hWnd)
 	hr = pDevice->CreateTexture2D(&ds, nullptr, &pDepthStencilBuffer);
 	hr = pDevice->CreateDepthStencilView(pDepthStencilBuffer, nullptr, &pDepthStencilView);
 	*/
+
 	//Set our Render Target
 	pContext->OMSetRenderTargets(1, &pTarget, nullptr);
+
+	//D3D11_RASTERIZER_DESC rsd;
+	//rsd.FillMode = D3D11_FILL_WIREFRAME;
+
+	//hr = pDevice->CreateRasterizerState(&rsd, &pWireframeState);
+	//DisplayError(hr, L"Create Rasterizer State failed");
 	
 	D3D11_VIEWPORT viewport = {};
 
@@ -110,6 +120,10 @@ Graphics::~Graphics()
 	if (pDepthStencilView != nullptr)
 	{
 		pDepthStencilView->Release();
+	}
+	if (pWireframeState != nullptr)
+	{
+		pWireframeState->Release();
 	}
 }
 
@@ -155,7 +169,7 @@ void Graphics::Begin(float r, float g, float b)
 {
 	float color[4] = { r, g, b, 1.0f };
 	pContext->ClearRenderTargetView(pTarget, color);
-	pContext->ClearDepthStencilView(pDepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+	//pContext->ClearDepthStencilView(pDepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 }
 
 void Graphics::End()
