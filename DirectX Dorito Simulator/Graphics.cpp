@@ -56,7 +56,7 @@ Graphics::Graphics(int width, int height, HWND hWnd)
 	DisplayError(hr, L"Create Render Target view failed");
 	BackBuffer->Release();
 
-	/*D3D11_TEXTURE2D_DESC ds = {};
+	D3D11_TEXTURE2D_DESC ds = {};
 
 	ds.Width = width;
 	ds.Height = height;
@@ -72,7 +72,6 @@ Graphics::Graphics(int width, int height, HWND hWnd)
 
 	hr = pDevice->CreateTexture2D(&ds, nullptr, &pDepthStencilBuffer);
 	hr = pDevice->CreateDepthStencilView(pDepthStencilBuffer, nullptr, &pDepthStencilView);
-	*/
 
 	//Set our Render Target
 	pContext->OMSetRenderTargets(1, &pTarget, nullptr);
@@ -81,7 +80,7 @@ Graphics::Graphics(int width, int height, HWND hWnd)
 	//rsd.FillMode = D3D11_FILL_WIREFRAME;
 
 	//hr = pDevice->CreateRasterizerState(&rsd, &pWireframeState);
-	//DisplayError(hr, L"Create Rasterizer State failed");
+	///DisplayError(hr, L"Create Rasterizer State failed");
 	
 	D3D11_VIEWPORT viewport = {};
 
@@ -97,37 +96,16 @@ Graphics::Graphics(int width, int height, HWND hWnd)
 
 Graphics::~Graphics()
 {
-	if (pSwap != nullptr)
-	{
-		pSwap->Release();
-	}
-	if (pDevice != nullptr)
-	{
-		pDevice->Release();
-	}
-	if (pContext != nullptr)
-	{
-		pContext->Release();
-	}
-	if (pTarget != nullptr)
-	{
-		pTarget->Release();
-	}
-	if (pDepthStencilBuffer != nullptr)
-	{
-		pDepthStencilBuffer->Release();
-	}
-	if (pDepthStencilView != nullptr)
-	{
-		pDepthStencilView->Release();
-	}
-	if (pWireframeState != nullptr)
-	{
-		pWireframeState->Release();
-	}
+	if (pSwap) pSwap->Release();
+	if (pDevice) pDevice->Release();
+	if (pContext) pContext->Release();
+	if (pTarget) pTarget->Release();
+	if (pDepthStencilBuffer) pDepthStencilBuffer->Release();
+	if (pDepthStencilView) pDepthStencilView->Release();
+	if (pWireframeState) pWireframeState->Release();
 }
 
-ID3D11VertexShader* Graphics::createVertexShader(LPCWSTR fileName)
+ID3D11VertexShader* Graphics::createVertexShader(LPCWSTR fileName, ID3DBlob** ppBlob)
 {
 	HRESULT hr;
 	ID3DBlob* Blob;
@@ -146,7 +124,7 @@ ID3D11VertexShader* Graphics::createVertexShader(LPCWSTR fileName)
 	return pVertexShader;
 }
 
-ID3D11PixelShader* Graphics::createPixelShader(LPCWSTR fileName)
+ID3D11PixelShader* Graphics::createPixelShader(LPCWSTR fileName, ID3DBlob** ppBlob)
 {
 	HRESULT hr;
 	ID3DBlob* Blob;
@@ -169,7 +147,7 @@ void Graphics::Begin(float r, float g, float b)
 {
 	float color[4] = { r, g, b, 1.0f };
 	pContext->ClearRenderTargetView(pTarget, color);
-	//pContext->ClearDepthStencilView(pDepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+	pContext->ClearDepthStencilView(pDepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 }
 
 void Graphics::End()

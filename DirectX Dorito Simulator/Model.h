@@ -4,6 +4,7 @@
 #include "Window.h"
 #include "Graphics.h"
 #include "WVP.h"
+#include "Camera.h"
 
 #include <vector>
 
@@ -17,7 +18,14 @@ public:
 		LPCWSTR vertexFileName, LPCWSTR pixelFileName);
 	void create(std::vector<Vertex>& vertices, std::vector<UINT>& indices, 
 		LPCWSTR vertexFileName, LPCWSTR pixelFileName);
-	void update();
+
+	void resetMatrix();
+	void update(float dt, Camera& camera);
+
+	void move(float x, float y, float z);
+	void rotate(float x, float y, float z, float Angle);
+	void scale(float x, float y, float z);
+
 	void draw();
 
 	void bind();
@@ -37,10 +45,11 @@ private:
 	ID3DBlob* pVertexBlob;
 	ID3DBlob* pPixelBlob;
 private:
-	DirectX::XMMATRIX scale;
+	DirectX::XMMATRIX sca;
 	DirectX::XMMATRIX rotation;
 	DirectX::XMMATRIX translation;
-	DirectX::XMMATRIX transform;
+	DirectX::XMMATRIX world;
+	DirectX::XMMATRIX WVP;
 	ConstantBuffer cb;
 
 	Graphics* pGfx;

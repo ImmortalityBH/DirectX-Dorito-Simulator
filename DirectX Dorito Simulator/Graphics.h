@@ -24,8 +24,8 @@ public:
 	Graphics(int width, int height, HWND hWnd);
 	~Graphics();
 
-	ID3D11VertexShader* createVertexShader(LPCWSTR fileName);
-	ID3D11PixelShader* createPixelShader(LPCWSTR fileName);
+	ID3D11VertexShader* createVertexShader(LPCWSTR fileName, ID3DBlob** ppBlob);
+	ID3D11PixelShader* createPixelShader(LPCWSTR fileName, ID3DBlob** ppBlob);
 
 	void Begin(float r, float g, float b);
 	void End();

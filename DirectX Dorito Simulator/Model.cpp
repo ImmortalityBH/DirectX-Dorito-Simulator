@@ -57,12 +57,13 @@ void Model::create(std::vector<Vertex>& vertices, LPCWSTR vertexFileName, LPCWST
 		pVertexBlob->GetBufferSize(), &pVertexLayout);
 	DisplayError(hr, L"Create Input layout failed");
 
-	D3D11_BUFFER_DESC cbd;
+	D3D11_BUFFER_DESC cbd = {};
 	cbd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	cbd.Usage = D3D11_USAGE_DEFAULT;
-	cbd.CPUAccessFlags = 0;
+	cbd.Usage = D3D11_USAGE_DEFAULT;//D3D11_USAGE_DYNAMIC
+	cbd.CPUAccessFlags = 0u;//D3D11_CPU_ACCESS_WRITE
 	cbd.MiscFlags = 0u;
 	cbd.ByteWidth = sizeof(ConstantBuffer);
+	cbd.StructureByteStride = 0u;
 
 	D3D11_SUBRESOURCE_DATA csd = {};
 	csd.pSysMem = &cb;
@@ -139,12 +140,13 @@ void Model::create(std::vector<Vertex>& vertices, std::vector<UINT>& indices, LP
 		pVertexBlob->GetBufferSize(), &pVertexLayout);
 	DisplayError(hr, L"Create Input layout failed");
 
-	D3D11_BUFFER_DESC cbd;
+	D3D11_BUFFER_DESC cbd = {};
 	cbd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 	cbd.Usage = D3D11_USAGE_DEFAULT;
-	cbd.CPUAccessFlags = 0;
+	cbd.CPUAccessFlags = 0u;
 	cbd.MiscFlags = 0u;
 	cbd.ByteWidth = sizeof(ConstantBuffer);
+	cbd.StructureByteStride = 0u;
 
 	D3D11_SUBRESOURCE_DATA csd = {};
 	csd.pSysMem = &cb;
@@ -170,14 +172,49 @@ void Model::create(std::vector<Vertex>& vertices, std::vector<UINT>& indices, LP
 	if (pPixelBlob) pPixelBlob->Release();
 }
 
-void Model::update()
+void Model::resetMatrix()
 {
+	sca = XMMatrixIdentity();
+	rotation = XMMatrixIdentity();
+	translation = XMMatrixIdentity();
+}
+
+void Model::update(float dt, Camera& camera)
+{
+
+	world = sca * rotation * translation;
+
+	WVP = world * camera.getView() * camera.getProjection();
+	cb.WVP = XMMatrixTranspose(WVP);
+
+}
+
+void Model::move(float x, float y, float z)
+{
+	translation = XMMatrixTranslation(x, y, z);
+}
+
+void Model::rotate(float x, float y, float z, float Angle)
+{
+	XMVECTOR vec = XMVectorSet(x, y, z, 1.0f);
+	rotation = XMMatrixRotationAxis(vec, XMConvertToRadians(Angle));
+}
+
+void Model::scale(float x, float y, float z)
+{
+	sca = XMMatrixScaling(x, y, z);
 }
 
 void Model::draw()
 {
-	//pGfx->getContext()->UpdateSubresource(pConstantBuffer, 0, NULL, &cb, 0, 0);
-	//pGfx->getContext()->VSSetConstantBuffers(0, 1, &pConstantBuffer);
+	pGfx->getContext()->UpdateSubresource(pConstantBuffer, 0, NULL, &cb, 0, 0);
+	pGfx->getContext()->VSSetConstantBuffers(0, 1, &pConstantBuffer);
+	/*D3D11_MAPPED_SUBRESOURCE mappedResource = {};
+	mappedResource.pData = &cb;
+	pGfx->getContext()->Map(pConstantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	pGfx->getContext()->VSSetConstantBuffers(0u, 1u, &pConstantBuffer);
+	pGfx->getContext()->Unmap(pConstantBuffer, 0);*/
+
 	pGfx->getContext()->PSSetShaderResources(0, 1, &pTexture);
 	pGfx->getContext()->PSSetSamplers(0, 1, &pTexSamplerState);
 
@@ -202,4 +239,5 @@ void Model::unbind()
 	pGfx->getContext()->VSSetShader(nullptr, nullptr, 0u);
 	pGfx->getContext()->PSSetShader(nullptr, nullptr, 0u);
 	pGfx->getContext()->IASetVertexBuffers(0u, 0u, nullptr, nullptr, nullptr);
+	if (pIndexBuffer) pGfx->getContext()->IASetIndexBuffer(nullptr, DXGI_FORMAT_R32_UINT, 0u);
 }

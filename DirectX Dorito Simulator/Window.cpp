@@ -1,5 +1,6 @@
 #include "Window.h"
 #include "Error.h"
+#include "resource.h"
 
 using namespace DirectX;
 
@@ -18,18 +19,20 @@ bool Window::init(HINSTANCE hInstance)
     HRESULT hr;
     WNDCLASSEX wc;
 
+    HICON hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_ICON1));
+
     wc.cbSize = sizeof(WNDCLASSEX);
     wc.style = CS_HREDRAW | CS_VREDRAW;
     wc.lpfnWndProc = WndProc;
     wc.cbClsExtra = NULL;
     wc.cbWndExtra = NULL;
     wc.hInstance = hInstance;
-    wc.hIcon = LoadIcon(nullptr, IDI_APPLICATION);
+    wc.hIcon = hIcon;
     wc.hCursor = LoadCursor(nullptr, IDC_ARROW);
     wc.hbrBackground = (HBRUSH)(COLOR_WINDOW + 2);
     wc.lpszMenuName = nullptr;
     wc.lpszClassName = WndClassName;
-    wc.hIconSm = LoadIcon(nullptr, IDI_APPLICATION);
+    wc.hIconSm = hIcon;
 
     if (!RegisterClassEx(&wc))
     {
