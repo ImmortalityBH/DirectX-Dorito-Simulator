@@ -74,14 +74,17 @@ Graphics::Graphics(int width, int height, HWND hWnd)
 	hr = pDevice->CreateDepthStencilView(pDepthStencilBuffer, nullptr, &pDepthStencilView);
 
 	//Set our Render Target
-	pContext->OMSetRenderTargets(1, &pTarget, nullptr);
+	pContext->OMSetRenderTargets(1, &pTarget, pDepthStencilView);
 
-	//D3D11_RASTERIZER_DESC rsd;
-	//rsd.FillMode = D3D11_FILL_WIREFRAME;
+	D3D11_RASTERIZER_DESC rsd = {};
+	rsd.FillMode = D3D11_FILL_SOLID;
+	rsd.CullMode = D3D11_CULL_NONE;
 
-	//hr = pDevice->CreateRasterizerState(&rsd, &pWireframeState);
-	///DisplayError(hr, L"Create Rasterizer State failed");
-	
+	hr = pDevice->CreateRasterizerState(&rsd, &pWireframeState);
+	pContext->RSSetState(pWireframeState);
+
+	DisplayError(hr, L"Create Rasterizer State failed");
+
 	D3D11_VIEWPORT viewport = {};
 
 	viewport.TopLeftX = 0;
@@ -141,6 +144,18 @@ ID3D11PixelShader* Graphics::createPixelShader(LPCWSTR fileName, ID3DBlob** ppBl
 			L"Error", MB_OK | MB_ICONERROR);
 	}
 	return pPixelShader;
+}
+
+void Graphics::setWireframe(bool value)
+{
+	if (value)
+	{
+		pContext->RSSetState(pWireframeState);
+	}
+	else
+	{
+		pContext->RSSetState(nullptr);
+	}
 }
 
 void Graphics::Begin(float r, float g, float b)

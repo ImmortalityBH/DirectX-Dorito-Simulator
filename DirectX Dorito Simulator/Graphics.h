@@ -27,6 +27,7 @@ public:
 	ID3D11VertexShader* createVertexShader(LPCWSTR fileName, ID3DBlob** ppBlob);
 	ID3D11PixelShader* createPixelShader(LPCWSTR fileName, ID3DBlob** ppBlob);
 
+	void setWireframe(bool value);
 	void Begin(float r, float g, float b);
 	void End();
 

@@ -2,8 +2,10 @@
 #include <string>
 #include <vector>
 
+using namespace DirectX;
+
 Game::Game()
-	: wnd(1280, 720, L"DirectX Dorito Simulator: Deluxe Edition"),
+	: wnd(1920, 1080, L"DirectX Dorito Simulator: Deluxe Edition"),
 	  camera(wnd)
 {
 }
@@ -40,6 +42,7 @@ void Game::Init()
 	model = std::make_unique<Model>(wnd.Gfx(), L"res/img/dorito.dds");
 	floorModel = std::make_unique<Model>(wnd.Gfx(), L"res/img/floor.dds");
 	dogModel = std::make_unique<Model>(wnd.Gfx(), L"res/img/dog.dds");
+	bagModel = std::make_unique<Model>(wnd.Gfx(), L"res/img/bag.dds");
 	//DORITO
 	std::vector<Vertex> vertices =
 	{
@@ -49,6 +52,13 @@ void Game::Init()
 	};
 	//FLOOR
 	std::vector<Vertex> floorVertices =
+	{
+		Vertex(-0.5f, 0.5f, 0.0f, 0.0f, 0.0f),
+		Vertex(0.5f, -0.5f, 0.0f, 2.0f, 2.0f),
+		Vertex(-0.5f, -0.5f, 0.0f, 0.0f, 2.0f),
+		Vertex(0.5f, 0.5f, 0.0f, 2.0f, 0.0f),
+	};
+	std::vector<Vertex> bagVertices =
 	{
 		Vertex(-0.5f, 0.5f, 0.0f, 0.0f, 0.0f),
 		Vertex(0.5f, -0.5f, 0.0f, 1.0f, 1.0f),
@@ -63,15 +73,33 @@ void Game::Init()
 
 	model->create(vertices, L"VertexShader.cso", L"PixelShader.cso");
 	floorModel->create(floorVertices, floorIndices, L"VertexShader.cso", L"PixelShader.cso");
-	dogModel->create(floorVertices, floorIndices, L"VertexShader.cso", L"PixelShader.cso");
+	dogModel->create(bagVertices, floorIndices, L"VertexShader.cso", L"PixelShader.cso");
+	bagModel->create(bagVertices, floorIndices, L"VertexShader.cso", L"PixelShader.cso");
+
+	intro = std::make_unique<SoundEffect>(wnd.aud.get() , L"res/audio/intro.wav");
+	outro = std::make_unique<SoundEffect>(wnd.aud.get(), L"res/audio/outro.wav");
+
+	effects[0] = std::make_unique<SoundEffect>(wnd.aud.get(), L"res/audio/amazing.wav");
+	effects[1] = std::make_unique<SoundEffect>(wnd.aud.get(), L"res/audio/awesome.wav");
+	effects[2] = std::make_unique<SoundEffect>(wnd.aud.get(), L"res/audio/delicious.wav");
+	effects[3] = std::make_unique<SoundEffect>(wnd.aud.get(), L"res/audio/good job.wav");
+	effects[4] = std::make_unique<SoundEffect>(wnd.aud.get(), L"res/audio/incredible.wav");
+	effects[5] = std::make_unique<SoundEffect>(wnd.aud.get(), L"res/audio/mom.wav");
+	effects[6] = std::make_unique<SoundEffect>(wnd.aud.get(), L"res/audio/nice one.wav");
+	effects[7] = std::make_unique<SoundEffect>(wnd.aud.get(), L"res/audio/oh my god.wav");
+	effects[8] = std::make_unique<SoundEffect>(wnd.aud.get(), L"res/audio/poop.wav");
+	effects[9] = std::make_unique<SoundEffect>(wnd.aud.get(), L"res/audio/right.wav");
+	effects[10] = std::make_unique<SoundEffect>(wnd.aud.get(), L"res/audio/un.wav");
+	effects[11] = std::make_unique<SoundEffect>(wnd.aud.get(), L"res/audio/fire.wav");
+	effects[12] = std::make_unique<SoundEffect>(wnd.aud.get(), L"res/audio/wow.wav");
 }
 
 void Game::UpdateScene()
 {
-	float timeSinceStart = timer.Mark();
-	float dt = timeSinceStart - oldTimeSinceStart;
-	oldTimeSinceStart = timeSinceStart;
-
+	//float timeSinceStart = timer.Mark();
+	//float dt = timeSinceStart - oldTimeSinceStart;
+	//oldTimeSinceStart = timeSinceStart;
+	float dt = 1;
 	auto kb = wnd.kbd->GetState();
 	auto ms = wnd.mouse->GetState();
 
@@ -79,24 +107,20 @@ void Game::UpdateScene()
 	{
 		
 	}
-	
+
 	//std::wstring title = L"Mouse Pos (" + std::to_wstring(ms.x) + L", " + std::to_wstring(ms.y) + L")";
 	//wnd.setTitle(title.c_str());
 	//std::wstring title = L"Deltatime: " + std::to_wstring(dt);
 	//wnd.setTitle(title.c_str());
 
-	if (ms.leftButton)
-	{
-		MessageBox(nullptr, L"COOCHIE", L"LOL", MB_OK);
-	}
-	//std::wstring title =  L"Elapsed Time: " + std::to_wstring((int)round(timer.Peek()));
+	std::wstring title =  L"Elapsed Time: " + std::to_wstring(static_cast<int>(round(timer.Peek())));
 	//wnd.setTitle(title.c_str());
-	camera.update(dt, wnd);
+	camera.update(timer.Peek(), wnd);
 
 	model->resetMatrix();
 
 	model->move(0.0f, 0.35f, 1.5f);
-	model->rotate(0.0f, 1.0f, 0.0f, 0.0f);
+	model->rotate(0.0f, 1.0f, 0.0f, timer.Peek() * 32);
 	model->scale(1.0f, 1.0f, 1.0f);
 
 	model->update(timer.Peek(), camera);
@@ -109,6 +133,7 @@ void Game::UpdateScene()
 
 	floorModel->update(timer.Peek(), camera);
 
+
 	dogModel->resetMatrix();
 
 	dogModel->move(-3.0f, .45f, 5.0f);
@@ -116,6 +141,14 @@ void Game::UpdateScene()
 	dogModel->scale(4.0f, 4.0f, 1.0f);
 
 	dogModel->update(timer.Peek(), camera);
+
+	bagModel->resetMatrix();
+
+	bagModel->move(3.0f, .45f, 5.0f);
+	bagModel->rotate(0.0f, 1.0f, 0.0f, 25.0f);
+	bagModel->scale(4.0f, 4.0f, 1.0f);
+
+	bagModel->update(timer.Peek(), camera);
 }
 
 void Game::DrawScene()
@@ -126,6 +159,10 @@ void Game::DrawScene()
 	dogModel->draw();
 	dogModel->unbind();
 
+	bagModel->bind();
+	bagModel->draw();
+	bagModel->unbind();
+	
 	model->bind();
 	model->draw();
 	model->unbind();

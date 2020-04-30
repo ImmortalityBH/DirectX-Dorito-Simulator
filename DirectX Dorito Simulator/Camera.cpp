@@ -2,7 +2,8 @@
 
 using namespace DirectX;
 
-Camera::Camera(const Window& wnd)
+Camera::Camera(Window& wnd)
+	: pMouse(wnd.mouse.get())
 {
 	position = XMVectorSet(0.0f, 0.0f, -0.5f, 0.0f);
 	target = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);

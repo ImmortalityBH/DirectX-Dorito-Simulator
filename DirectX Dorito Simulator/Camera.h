@@ -2,13 +2,14 @@
 
 #include "Window.h"
 #include <DirectXMath.h>
+#include <Mouse.h>
 
 namespace DX = DirectX;
 
 class Camera
 {
 public:
-	Camera(const Window& wnd);
+	Camera(Window& wnd);
 
 	void update(float dt, Window& wnd);
 
@@ -22,6 +23,7 @@ private:
 	DX::XMVECTOR target;
 	DX::XMVECTOR up;
 
+	DirectX::Mouse* pMouse;
 	const float speed = 0.01f;
 };
 

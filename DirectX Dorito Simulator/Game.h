@@ -4,6 +4,8 @@
 #include "Timer.h"
 #include "Model.h"
 #include "Camera.h"
+#include <Audio.h>
+#include <memory>
 
 class Game
 {
@@ -23,11 +25,18 @@ private:
 	std::unique_ptr<Model> model;
 	std::unique_ptr<Model> floorModel;
 	std::unique_ptr<Model> dogModel;
+	std::unique_ptr<Model> bagModel;
+
+	std::unique_ptr<DirectX::SoundEffect> intro;
+	std::unique_ptr<DirectX::SoundEffect> outro;
+	std::unique_ptr<DirectX::SoundEffect> effects[13];
+
 	Camera camera;
 	int randomNum;
 	int taskNum;
 	bool didRequest = true;
 
 	float oldTimeSinceStart = 0;
+	bool isWireframe = false;
 };
 

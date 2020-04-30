@@ -18,6 +18,7 @@ public:
 		LPCWSTR vertexFileName, LPCWSTR pixelFileName);
 	void create(std::vector<Vertex>& vertices, std::vector<UINT>& indices, 
 		LPCWSTR vertexFileName, LPCWSTR pixelFileName);
+	void createFromOBJ(LPCWSTR fileName);
 
 	void resetMatrix();
 	void update(float dt, Camera& camera);

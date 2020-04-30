@@ -172,6 +172,11 @@ void Model::create(std::vector<Vertex>& vertices, std::vector<UINT>& indices, LP
 	if (pPixelBlob) pPixelBlob->Release();
 }
 
+void Model::createFromOBJ(LPCWSTR fileName)
+{
+
+}
+
 void Model::resetMatrix()
 {
 	sca = XMMatrixIdentity();

@@ -150,10 +150,9 @@
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="Graphics.cpp" />
-    <ClCompile Include="main.cpp" />
+    <ClCompile Include="WinMain.cpp" />
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="Timer.cpp" />
-    <ClCompile Include="Triangle.cpp" />
     <ClCompile Include="Window.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -197,7 +196,6 @@
     <ClInclude Include="Model.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Timer.h" />
-    <ClInclude Include="Triangle.h" />
     <ClInclude Include="Win.h" />
     <ClInclude Include="Window.h" />
     <ClInclude Include="WVP.h" />

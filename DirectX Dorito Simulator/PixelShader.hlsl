@@ -10,5 +10,8 @@ SamplerState samplerState;
 
 float4 main(VS_OUT vso) : SV_TARGET
 {
-	return doritoTexture.Sample(samplerState, vso.texCoord);
+	float4 diffuse = doritoTexture.Sample(samplerState, vso.texCoord);
+	
+	clip(diffuse.a - .25);
+	return diffuse;
 }
