@@ -78,6 +78,11 @@ bool Window::init(HINSTANCE hInstance)
     if (!mouse) {
         DisplayError(L"Mouse object creation failed");
     }
+    gamepad = std::make_unique<Gamepad>(1);
+    if (!gamepad) {
+        DisplayError(L"Gamepad creation failed");
+
+    }
     pGfx = std::make_unique<Graphics>(this->getWidth(), this->getHeight(), hWnd);
     if (pGfx == nullptr) {
         DisplayError(L"Graphics object was nullptr");
@@ -89,7 +94,7 @@ bool Window::init(HINSTANCE hInstance)
     return true;
 }
 
-void Window::setTitle(LPCWSTR text)
+void Window::setTitle(LPCWSTR text) 
 {
     SetWindowText(hWnd, text);
 }

@@ -5,7 +5,7 @@
 using namespace DirectX;
 
 Game::Game()
-	: wnd(1920, 1080, L"DirectX Dorito Simulator: Deluxe Edition"),
+	: wnd(800, 600, L"DirectX Dorito Simulator: Deluxe Edition"),
 	  camera(wnd)
 {
 }
@@ -106,6 +106,14 @@ void Game::UpdateScene()
 	if (!wnd.aud->Update())
 	{
 		
+	}
+
+	if (wnd.gamepad->Update())
+	{
+		if (wnd.gamepad->isButtonPressed(XINPUT_GAMEPAD_A))
+		{
+
+		}
 	}
 
 	//std::wstring title = L"Mouse Pos (" + std::to_wstring(ms.x) + L", " + std::to_wstring(ms.y) + L")";

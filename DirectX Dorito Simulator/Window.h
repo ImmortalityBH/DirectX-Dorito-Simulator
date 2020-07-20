@@ -6,7 +6,7 @@
 
 #include <Keyboard.h>
 #include <Mouse.h>
-#include <GamePad.h>
+#include "Gamepad.h"
 #include <Audio.h>
 
 class Window
@@ -29,7 +29,7 @@ private:
 public:
 	std::unique_ptr<DirectX::Keyboard> kbd;
 	std::unique_ptr<DirectX::Mouse> mouse;
-	std::unique_ptr<DirectX::GamePad> gamepad;
+	std::unique_ptr<Gamepad> gamepad;
 	std::unique_ptr<DirectX::AudioEngine> aud;
 private:
 	std::unique_ptr<Graphics> pGfx;
