@@ -2,7 +2,7 @@
 // Microsoft Visual C++ generated include file.
 // Used by DirectX Dorito Simulator.rc
 //
-#define IDI_ICON1                       "icon_IOc_icon.ico"
+#define IDI_ICON1                       101
 
 // Next default values for new objects
 // 
