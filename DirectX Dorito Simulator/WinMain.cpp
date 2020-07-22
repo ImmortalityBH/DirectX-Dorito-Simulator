@@ -8,7 +8,7 @@ int WINAPI WinMain(HINSTANCE hInstance,
     LPSTR lpCmdLine,
     int nShowCmd)
 {
-    srand(time(NULL));
+    srand(time(nullptr));
     return Game{}.run(hInstance);
 }
 

@@ -21,11 +21,15 @@ public:
 private:
 	Window wnd; 
 	Timer timer;
+	Timer elapsedTimer;
+
+	float mtnDewX = 0;
 private:
-	std::unique_ptr<Model> model;
+	std::unique_ptr<Model> dorito;
 	std::unique_ptr<Model> floorModel;
 	std::unique_ptr<Model> dogModel;
 	std::unique_ptr<Model> bagModel;
+	std::unique_ptr<Model> mtnDewModel;
 
 	std::unique_ptr<DirectX::SoundEffect> intro;
 	std::unique_ptr<DirectX::SoundEffect> outro;

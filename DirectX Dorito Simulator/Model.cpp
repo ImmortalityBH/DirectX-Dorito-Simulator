@@ -1,6 +1,7 @@
 #include "Model.h"
 #include "Error.h"
 #include <DDSTextureLoader.h>
+#include "d3dUtil.h"
 
 using namespace DirectX;
 
@@ -11,14 +12,14 @@ Model::Model(Graphics& gfx, LPCWSTR texFilename)
 
 Model::~Model()
 {
-	if (pVertexBuffer) pVertexBuffer->Release();
-	if (pConstantBuffer) pConstantBuffer->Release();
-	if (pTexture) pTexture->Release();
-	if (pTexSamplerState) pTexSamplerState->Release();
-	if (pVertexLayout) pVertexLayout->Release();
-	if (pVertexShader) pVertexShader->Release();
-	if (pPixelShader) pPixelShader->Release();
-	if (pIndexBuffer) pIndexBuffer->Release();
+	ReleaseCOM(pVertexBuffer);
+	ReleaseCOM(pConstantBuffer);
+	ReleaseCOM(pTexture);
+	ReleaseCOM(pTexSamplerState);
+	ReleaseCOM(pVertexLayout);
+	ReleaseCOM(pVertexShader);
+	ReleaseCOM(pPixelShader);
+	ReleaseCOM(pIndexBuffer);
 }
 
 void Model::create(std::vector<Vertex>& vertices, LPCWSTR vertexFileName, LPCWSTR pixelFileName)
@@ -168,8 +169,8 @@ void Model::create(std::vector<Vertex>& vertices, std::vector<UINT>& indices, LP
 	hr = pGfx->getDevice()->CreateSamplerState(&tsd, &pTexSamplerState);
 	DisplayError(hr, L"Create sampler state failed.");
 
-	if (pVertexBlob) pVertexBlob->Release();
-	if (pPixelBlob) pPixelBlob->Release();
+	ReleaseCOM(pVertexBlob);
+	ReleaseCOM(pPixelBlob);
 }
 
 void Model::createFromOBJ(LPCWSTR fileName)
@@ -186,6 +187,10 @@ void Model::resetMatrix()
 
 void Model::update(float dt, Camera& camera)
 {
+	//move
+	translation = XMMatrixTranslation(transform.position.x, 
+		transform.position.y, transform.position.z);
+
 
 	world = sca * rotation * translation;
 
@@ -196,7 +201,18 @@ void Model::update(float dt, Camera& camera)
 
 void Model::move(float x, float y, float z)
 {
-	translation = XMMatrixTranslation(x, y, z);
+	transform.position.x += x;
+	transform.position.y += y;
+	transform.position.z += z;
+	transform.position.w = 1.0f;
+}
+
+void Model::setPos(float x, float y, float z)
+{
+	transform.position.x = x;
+	transform.position.y = y;
+	transform.position.z = z;
+	transform.position.w = 1.0f;
 }
 
 void Model::rotate(float x, float y, float z, float Angle)

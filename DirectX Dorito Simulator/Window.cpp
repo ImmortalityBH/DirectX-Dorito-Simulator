@@ -50,7 +50,7 @@ bool Window::init(HINSTANCE hInstance)
     hWnd = CreateWindowEx(
         NULL,
         WndClassName,
-        L"DirectX Dorito Simulator",
+        title,
         WS_OVERLAPPEDWINDOW,
         CW_USEDEFAULT, CW_USEDEFAULT,
         wr.right - wr.left, wr.bottom - wr.top,

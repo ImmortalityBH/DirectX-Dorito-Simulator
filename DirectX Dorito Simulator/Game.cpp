@@ -1,12 +1,15 @@
 #include "Game.h"
 #include <string>
 #include <vector>
+#include <algorithm>
 
 using namespace DirectX;
 
 Game::Game()
 	: wnd(800, 600, L"DirectX Dorito Simulator: Deluxe Edition"),
-	  camera(wnd)
+	  camera(wnd),
+	  randomNum(0),
+	  taskNum(0)
 {
 }
 
@@ -39,10 +42,11 @@ int Game::run(HINSTANCE hInstance)
 
 void Game::Init()
 {
-	model = std::make_unique<Model>(wnd.Gfx(), L"res/img/dorito.dds");
+	dorito = std::make_unique<Model>(wnd.Gfx(), L"res/img/dorito.dds");
 	floorModel = std::make_unique<Model>(wnd.Gfx(), L"res/img/floor.dds");
 	dogModel = std::make_unique<Model>(wnd.Gfx(), L"res/img/dog.dds");
 	bagModel = std::make_unique<Model>(wnd.Gfx(), L"res/img/bag.dds");
+	mtnDewModel = std::make_unique<Model>(wnd.Gfx(), L"res/img/mtndew.dds");
 	//DORITO
 	std::vector<Vertex> vertices =
 	{
@@ -71,27 +75,36 @@ void Game::Init()
 		3, 1, 0,
 	};
 
-	model->create(vertices, L"VertexShader.cso", L"PixelShader.cso");
+	dorito->create(vertices, L"VertexShader.cso", L"PixelShader.cso");
 	floorModel->create(floorVertices, floorIndices, L"VertexShader.cso", L"PixelShader.cso");
 	dogModel->create(bagVertices, floorIndices, L"VertexShader.cso", L"PixelShader.cso");
 	bagModel->create(bagVertices, floorIndices, L"VertexShader.cso", L"PixelShader.cso");
+	mtnDewModel->create(bagVertices, floorIndices, L"VertexShader.cso", L"PixelShader.cso");
+
+	dorito->setPos(0.0f, 0.35f, 1.5f);
 
 	intro = std::make_unique<SoundEffect>(wnd.aud.get() , L"res/audio/intro.wav");
 	outro = std::make_unique<SoundEffect>(wnd.aud.get(), L"res/audio/outro.wav");
 
-	effects[0] = std::make_unique<SoundEffect>(wnd.aud.get(), L"res/audio/amazing.wav");
-	effects[1] = std::make_unique<SoundEffect>(wnd.aud.get(), L"res/audio/awesome.wav");
-	effects[2] = std::make_unique<SoundEffect>(wnd.aud.get(), L"res/audio/delicious.wav");
-	effects[3] = std::make_unique<SoundEffect>(wnd.aud.get(), L"res/audio/good job.wav");
-	effects[4] = std::make_unique<SoundEffect>(wnd.aud.get(), L"res/audio/incredible.wav");
-	effects[5] = std::make_unique<SoundEffect>(wnd.aud.get(), L"res/audio/mom.wav");
-	effects[6] = std::make_unique<SoundEffect>(wnd.aud.get(), L"res/audio/nice one.wav");
-	effects[7] = std::make_unique<SoundEffect>(wnd.aud.get(), L"res/audio/oh my god.wav");
-	effects[8] = std::make_unique<SoundEffect>(wnd.aud.get(), L"res/audio/poop.wav");
-	effects[9] = std::make_unique<SoundEffect>(wnd.aud.get(), L"res/audio/right.wav");
-	effects[10] = std::make_unique<SoundEffect>(wnd.aud.get(), L"res/audio/un.wav");
-	effects[11] = std::make_unique<SoundEffect>(wnd.aud.get(), L"res/audio/fire.wav");
-	effects[12] = std::make_unique<SoundEffect>(wnd.aud.get(), L"res/audio/wow.wav");
+	std::vector<std::wstring> fileNames = {
+		L"res/audio/amazing.wav",
+		L"res/audio/awesome.wav",
+		L"res/audio/delicious.wav",
+		L"res/audio/good job.wav",
+		L"res/audio/incredible.wav",
+		L"res/audio/mom.wav",
+		L"res/audio/nice one.wav",
+		L"res/audio/oh my god.wav",
+		L"res/audio/poop.wav",
+		L"res/audio/right.wav",
+		L"res/audio/un.wav",
+		L"res/audio/fire.wav",
+		L"res/audio/wow.wav"
+	};
+	for (std::size_t i = 0; i < fileNames.size(); i++)
+	{
+		effects[i] = std::make_unique<SoundEffect>(wnd.aud.get(), fileNames[i].c_str());
+	}
 }
 
 void Game::UpdateScene()
@@ -99,7 +112,10 @@ void Game::UpdateScene()
 	//float timeSinceStart = timer.Mark();
 	//float dt = timeSinceStart - oldTimeSinceStart;
 	//oldTimeSinceStart = timeSinceStart;
-	float dt = 1;
+	float dTime = timer.Peek();
+	float eTime = elapsedTimer.Peek();
+	timer.Mark();
+
 	auto kb = wnd.kbd->GetState();
 	auto ms = wnd.mouse->GetState();
 
@@ -108,34 +124,144 @@ void Game::UpdateScene()
 		
 	}
 
-	if (wnd.gamepad->Update())
-	{
-		if (wnd.gamepad->isButtonPressed(XINPUT_GAMEPAD_A))
-		{
+	//std::wstring title = L"Mouse Pos (" + std::to_wstring(ms.x) + L", " + std::to_wstring(ms.y) + L")";
 
+	//std::wstring title =  L"Elapsed Time: " + std::to_wstring(elapsedTimer.Peek()) + L", Delta Time: " + std::to_wstring(dTime);
+	//std::wstring forito = L"X: " + std::to_wstring(dorito->transform.position.x) + L", Y:" + std::to_wstring(dorito->transform.position.y);
+	//wnd.setTitle(forito.c_str());
+	camera.update(timer.Peek(), wnd);
+
+
+	//model->resetMatrix();
+#pragma region Game code
+/*
+	if (kb.Q)
+	{
+		if (randomNum == 0)
+		{
+			didRequest = true;
+		}
+	}
+	else if (kb.E)
+	{
+		if (randomNum == 1)
+		{
+			didRequest = true;
+		}
+	}
+	else if (kb.W)
+	{
+		if (randomNum == 2)
+		{
+			didRequest = true;
+		}
+	}
+	else if (kb.S)
+	{
+		if (randomNum == 3)
+		{
+			didRequest = true;
+		}
+	}
+	else if (kb.A)
+	{
+		if (randomNum == 4)
+		{
+			didRequest = true;
+		}
+	}
+	else if (kb.D)
+	{
+		if (randomNum == 5)
+		{
+			didRequest = true;
 		}
 	}
 
-	//std::wstring title = L"Mouse Pos (" + std::to_wstring(ms.x) + L", " + std::to_wstring(ms.y) + L")";
-	//wnd.setTitle(title.c_str());
-	//std::wstring title = L"Deltatime: " + std::to_wstring(dt);
-	//wnd.setTitle(title.c_str());
+	if (timer.Peek() > 2.5f)
+	{
+		randomNum = rand() % 6;
+		switch (randomNum)
+		{
+		case 0:
+		{
+			std::wstring title = L"Dorito Says Rotate Left, Task Number:" + std::to_wstring(taskNum);
+			wnd.setTitle(title.c_str());
+		}
+		break;
+		case 1:
+		{
+			std::wstring title = L"Dorito Says Rotate Right, Task Number:" + std::to_wstring(taskNum);
+			wnd.setTitle(title.c_str());
+		}
+		break;
+		case 2:
+		{
+			std::wstring title = L"Dorito Says Scale Up, Task Number:" + std::to_wstring(taskNum);
+			wnd.setTitle(title.c_str());
+		}
+		break;
+		case 3:
+		{
+			std::wstring title = L"Dorito Says Scale Down, Task Number:" + std::to_wstring(taskNum);
+			wnd.setTitle(title.c_str());
+		}
+		break;
+		case 4:
+		{
+			std::wstring title = L"Dorito Says Move Left, Task Number:" + std::to_wstring(taskNum);
+			wnd.setTitle(title.c_str());
+		}
+		break;
+		case 5:
+		{
+			std::wstring title = L"Dorito Says Move Right, Task Number:" + std::to_wstring(taskNum);
+			wnd.setTitle(title.c_str());
+		}
+		break;
+		}
+		if (didRequest == false)
+		{
+			wnd.setTitle(L"YOU FAILED");
+			didRequest = true;
+		}
+		else
+		{
+			didRequest = false;
+			taskNum++;
+		}
 
-	std::wstring title =  L"Elapsed Time: " + std::to_wstring(static_cast<int>(round(timer.Peek())));
-	//wnd.setTitle(title.c_str());
-	camera.update(timer.Peek(), wnd);
+		timer.Mark();
+	}
+*/
+#pragma endregion
 
-	model->resetMatrix();
+	dorito->transform.position.x = std::clamp(dorito->transform.position.x, -1.5f, 1.5f);
+	dorito->transform.position.y = std::clamp(dorito->transform.position.y, -0.30f, 1.15f);
+	/*if (dorito->transform.position.x > 1.5f)
+		dorito->transform.position.x = 1.5f;
+	if (dorito->transform.position.x < -1.5f)
+		dorito->transform.position.x = -1.5f;
+	if (dorito->transform.position.y > 1.5f)
+		dorito->transform.position.y = 1.5f;
+	if (dorito->transform.position.y < -0.30f)
+		dorito->transform.position.y = -0.30f;*/
 
-	model->move(0.0f, 0.35f, 1.5f);
-	model->rotate(0.0f, 1.0f, 0.0f, timer.Peek() * 32);
-	model->scale(1.0f, 1.0f, 1.0f);
+	if (wnd.gamepad->Update())
+	{
+		float joyX = wnd.gamepad->leftStickX;
+		float joyY = wnd.gamepad->leftStickY;
+		dorito->move(0.0f, joyY * dTime * 0.5f, 0.0f);
+		dorito->move(joyX * dTime * 0.5f, 0.0f, 0.0f);
+	}
+	dorito->rotate(0.0f, 1.0f, 0.0f, sin(eTime) * 35.0f);
+	dorito->scale(1.0f, 1.0f, 1.0f);
 
-	model->update(timer.Peek(), camera);
+	dorito->update(timer.Peek(), camera);
 
 	floorModel->resetMatrix();
 
-	floorModel->move(0.0f, -0.75f, 3.0f);
+	floorModel->setPos(0.0f, -0.75f, 3.0f);
 	floorModel->rotate(1.0f, 0.0f, 0.0f, 85.0f);
 	floorModel->scale(4.0f, 4.0f, 1.0f);
 
@@ -144,7 +270,7 @@ void Game::UpdateScene()
 
 	dogModel->resetMatrix();
 
-	dogModel->move(-3.0f, .45f, 5.0f);
+	dogModel->setPos(-3.0f, .45f, 5.0f);
 	dogModel->rotate(0.0f, 1.0f, 0.0f, -25.0f);
 	dogModel->scale(4.0f, 4.0f, 1.0f);
 
@@ -152,11 +278,19 @@ void Game::UpdateScene()
 
 	bagModel->resetMatrix();
 
-	bagModel->move(3.0f, .45f, 5.0f);
+	bagModel->setPos(3.0f, .45f, 5.0f);
 	bagModel->rotate(0.0f, 1.0f, 0.0f, 25.0f);
 	bagModel->scale(4.0f, 4.0f, 1.0f);
 
 	bagModel->update(timer.Peek(), camera);
+
+	mtnDewModel->resetMatrix();
+	
+	mtnDewModel->setPos(sin(eTime) / 1.0f, 2.0f, 8.0f);
+	mtnDewModel->rotate(0.0, 0.0f, 1.0f, eTime * 32);
+	mtnDewModel->scale(3.0f, 4.0f, 1.0f);
+
+	mtnDewModel->update(timer.Peek(), camera);
 }
 
 void Game::DrawScene()
@@ -171,13 +305,17 @@ void Game::DrawScene()
 	bagModel->draw();
 	bagModel->unbind();
 	
-	model->bind();
-	model->draw();
-	model->unbind();
+	dorito->bind();
+	dorito->draw();
+	dorito->unbind();
 
 	floorModel->bind();
 	floorModel->draw();
 	floorModel->unbind();
+
+	mtnDewModel->bind();
+	mtnDewModel->draw();
+	mtnDewModel->unbind();
 
 	wnd.Gfx().End();
 }

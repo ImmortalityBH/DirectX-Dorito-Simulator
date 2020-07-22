@@ -3,6 +3,8 @@
 #pragma comment(lib, "d3dcompiler.lib")
 #include <d3dcompiler.h>
 #include "Error.h"
+#include "d3dUtil.h"
+
 using namespace DirectX;
 
 Graphics::Graphics(int width, int height, HWND hWnd)
@@ -99,13 +101,13 @@ Graphics::Graphics(int width, int height, HWND hWnd)
 
 Graphics::~Graphics()
 {
-	if (pSwap) pSwap->Release();
-	if (pDevice) pDevice->Release();
-	if (pContext) pContext->Release();
-	if (pTarget) pTarget->Release();
-	if (pDepthStencilBuffer) pDepthStencilBuffer->Release();
-	if (pDepthStencilView) pDepthStencilView->Release();
-	if (pWireframeState) pWireframeState->Release();
+	ReleaseCOM(pSwap);
+	ReleaseCOM(pDevice);
+	ReleaseCOM(pContext);
+	ReleaseCOM(pTarget);
+	ReleaseCOM(pDepthStencilBuffer);
+	ReleaseCOM(pDepthStencilView);
+	ReleaseCOM(pWireframeState);
 }
 
 ID3D11VertexShader* Graphics::createVertexShader(LPCWSTR fileName, ID3DBlob** ppBlob)

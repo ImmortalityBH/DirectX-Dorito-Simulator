@@ -5,6 +5,7 @@
 #include "Graphics.h"
 #include "WVP.h"
 #include "Camera.h"
+#include "Transform.h"
 
 #include <vector>
 
@@ -12,6 +13,7 @@ class Model
 {
 public:
 	Model(Graphics& gfx, LPCWSTR texFilename);
+	Model(const Model&) = delete;
 	~Model();
 
 	void create(std::vector<Vertex>& vertices, 
@@ -24,13 +26,18 @@ public:
 	void update(float dt, Camera& camera);
 
 	void move(float x, float y, float z);
+	void setPos(float x, float y, float z);
 	void rotate(float x, float y, float z, float Angle);
+	void setRotation(float x, float y, float z, float Angle);
 	void scale(float x, float y, float z);
+	void setScale(float x, float y, float z);
 
 	void draw();
 
 	void bind();
 	void unbind();
+
+	Transform transform;
 private:
 	ID3D11Buffer* pVertexBuffer;
 	ID3D11Buffer* pIndexBuffer;
