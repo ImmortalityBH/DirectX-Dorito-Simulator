@@ -22,8 +22,6 @@ private:
 	Window wnd; 
 	Timer timer;
 	Timer elapsedTimer;
-
-	float mtnDewX = 0;
 private:
 	std::unique_ptr<Model> dorito;
 	std::unique_ptr<Model> floorModel;
