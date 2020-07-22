@@ -81,7 +81,6 @@ bool Window::init(HINSTANCE hInstance)
     gamepad = std::make_unique<Gamepad>(1);
     if (!gamepad) {
         DisplayError(L"Gamepad creation failed");
-
     }
     pGfx = std::make_unique<Graphics>(this->getWidth(), this->getHeight(), hWnd);
     if (pGfx == nullptr) {
@@ -115,7 +114,6 @@ LRESULT Window::WndProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
         PostQuitMessage(0);
         break;
     case WM_ACTIVATEAPP:
-
         Keyboard::ProcessMessage(Msg, wParam, lParam);
         break;
 
@@ -133,6 +131,44 @@ LRESULT Window::WndProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
     case WM_MOUSEHOVER:
         Mouse::ProcessMessage(Msg, wParam, lParam);
         break;
+    /*case WM_MOUSEMOVE:
+    {
+        int x = LOWORD(lParam);
+        int y = HIWORD(lParam);
+        Window::mouse.OnMouseMove(x, y);
+        break;
+    } 
+    case WM_LBUTTONUP:
+    {
+        int x = LOWORD(lParam);
+        int y = HIWORD(lParam);
+        Window::mouse.OnLeftReleased(x, y);
+        break;
+    }
+    case WM_LBUTTONDOWN:
+    {
+        int x = LOWORD(lParam);
+        int y = HIWORD(lParam);
+        Window::mouse.OnLeftPressed(x, y);
+        break;
+    }
+    case WM_RBUTTONUP:
+    {
+        int x = LOWORD(lParam);
+        int y = HIWORD(lParam);
+        Window::mouse.OnRightReleased(x, y);
+        break;
+    }
+    case WM_RBUTTONDOWN:
+    {
+        int x = LOWORD(lParam);
+        int y = HIWORD(lParam);
+        Window::mouse.OnRightPressed(x, y);
+        break;
+    }  
+    case WM_MOUSEWHEEL:
+
+        break;*/
 
     case WM_KEYDOWN:
     case WM_SYSKEYDOWN:

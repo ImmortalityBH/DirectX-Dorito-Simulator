@@ -190,6 +190,9 @@ void Model::update(float dt, Camera& camera)
 	//move
 	translation = XMMatrixTranslation(transform.position.x, 
 		transform.position.y, transform.position.z);
+	//scale
+	sca = XMMatrixScaling(transform.scale.x, transform.scale.y, transform.scale.z);
+	//rotation
 
 
 	world = sca * rotation * translation;
@@ -221,9 +224,26 @@ void Model::rotate(float x, float y, float z, float Angle)
 	rotation = XMMatrixRotationAxis(vec, XMConvertToRadians(Angle));
 }
 
+void Model::setRotation(float x, float y, float z, float Angle)
+{
+	XMVECTOR vec = XMVectorSet(x, y, z, 1.0f);
+	rotation = XMMatrixRotationAxis(vec, XMConvertToRadians(Angle));
+}
+
 void Model::scale(float x, float y, float z)
 {
-	sca = XMMatrixScaling(x, y, z);
+	transform.scale.x += x;
+	transform.scale.y += y;
+	transform.scale.z += z;
+	transform.scale.w = 1.0f;
+}
+
+void Model::setScale(float x, float y, float z)
+{
+	transform.scale.x = x;
+	transform.scale.y = y;
+	transform.scale.z = z;
+	transform.scale.w = 1.0f;
 }
 
 void Model::draw()

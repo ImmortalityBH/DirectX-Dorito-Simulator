@@ -123,15 +123,12 @@ void Game::UpdateScene()
 	{
 		
 	}
-
-	//std::wstring title = L"Mouse Pos (" + std::to_wstring(ms.x) + L", " + std::to_wstring(ms.y) + L")";
+	//std::wstring title = L"Mouse Pos (" + std::to_wstring(Window::mouse.getPos().x) + L", " + std::to_wstring(Window::mouse.getPos().y) + L")";
 
 	//std::wstring title =  L"Elapsed Time: " + std::to_wstring(elapsedTimer.Peek()) + L", Delta Time: " + std::to_wstring(dTime);
 	//std::wstring forito = L"X: " + std::to_wstring(dorito->transform.position.x) + L", Y:" + std::to_wstring(dorito->transform.position.y);
-	//wnd.setTitle(forito.c_str());
+	//wnd.setTitle(title.c_str());
 	camera.update(timer.Peek(), wnd);
-
-
 	//model->resetMatrix();
 #pragma region Game code
 /*
@@ -255,7 +252,7 @@ void Game::UpdateScene()
 		dorito->move(joyX * dTime * 0.5f, 0.0f, 0.0f);
 	}
 	dorito->rotate(0.0f, 1.0f, 0.0f, sin(eTime) * 35.0f);
-	dorito->scale(1.0f, 1.0f, 1.0f);
+	dorito->setScale(1.0f, 1.0f, 1.0f);
 
 	dorito->update(timer.Peek(), camera);
 
@@ -263,7 +260,7 @@ void Game::UpdateScene()
 
 	floorModel->setPos(0.0f, -0.75f, 3.0f);
 	floorModel->rotate(1.0f, 0.0f, 0.0f, 85.0f);
-	floorModel->scale(4.0f, 4.0f, 1.0f);
+	floorModel->setScale(4.0f, 4.0f, 1.0f);
 
 	floorModel->update(timer.Peek(), camera);
 
@@ -272,7 +269,7 @@ void Game::UpdateScene()
 
 	dogModel->setPos(-3.0f, .45f, 5.0f);
 	dogModel->rotate(0.0f, 1.0f, 0.0f, -25.0f);
-	dogModel->scale(4.0f, 4.0f, 1.0f);
+	dogModel->setScale(4.0f, 4.0f, 1.0f);
 
 	dogModel->update(timer.Peek(), camera);
 
@@ -280,7 +277,7 @@ void Game::UpdateScene()
 
 	bagModel->setPos(3.0f, .45f, 5.0f);
 	bagModel->rotate(0.0f, 1.0f, 0.0f, 25.0f);
-	bagModel->scale(4.0f, 4.0f, 1.0f);
+	bagModel->setScale(4.0f, 4.0f, 1.0f);
 
 	bagModel->update(timer.Peek(), camera);
 
@@ -288,7 +285,7 @@ void Game::UpdateScene()
 	
 	mtnDewModel->setPos(sin(eTime) / 1.0f, 2.0f, 8.0f);
 	mtnDewModel->rotate(0.0, 0.0f, 1.0f, eTime * 32);
-	mtnDewModel->scale(3.0f, 4.0f, 1.0f);
+	mtnDewModel->setScale(3.0f, 4.0f, 1.0f);
 
 	mtnDewModel->update(timer.Peek(), camera);
 }

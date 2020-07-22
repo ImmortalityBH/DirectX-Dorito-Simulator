@@ -23,7 +23,6 @@ private:
 	DX::XMVECTOR target;
 	DX::XMVECTOR up;
 
-	DirectX::Mouse* pMouse;
 	const float speed = 0.01f;
 };
 
