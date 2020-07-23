@@ -70,15 +70,16 @@ bool Window::init(HINSTANCE hInstance)
     ShowWindow(hWnd, TRUE);
     UpdateWindow(hWnd);
 
-    kbd = std::make_unique<DirectX::Keyboard>();
+    /*kbd = std::make_unique<DirectX::Keyboard>();
     if (!kbd) {
         DisplayError(L"Keyboard object creation failed");
-    }
+    }*/
     /*mouse = std::make_unique<DirectX::Mouse>();
     if (!mouse) {
         DisplayError(L"Mouse object creation failed");
     }*/
     Mouse::get();//construct static singleton instance of my mouse
+    Keyboard::get();
     gamepad = std::make_unique<Gamepad>(1);
     if (!gamepad) {
         DisplayError(L"Gamepad creation failed");
@@ -114,10 +115,6 @@ LRESULT Window::WndProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
     case WM_DESTROY:
         PostQuitMessage(0);
         break;
-    case WM_ACTIVATEAPP:
-        Keyboard::ProcessMessage(Msg, wParam, lParam);
-        break;
-
     /*case WM_INPUT:
     case WM_MOUSEMOVE:
     case WM_LBUTTONDOWN:
@@ -132,6 +129,24 @@ LRESULT Window::WndProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
     case WM_MOUSEHOVER:
         //Mouse::ProcessMessage(Msg, wParam, lParam);
         break;*/
+    case WM_KEYDOWN:
+    {
+        unsigned char keycode = static_cast<unsigned char>(wParam);
+        Keyboard::get().OnKeyPressed(keycode);
+        break;
+    }
+    case WM_KEYUP:
+    {
+        unsigned char keycode = static_cast<unsigned char>(wParam);
+        Keyboard::get().OnKeyReleased(keycode);
+        break;
+    }
+    case WM_CHAR:
+    {
+        unsigned char keycode = static_cast<unsigned char>(wParam);
+        Keyboard::get().OnChar(keycode);
+        break;
+    }
     case WM_MOUSEMOVE:
     case WM_MOUSELEAVE:
     {
@@ -140,13 +155,6 @@ LRESULT Window::WndProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
         Mouse::get().OnMouseMove(x, y);
         break;
     } 
-    case WM_LBUTTONUP:
-    {
-        int x = LOWORD(lParam);
-        int y = HIWORD(lParam);
-        Mouse::get().OnLeftReleased(x, y);
-        break;
-    }
     case WM_LBUTTONDOWN:
     {
         int x = LOWORD(lParam);
@@ -154,11 +162,11 @@ LRESULT Window::WndProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
         Mouse::get().OnLeftPressed(x, y);
         break;
     }
-    case WM_RBUTTONUP:
+    case WM_LBUTTONUP:
     {
         int x = LOWORD(lParam);
         int y = HIWORD(lParam);
-        Mouse::get().OnRightReleased(x, y);
+        Mouse::get().OnLeftReleased(x, y);
         break;
     }
     case WM_RBUTTONDOWN:
@@ -167,12 +175,12 @@ LRESULT Window::WndProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
         int y = HIWORD(lParam);
         Mouse::get().OnRightPressed(x, y);
         break;
-    }  
-    case WM_MBUTTONUP:
+    } 
+    case WM_RBUTTONUP:
     {
         int x = LOWORD(lParam);
         int y = HIWORD(lParam);
-        Mouse::get().OnMiddleReleased(x, y);
+        Mouse::get().OnRightReleased(x, y);
         break;
     }
     case WM_MBUTTONDOWN:
@@ -182,6 +190,13 @@ LRESULT Window::WndProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
         Mouse::get().OnMiddlePressed(x, y);
         break;
     }  
+    case WM_MBUTTONUP:
+    {
+        int x = LOWORD(lParam);
+        int y = HIWORD(lParam);
+        Mouse::get().OnMiddleReleased(x, y);
+        break;
+    }
     case WM_MOUSEWHEEL:
     {
         int x = LOWORD(lParam);
@@ -191,7 +206,7 @@ LRESULT Window::WndProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
         Mouse::get().OnWheelMove(x, y, normDelta);
         break;
     }
-    case WM_KEYDOWN:
+    /*case WM_KEYDOWN:
     case WM_SYSKEYDOWN:
     case WM_KEYUP:
     case WM_SYSKEYUP:
@@ -199,7 +214,7 @@ LRESULT Window::WndProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
         if (wParam == VK_ESCAPE) {
             DestroyWindow(hWnd);
         }
-        break;
+        break;*/
     }
     return DefWindowProc(hWnd, Msg, wParam, lParam);
 }

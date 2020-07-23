@@ -117,7 +117,7 @@ void Game::UpdateScene()
 	float eTime = elapsedTimer.Peek();
 	timer.Mark();
 
-	auto kb = wnd.kbd->GetState();
+	//auto kb = wnd.kbd->GetState();
 	//auto ms = wnd.mouse->GetState();
 
 	if (!wnd.aud->Update())
@@ -129,7 +129,8 @@ void Game::UpdateScene()
 
 	//std::wstring title =  L"Elapsed Time: " + std::to_wstring(elapsedTimer.Peek()) + L", Delta Time: " + std::to_wstring(dTime);
 	//std::wstring forito = L"X: " + std::to_wstring(dorito->transform.position.x) + L", Y:" + std::to_wstring(dorito->transform.position.y);
-	wnd.setTitle(title.c_str());
+	//wnd.setTitle(title.c_str());
+
 	camera.update(timer.Peek(), wnd);
 	//model->resetMatrix();
 

@@ -12,7 +12,5 @@ Camera::Camera(Window& wnd)
 
 void Camera::update(float dt, Window& wnd)
 {
-	auto kb = wnd.kbd->GetState();
-
 	view = XMMatrixLookAtLH(position, target, up);
 }
