@@ -5,10 +5,10 @@
 #include <memory>
 
 #include <Keyboard.h>
-#include <Mouse.h>
+//#include <Mouse.h>
 #include "Gamepad.h"
 #include <Audio.h>
-//#include "Mouse.h"
+#include "Mouse.h"
 
 class Window
 {
@@ -29,8 +29,8 @@ private:
 		WPARAM wParam, LPARAM lParam);
 public:
 	std::unique_ptr<DirectX::Keyboard> kbd;
-	std::unique_ptr<DirectX::Mouse> mouse;
-	//static Mouse mouse;
+	//std::unique_ptr<DirectX::Mouse> mouse;
+	//Mouse mouse;
 	std::unique_ptr<Gamepad> gamepad;
 	std::unique_ptr<DirectX::AudioEngine> aud;
 private:

@@ -14,3 +14,8 @@ inline void DisplayError(LPCWSTR what)
 {
 	MessageBox(nullptr, what, L"User Defined Error", MB_OK | MB_ICONERROR);
 }
+
+inline void DisplayMB(LPCWSTR what, LPCWSTR title)
+{
+	MessageBox(nullptr, what, title, MB_OK);
+}

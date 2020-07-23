@@ -2,9 +2,11 @@
 class Keyboard
 {
 public:
-	Keyboard() = default;
+	
+	static Keyboard& get();
+
 	~Keyboard() = default;
 private:
-
+	Keyboard() {};
 };
 

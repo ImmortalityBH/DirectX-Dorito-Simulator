@@ -74,10 +74,11 @@ bool Window::init(HINSTANCE hInstance)
     if (!kbd) {
         DisplayError(L"Keyboard object creation failed");
     }
-    mouse = std::make_unique<DirectX::Mouse>();
+    /*mouse = std::make_unique<DirectX::Mouse>();
     if (!mouse) {
         DisplayError(L"Mouse object creation failed");
-    }
+    }*/
+    Mouse::get();//construct static singleton instance of my mouse
     gamepad = std::make_unique<Gamepad>(1);
     if (!gamepad) {
         DisplayError(L"Gamepad creation failed");
@@ -117,7 +118,7 @@ LRESULT Window::WndProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
         Keyboard::ProcessMessage(Msg, wParam, lParam);
         break;
 
-    case WM_INPUT:
+    /*case WM_INPUT:
     case WM_MOUSEMOVE:
     case WM_LBUTTONDOWN:
     case WM_LBUTTONUP:
@@ -129,47 +130,67 @@ LRESULT Window::WndProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
     case WM_XBUTTONDOWN:
     case WM_XBUTTONUP:
     case WM_MOUSEHOVER:
-        Mouse::ProcessMessage(Msg, wParam, lParam);
-        break;
-    /*case WM_MOUSEMOVE:
+        //Mouse::ProcessMessage(Msg, wParam, lParam);
+        break;*/
+    case WM_MOUSEMOVE:
+    case WM_MOUSELEAVE:
     {
         int x = LOWORD(lParam);
         int y = HIWORD(lParam);
-        Window::mouse.OnMouseMove(x, y);
+        Mouse::get().OnMouseMove(x, y);
         break;
     } 
     case WM_LBUTTONUP:
     {
         int x = LOWORD(lParam);
         int y = HIWORD(lParam);
-        Window::mouse.OnLeftReleased(x, y);
+        Mouse::get().OnLeftReleased(x, y);
         break;
     }
     case WM_LBUTTONDOWN:
     {
         int x = LOWORD(lParam);
         int y = HIWORD(lParam);
-        Window::mouse.OnLeftPressed(x, y);
+        Mouse::get().OnLeftPressed(x, y);
         break;
     }
     case WM_RBUTTONUP:
     {
         int x = LOWORD(lParam);
         int y = HIWORD(lParam);
-        Window::mouse.OnRightReleased(x, y);
+        Mouse::get().OnRightReleased(x, y);
         break;
     }
     case WM_RBUTTONDOWN:
     {
         int x = LOWORD(lParam);
         int y = HIWORD(lParam);
-        Window::mouse.OnRightPressed(x, y);
+        Mouse::get().OnRightPressed(x, y);
+        break;
+    }  
+    case WM_MBUTTONUP:
+    {
+        int x = LOWORD(lParam);
+        int y = HIWORD(lParam);
+        Mouse::get().OnMiddleReleased(x, y);
+        break;
+    }
+    case WM_MBUTTONDOWN:
+    {
+        int x = LOWORD(lParam);
+        int y = HIWORD(lParam);
+        Mouse::get().OnMiddlePressed(x, y);
         break;
     }  
     case WM_MOUSEWHEEL:
-
-        break;*/
-
+    {
+        int x = LOWORD(lParam);
+        int y = HIWORD(lParam);
+        int wheelDelta = GET_WHEEL_DELTA_WPARAM(wParam);
+        float normDelta = static_cast<float>(wheelDelta) / 120.0f;
+        Mouse::get().OnWheelMove(x, y, normDelta);
+        break;
+    }
     case WM_KEYDOWN:
     case WM_SYSKEYDOWN:
     case WM_KEYUP:

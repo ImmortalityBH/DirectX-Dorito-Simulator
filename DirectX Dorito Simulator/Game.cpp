@@ -2,6 +2,7 @@
 #include <string>
 #include <vector>
 #include <algorithm>
+#include "Error.h"
 
 using namespace DirectX;
 
@@ -117,19 +118,34 @@ void Game::UpdateScene()
 	timer.Mark();
 
 	auto kb = wnd.kbd->GetState();
-	auto ms = wnd.mouse->GetState();
+	//auto ms = wnd.mouse->GetState();
 
 	if (!wnd.aud->Update())
 	{
 		
 	}
-	//std::wstring title = L"Mouse Pos (" + std::to_wstring(Window::mouse.getPos().x) + L", " + std::to_wstring(Window::mouse.getPos().y) + L")";
+	std::wstring title = L"Mouse Pos (" + std::to_wstring(Mouse::get().getPos().x) + L", " + 
+		std::to_wstring(Mouse::get().getPos().y) + L", Wheel: " + std::to_wstring(Mouse::get().getWheelDelta()) + L")";
 
 	//std::wstring title =  L"Elapsed Time: " + std::to_wstring(elapsedTimer.Peek()) + L", Delta Time: " + std::to_wstring(dTime);
 	//std::wstring forito = L"X: " + std::to_wstring(dorito->transform.position.x) + L", Y:" + std::to_wstring(dorito->transform.position.y);
-	//wnd.setTitle(title.c_str());
+	wnd.setTitle(title.c_str());
 	camera.update(timer.Peek(), wnd);
 	//model->resetMatrix();
+
+	if (Mouse::get().isButtonPressed(Mouse::BUTTON_LEFT))
+	{
+		DisplayMB(L"", L"Left Button Pressed");
+	}
+	else if (Mouse::get().isButtonPressed(Mouse::BUTTON_RIGHT))
+	{
+		DisplayMB(L"", L"Right Button Pressed");
+	}
+	else if (Mouse::get().isButtonPressed(Mouse::BUTTON_MIDDLE))
+	{
+		DisplayMB(L"", L"Middle Button Pressed");
+	}
+
 #pragma region Game code
 /*
 	if (kb.Q)
@@ -235,14 +251,6 @@ void Game::UpdateScene()
 
 	dorito->transform.position.x = std::clamp(dorito->transform.position.x, -1.5f, 1.5f);
 	dorito->transform.position.y = std::clamp(dorito->transform.position.y, -0.30f, 1.15f);
-	/*if (dorito->transform.position.x > 1.5f)
-		dorito->transform.position.x = 1.5f;
-	if (dorito->transform.position.x < -1.5f)
-		dorito->transform.position.x = -1.5f;
-	if (dorito->transform.position.y > 1.5f)
-		dorito->transform.position.y = 1.5f;
-	if (dorito->transform.position.y < -0.30f)
-		dorito->transform.position.y = -0.30f;*/
 
 	if (wnd.gamepad->Update())
 	{

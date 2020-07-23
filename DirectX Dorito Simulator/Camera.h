@@ -2,7 +2,6 @@
 
 #include "Window.h"
 #include <DirectXMath.h>
-#include <Mouse.h>
 
 namespace DX = DirectX;
 
