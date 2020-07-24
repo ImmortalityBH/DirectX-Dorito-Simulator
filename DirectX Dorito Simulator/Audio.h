@@ -14,7 +14,7 @@
 #include <string>
 #include <vector>
 
-class AudioEngine
+/*class AudioEngine
 {
 public:
 	AudioEngine();
@@ -34,7 +34,7 @@ private:
 	IXAudio2* pMusicDevice = nullptr;
 	IXAudio2MasteringVoice* pEffectMasterVoice = nullptr;
 	IXAudio2MasteringVoice* pMusicMasterVoice = nullptr;
-};
+};*/
 
 class AudioEngine
 {

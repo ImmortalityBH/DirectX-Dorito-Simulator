@@ -75,7 +75,6 @@ void Game::Init()
 		0, 1, 2,
 		3, 1, 0,
 	};
-
 	dorito->create(vertices, L"VertexShader.cso", L"PixelShader.cso");
 	floorModel->create(floorVertices, floorIndices, L"VertexShader.cso", L"PixelShader.cso");
 	dogModel->create(bagVertices, floorIndices, L"VertexShader.cso", L"PixelShader.cso");
