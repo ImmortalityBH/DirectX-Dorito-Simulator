@@ -1,4 +1,4 @@
-#include "AudioEngine.h"
+#include "Audio.h"
 #include "Error.h"
 #include "d3dUtil.h"
 
@@ -45,6 +45,16 @@ bool AudioEngine::init()
 		return false;
 
 	return true;
+}
+
+void AudioEngine::start()
+{
+	pAudioDevice->StartEngine();
+}
+
+void AudioEngine::stop()
+{
+	pAudioDevice->StopEngine();
 }
 
 bool AudioEngine::loadFile(const std::wstring& filename, std::vector<BYTE>& audioData, WAVEFORMATEX** wafeFormatEx, unsigned int& waveLength)

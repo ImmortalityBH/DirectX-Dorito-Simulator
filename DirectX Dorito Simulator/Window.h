@@ -28,9 +28,8 @@ private:
 	static LRESULT CALLBACK WndProc(HWND hWnd, UINT Msg,
 		WPARAM wParam, LPARAM lParam);
 public:
-	//std::unique_ptr<DirectX::Keyboard> kbd;
-	//std::unique_ptr<DirectX::Mouse> mouse;
 	//Mouse mouse;
+	//Keyboard kbd;
 	std::unique_ptr<Gamepad> gamepad;
 	std::unique_ptr<DirectX::AudioEngine> aud;
 private:

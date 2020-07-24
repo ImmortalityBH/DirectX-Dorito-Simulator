@@ -70,14 +70,6 @@ bool Window::init(HINSTANCE hInstance)
     ShowWindow(hWnd, TRUE);
     UpdateWindow(hWnd);
 
-    /*kbd = std::make_unique<DirectX::Keyboard>();
-    if (!kbd) {
-        DisplayError(L"Keyboard object creation failed");
-    }*/
-    /*mouse = std::make_unique<DirectX::Mouse>();
-    if (!mouse) {
-        DisplayError(L"Mouse object creation failed");
-    }*/
     Mouse::get();//construct static singleton instance of my mouse
     Keyboard::get();
     gamepad = std::make_unique<Gamepad>(1);
@@ -126,9 +118,7 @@ LRESULT Window::WndProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
     case WM_MOUSEWHEEL:
     case WM_XBUTTONDOWN:
     case WM_XBUTTONUP:
-    case WM_MOUSEHOVER:
-        //Mouse::ProcessMessage(Msg, wParam, lParam);
-        break;*/
+    case WM_MOUSEHOVER:*/
     case WM_KEYDOWN:
     {
         unsigned char keycode = static_cast<unsigned char>(wParam);

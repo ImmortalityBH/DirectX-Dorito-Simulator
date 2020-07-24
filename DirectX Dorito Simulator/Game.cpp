@@ -110,15 +110,9 @@ void Game::Init()
 
 void Game::UpdateScene()
 {
-	//float timeSinceStart = timer.Mark();
-	//float dt = timeSinceStart - oldTimeSinceStart;
-	//oldTimeSinceStart = timeSinceStart;
 	float dTime = timer.Peek();
 	float eTime = elapsedTimer.Peek();
 	timer.Mark();
-
-	//auto kb = wnd.kbd->GetState();
-	//auto ms = wnd.mouse->GetState();
 
 	if (!wnd.aud->Update())
 	{
@@ -133,6 +127,22 @@ void Game::UpdateScene()
 
 	camera.update(timer.Peek(), wnd);
 	//model->resetMatrix();
+	if (Keyboard::get().isKeyPressed(Keyboard::KeyCode::VK_W) || Keyboard::get().isKeyPressed(VK_UP))
+	{
+		dorito->move(0.0f, dTime * 0.5f, 0.0f);
+	} 
+	else if (Keyboard::get().isKeyPressed(Keyboard::KeyCode::VK_S) || Keyboard::get().isKeyPressed(VK_DOWN))
+	{
+		dorito->move(0.0f, -(dTime * 0.5f), 0.0f);
+	}
+	else if (Keyboard::get().isKeyPressed(Keyboard::KeyCode::VK_A) || Keyboard::get().isKeyPressed(VK_LEFT))
+	{
+		dorito->move(-(dTime * 0.5f), 0.0f, 0.0f);
+	}
+	else if (Keyboard::get().isKeyPressed(Keyboard::KeyCode::VK_D) || Keyboard::get().isKeyPressed(VK_RIGHT))
+	{
+		dorito->move(dTime * 0.5f, 0.0f, 0.0f);
+	}
 
 	if (Mouse::get().isButtonPressed(Mouse::BUTTON_LEFT))
 	{
