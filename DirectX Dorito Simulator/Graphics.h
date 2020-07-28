@@ -20,6 +20,15 @@ struct Vertex
 	DirectX::XMFLOAT2 uv;
 };
 
+struct VertexColor
+{
+	VertexColor(float x, float y, float z,
+		float r, float g, float b)
+		: pos(x, y, z), color(r, g, b) {}
+	DirectX::XMFLOAT3 pos;
+	DirectX::XMFLOAT3 color;
+};
+
 class Graphics
 {
 public:
@@ -33,6 +42,7 @@ public:
 	void onSize(unsigned int width, unsigned int height);
 	void setFullscreen(bool fullscreen, unsigned int widhth, unsigned int height);
 	void setWireframe(bool value);
+	bool isWireframe() const { return isWireframeEnabled; }
 	void Begin(float r, float g, float b);
 	void End();
 
@@ -42,6 +52,7 @@ public:
 	VertexShader vertexShader;
 	PixelShader pixelShader;
 private:
+	bool isWireframeEnabled = false;
 	IDXGISwapChain* pSwapChain;
 	ID3D11Device* pDevice;
 	ID3D11DeviceContext* pContext;

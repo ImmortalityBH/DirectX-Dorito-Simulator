@@ -117,8 +117,8 @@ void Game::UpdateScene()
 	{
 		
 	}
-	std::wstring title = L"Mouse Pos (" + std::to_wstring(wnd.mouse.getPos().x) + L", " + 
-		std::to_wstring(wnd.mouse.getPos().y) + L", Wheel: " + std::to_wstring(wnd.mouse.getWheelDelta()) + L")";
+	//std::wstring title = L"Mouse Pos (" + std::to_wstring(wnd.mouse.getPos().x) + L", " + 
+		//std::to_wstring(wnd.mouse.getPos().y) + L", Wheel: " + std::to_wstring(wnd.mouse.getWheelDelta()) + L")";
 
 	if (elapsedTimer.Peek() > 10.0f)
 	{

@@ -14,9 +14,6 @@ public:
 	PixelShader() = default;
 	~PixelShader();
 
-	//void bind(ID3D11Device* device);
-	//void unbind();
-
 	ID3D11PixelShader* getPixelShader() const
 	{
 		return pPixelShader;

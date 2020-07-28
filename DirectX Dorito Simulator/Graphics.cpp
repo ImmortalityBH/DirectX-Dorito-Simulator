@@ -90,12 +90,10 @@ bool Graphics::init(unsigned int width, unsigned int height, HWND hWnd)
 	pContext->OMSetRenderTargets(1, &pTarget, pDepthStencilView);
 
 	D3D11_RASTERIZER_DESC rsd = {};
-	rsd.FillMode = D3D11_FILL_SOLID;
+	rsd.FillMode = D3D11_FILL_WIREFRAME;
 	rsd.CullMode = D3D11_CULL_NONE;
 
 	hr = pDevice->CreateRasterizerState(&rsd, &pWireframeState);
-	pContext->RSSetState(pWireframeState);
-
 	DisplayError(hr, L"Create Rasterizer State failed");
 
 	D3D11_VIEWPORT viewport = {};
@@ -173,10 +171,12 @@ void Graphics::setWireframe(bool value)
 {
 	if (value)
 	{
+		isWireframeEnabled = true;
 		pContext->RSSetState(pWireframeState);
 	}
 	else
 	{
+		isWireframeEnabled = false;
 		pContext->RSSetState(nullptr);
 	}
 }

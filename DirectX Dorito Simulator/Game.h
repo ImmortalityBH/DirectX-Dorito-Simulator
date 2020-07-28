@@ -38,8 +38,5 @@ private:
 	int randomNum;
 	int taskNum;
 	bool didRequest = true;
-
-	float oldTimeSinceStart = 0;
-	bool isWireframe = false;
 };
 

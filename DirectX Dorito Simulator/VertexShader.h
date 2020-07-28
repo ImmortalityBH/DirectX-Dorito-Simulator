@@ -15,9 +15,6 @@ public:
 	VertexShader() = default;
 	~VertexShader();
 
-	//void bind(ID3D11Device* device);
-	//void unbind();
-
 	ID3D11VertexShader* getVertexShader() const
 	{ 
 		return pVertexShader;
