@@ -1,21 +1,22 @@
 #pragma once
 
 #include "Win.h"
+#include <string>
 
-inline void DisplayError(HRESULT hr, LPCWSTR what)
+inline void DisplayError(HRESULT hr, std::wstring what)
 {
 	if (FAILED(hr))
 	{
-		MessageBox(nullptr, what, L"Error", MB_OK | MB_ICONERROR);
+		MessageBoxW(nullptr, what.c_str(), L"Error", MB_OK | MB_ICONERROR);
 	}
 }
 
-inline void DisplayError(LPCWSTR what) 
+inline void DisplayError(std::wstring what)
 {
-	MessageBox(nullptr, what, L"User Defined Error", MB_OK | MB_ICONERROR);
+	MessageBoxW(nullptr, what.c_str(), L"User Defined Error", MB_OK | MB_ICONERROR);
 }
 
-inline void DisplayMB(LPCWSTR what, LPCWSTR title)
+inline void DisplayMB(std::wstring what, std::wstring title)
 {
-	MessageBox(nullptr, what, title, MB_OK);
+	MessageBoxW(nullptr, what.c_str(), title.c_str(), MB_OK);
 }

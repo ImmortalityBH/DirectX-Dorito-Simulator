@@ -5,7 +5,8 @@
 using namespace DirectX;
 
 Window::Window(int width, int height, LPCWSTR title)
-    : width(width), height(height), title(title), hWnd(nullptr)
+    : width(width), height(height), title(title), hWnd(nullptr), 
+    mouse(), kbd(), gamepad(1)
 {
 }
 
@@ -51,7 +52,7 @@ bool Window::init(HINSTANCE hInstance)
         NULL,
         WndClassName,
         title,
-        WS_OVERLAPPEDWINDOW,
+        WS_CAPTION | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_SYSMENU,
         CW_USEDEFAULT, CW_USEDEFAULT,
         wr.right - wr.left, wr.bottom - wr.top,
         nullptr,
@@ -64,21 +65,18 @@ bool Window::init(HINSTANCE hInstance)
     {
         MessageBox(NULL, L"Error creating window",
             L"Error", MB_OK | MB_ICONERROR);
-        return 1;
+        return false;
     }
 
     ShowWindow(hWnd, TRUE);
     UpdateWindow(hWnd);
 
-    Mouse::get();//construct static singleton instance of my mouse
-    Keyboard::get();
-    gamepad = std::make_unique<Gamepad>(1);
-    if (!gamepad) {
-        DisplayError(L"Gamepad creation failed");
-    }
-    pGfx = std::make_unique<Graphics>(this->getWidth(), this->getHeight(), hWnd);
-    if (pGfx == nullptr) {
-        DisplayError(L"Graphics object was nullptr");
+    SetWindowLongPtr(hWnd, GWLP_USERDATA, (LONG_PTR)this);
+
+    if (!gfx.init(width, height, hWnd))
+    {
+        DisplayError(L"Graphics creation failed");
+        return false;
     }
     aud = std::make_unique<DirectX::AudioEngine>();
     if (!aud) {
@@ -92,9 +90,9 @@ void Window::setTitle(LPCWSTR text)
     SetWindowText(hWnd, text);
 }
 
-Graphics& Window::Gfx()
+Graphics& Window::getGraphics()
 {
-    return *pGfx;
+    return gfx;
 }
 
 LRESULT Window::WndProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
@@ -107,104 +105,128 @@ LRESULT Window::WndProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
     case WM_DESTROY:
         PostQuitMessage(0);
         break;
-    /*case WM_INPUT:
-    case WM_MOUSEMOVE:
-    case WM_LBUTTONDOWN:
-    case WM_LBUTTONUP:
-    case WM_RBUTTONDOWN:
-    case WM_RBUTTONUP:
-    case WM_MBUTTONDOWN:
-    case WM_MBUTTONUP:
-    case WM_MOUSEWHEEL:
-    case WM_XBUTTONDOWN:
-    case WM_XBUTTONUP:
-    case WM_MOUSEHOVER:*/
-    case WM_KEYDOWN:
+    case WM_SIZE:
     {
+        Window* window = reinterpret_cast<Window*>(GetWindowLongPtr(hWnd, GWLP_USERDATA));
+        int newWidth = LOWORD(lParam);
+        int newHeight = HIWORD(lParam);
+        //window->Gfx().onSize(newWidth, newHeight);
+        break;
+    }
+    case WM_KEYDOWN:
+    case WM_SYSKEYDOWN:
+    {
+        Window* window = reinterpret_cast<Window*>(GetWindowLongPtr(hWnd, GWLP_USERDATA));
         unsigned char keycode = static_cast<unsigned char>(wParam);
-        Keyboard::get().OnKeyPressed(keycode);
+        if (window->kbd.autoRepeatKeys == true)
+        {
+            window->kbd.OnKeyPressed(keycode);
+        }
+        else
+        {
+            const bool wasPressed = lParam & 0x40000000;
+            if (!wasPressed)
+            {
+                window->kbd.OnKeyPressed(keycode);
+            }
+        }
+      
         break;
     }
     case WM_KEYUP:
+    case WM_SYSKEYUP:
     {
+        Window* window = reinterpret_cast<Window*>(GetWindowLongPtr(hWnd, GWLP_USERDATA));
         unsigned char keycode = static_cast<unsigned char>(wParam);
-        Keyboard::get().OnKeyReleased(keycode);
+        window->kbd.OnKeyReleased(keycode);
         break;
     }
     case WM_CHAR:
     {
+        Window* window = reinterpret_cast<Window*>(GetWindowLongPtr(hWnd, GWLP_USERDATA));
         unsigned char keycode = static_cast<unsigned char>(wParam);
-        Keyboard::get().OnChar(keycode);
+        if (window->kbd.autoRepeatChars == true)
+        {
+            window->kbd.OnChar(keycode);
+        }
+        else
+        {
+            const bool wasPressed = lParam & 0x40000000;
+            if (!wasPressed)
+            {
+                window->kbd.OnChar(keycode);
+            }
+        }
         break;
     }
     case WM_MOUSEMOVE:
     case WM_MOUSELEAVE:
     {
+        Window* window = reinterpret_cast<Window*>(GetWindowLongPtr(hWnd, GWLP_USERDATA));
         int x = LOWORD(lParam);
         int y = HIWORD(lParam);
-        Mouse::get().OnMouseMove(x, y);
+        window->mouse.OnMouseMove(x, y);
         break;
     } 
     case WM_LBUTTONDOWN:
     {
+        Window* window = reinterpret_cast<Window*>(GetWindowLongPtr(hWnd, GWLP_USERDATA));
         int x = LOWORD(lParam);
         int y = HIWORD(lParam);
-        Mouse::get().OnLeftPressed(x, y);
+        window->mouse.OnLeftPressed(x, y);
         break;
     }
     case WM_LBUTTONUP:
     {
+        Window* window = reinterpret_cast<Window*>(GetWindowLongPtr(hWnd, GWLP_USERDATA));
         int x = LOWORD(lParam);
         int y = HIWORD(lParam);
-        Mouse::get().OnLeftReleased(x, y);
+        window->mouse.OnLeftReleased(x, y);
         break;
     }
     case WM_RBUTTONDOWN:
     {
+        Window* window = reinterpret_cast<Window*>(GetWindowLongPtr(hWnd, GWLP_USERDATA));
         int x = LOWORD(lParam);
         int y = HIWORD(lParam);
-        Mouse::get().OnRightPressed(x, y);
+        window->mouse.OnRightPressed(x, y);
         break;
     } 
     case WM_RBUTTONUP:
     {
+        Window* window = reinterpret_cast<Window*>(GetWindowLongPtr(hWnd, GWLP_USERDATA));
         int x = LOWORD(lParam);
         int y = HIWORD(lParam);
-        Mouse::get().OnRightReleased(x, y);
+        window->mouse.OnRightReleased(x, y);
         break;
     }
     case WM_MBUTTONDOWN:
     {
+        Window* window = reinterpret_cast<Window*>(GetWindowLongPtr(hWnd, GWLP_USERDATA));
         int x = LOWORD(lParam);
         int y = HIWORD(lParam);
-        Mouse::get().OnMiddlePressed(x, y);
+        window->mouse.OnMiddlePressed(x, y);
         break;
     }  
     case WM_MBUTTONUP:
     {
+        Window* window = reinterpret_cast<Window*>(GetWindowLongPtr(hWnd, GWLP_USERDATA));
         int x = LOWORD(lParam);
         int y = HIWORD(lParam);
-        Mouse::get().OnMiddleReleased(x, y);
+        window->mouse.OnMiddleReleased(x, y);
         break;
     }
     case WM_MOUSEWHEEL:
     {
+        Window* window = reinterpret_cast<Window*>(GetWindowLongPtr(hWnd, GWLP_USERDATA));
         int x = LOWORD(lParam);
         int y = HIWORD(lParam);
         int wheelDelta = GET_WHEEL_DELTA_WPARAM(wParam);
         float normDelta = static_cast<float>(wheelDelta) / 120.0f;
-        Mouse::get().OnWheelMove(x, y, normDelta);
+        window->mouse.OnWheelMove(x, y, normDelta);
         break;
     }
-    /*case WM_KEYDOWN:
-    case WM_SYSKEYDOWN:
-    case WM_KEYUP:
-    case WM_SYSKEYUP:
-        Keyboard::ProcessMessage(Msg, wParam, lParam);
-        if (wParam == VK_ESCAPE) {
-            DestroyWindow(hWnd);
-        }
-        break;*/
+    default:
+        return DefWindowProc(hWnd, Msg, wParam, lParam);
     }
-    return DefWindowProc(hWnd, Msg, wParam, lParam);
 }

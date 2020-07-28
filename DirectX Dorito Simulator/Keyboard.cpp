@@ -9,12 +9,6 @@ Keyboard::Keyboard()
 	}
 }
 
-Keyboard& Keyboard::get()
-{
-	static Keyboard instance;
-	return instance;
-}
-
 bool Keyboard::isKeyPressed(const unsigned char keyCode)
 {
 	return keyStates[keyCode];
@@ -38,16 +32,27 @@ void Keyboard::OnChar(const unsigned char keyCode)
 	}
 	else
 	{
+		charBuffer.push_back(keyCode);
 		charBuffer.pop_front();
 	}
 }
 
-void Keyboard::clearCharBuffer()
+inline void Keyboard::clearCharBuffer()
 {
 	charBuffer.clear();
 }
 
-std::list<unsigned char>& Keyboard::getCharBuffer()
+std::deque<unsigned char>& Keyboard::getCharBuffer()
 {
 	return charBuffer;
+}
+
+std::wstring Keyboard::getCharAsString()
+{
+	std::wstring charStr = L"";
+	for (std::size_t i = 0; i < charBuffer.size(); i++)
+	{
+		charStr.append(1, static_cast<wchar_t>(charBuffer[i]));
+	}
+	return charStr;
 }

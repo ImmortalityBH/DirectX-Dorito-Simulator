@@ -22,7 +22,7 @@ int Game::run(HINSTANCE hInstance)
 {
 	wnd.init(hInstance);
 	MSG msg = {};
-	Init();
+	init();
 	while (true)
 	{
 		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
@@ -41,13 +41,13 @@ int Game::run(HINSTANCE hInstance)
 	return static_cast<int>(msg.wParam);
 }
 
-void Game::Init()
+void Game::init()
 {
-	dorito = std::make_unique<Model>(wnd.Gfx(), L"res/img/dorito.dds");
-	floorModel = std::make_unique<Model>(wnd.Gfx(), L"res/img/floor.dds");
-	dogModel = std::make_unique<Model>(wnd.Gfx(), L"res/img/dog.dds");
-	bagModel = std::make_unique<Model>(wnd.Gfx(), L"res/img/bag.dds");
-	mtnDewModel = std::make_unique<Model>(wnd.Gfx(), L"res/img/mtndew.dds");
+	dorito = std::make_unique<Model>(wnd.getGraphics(), L"res/img/dorito.dds");
+	floorModel = std::make_unique<Model>(wnd.getGraphics(), L"res/img/floor.dds");
+	dogModel = std::make_unique<Model>(wnd.getGraphics(), L"res/img/dog.dds");
+	bagModel = std::make_unique<Model>(wnd.getGraphics(), L"res/img/bag.dds");
+	mtnDewModel = std::make_unique<Model>(wnd.getGraphics(), L"res/img/mtndew.dds");
 	//DORITO
 	std::vector<Vertex> vertices =
 	{
@@ -75,18 +75,18 @@ void Game::Init()
 		0, 1, 2,
 		3, 1, 0,
 	};
-	dorito->create(vertices, L"VertexShader.cso", L"PixelShader.cso");
-	floorModel->create(floorVertices, floorIndices, L"VertexShader.cso", L"PixelShader.cso");
-	dogModel->create(bagVertices, floorIndices, L"VertexShader.cso", L"PixelShader.cso");
-	bagModel->create(bagVertices, floorIndices, L"VertexShader.cso", L"PixelShader.cso");
-	mtnDewModel->create(bagVertices, floorIndices, L"VertexShader.cso", L"PixelShader.cso");
+	dorito->create(vertices);
+	floorModel->create(floorVertices, floorIndices);
+	dogModel->create(bagVertices, floorIndices);
+	bagModel->create(bagVertices, floorIndices);
+	mtnDewModel->create(bagVertices, floorIndices);
 
 	dorito->setPos(0.0f, 0.35f, 1.5f);
 
-	intro = std::make_unique<SoundEffect>(wnd.aud.get() , L"res/audio/intro.wav");
-	outro = std::make_unique<SoundEffect>(wnd.aud.get(), L"res/audio/outro.wav");
+	//intro = std::make_unique<SoundEffect>(wnd.aud.get() , L"res/audio/intro.wav");
+	//outro = std::make_unique<SoundEffect>(wnd.aud.get(), L"res/audio/outro.wav");
 
-	std::vector<std::wstring> fileNames = {
+	/*std::vector<std::wstring> fileNames = {
 		L"res/audio/amazing.wav",
 		L"res/audio/awesome.wav",
 		L"res/audio/delicious.wav",
@@ -104,7 +104,7 @@ void Game::Init()
 	for (std::size_t i = 0; i < fileNames.size(); i++)
 	{
 		effects[i] = std::make_unique<SoundEffect>(wnd.aud.get(), fileNames[i].c_str());
-	}
+	}*/
 }
 
 void Game::UpdateScene()
@@ -117,8 +117,13 @@ void Game::UpdateScene()
 	{
 		
 	}
-	std::wstring title = L"Mouse Pos (" + std::to_wstring(Mouse::get().getPos().x) + L", " + 
-		std::to_wstring(Mouse::get().getPos().y) + L", Wheel: " + std::to_wstring(Mouse::get().getWheelDelta()) + L")";
+	std::wstring title = L"Mouse Pos (" + std::to_wstring(wnd.mouse.getPos().x) + L", " + 
+		std::to_wstring(wnd.mouse.getPos().y) + L", Wheel: " + std::to_wstring(wnd.mouse.getWheelDelta()) + L")";
+
+	if (elapsedTimer.Peek() > 10.0f)
+	{
+		wnd.setTitle(wnd.kbd.getCharAsString().c_str());
+	}
 
 	//std::wstring title =  L"Elapsed Time: " + std::to_wstring(elapsedTimer.Peek()) + L", Delta Time: " + std::to_wstring(dTime);
 	//std::wstring forito = L"X: " + std::to_wstring(dorito->transform.position.x) + L", Y:" + std::to_wstring(dorito->transform.position.y);
@@ -126,32 +131,32 @@ void Game::UpdateScene()
 
 	camera.update(timer.Peek(), wnd);
 	//model->resetMatrix();
-	if (Keyboard::get().isKeyPressed(Keyboard::KeyCode::VK_W) || Keyboard::get().isKeyPressed(VK_UP))
+	if (wnd.kbd.isKeyPressed(Keyboard::KeyCode::VK_W) || wnd.kbd.isKeyPressed(VK_UP))
 	{
 		dorito->move(0.0f, dTime * 0.5f, 0.0f);
 	} 
-	else if (Keyboard::get().isKeyPressed(Keyboard::KeyCode::VK_S) || Keyboard::get().isKeyPressed(VK_DOWN))
+	else if (wnd.kbd.isKeyPressed(Keyboard::KeyCode::VK_S) || wnd.kbd.isKeyPressed(VK_DOWN))
 	{
 		dorito->move(0.0f, -(dTime * 0.5f), 0.0f);
 	}
-	else if (Keyboard::get().isKeyPressed(Keyboard::KeyCode::VK_A) || Keyboard::get().isKeyPressed(VK_LEFT))
+	else if (wnd.kbd.isKeyPressed(Keyboard::KeyCode::VK_A) || wnd.kbd.isKeyPressed(VK_LEFT))
 	{
 		dorito->move(-(dTime * 0.5f), 0.0f, 0.0f);
 	}
-	else if (Keyboard::get().isKeyPressed(Keyboard::KeyCode::VK_D) || Keyboard::get().isKeyPressed(VK_RIGHT))
+	else if (wnd.kbd.isKeyPressed(Keyboard::KeyCode::VK_D) || wnd.kbd.isKeyPressed(VK_RIGHT))
 	{
 		dorito->move(dTime * 0.5f, 0.0f, 0.0f);
 	}
 
-	if (Mouse::get().isButtonPressed(Mouse::BUTTON_LEFT))
+	if (wnd.mouse.isButtonPressed(Mouse::BUTTON_LEFT))
 	{
 		DisplayMB(L"", L"Left Button Pressed");
 	}
-	else if (Mouse::get().isButtonPressed(Mouse::BUTTON_RIGHT))
+	else if (wnd.mouse.isButtonPressed(Mouse::BUTTON_RIGHT))
 	{
 		DisplayMB(L"", L"Right Button Pressed");
 	}
-	else if (Mouse::get().isButtonPressed(Mouse::BUTTON_MIDDLE))
+	else if (wnd.mouse.isButtonPressed(Mouse::BUTTON_MIDDLE))
 	{
 		DisplayMB(L"", L"Middle Button Pressed");
 	}
@@ -262,10 +267,10 @@ void Game::UpdateScene()
 	dorito->transform.position.x = std::clamp(dorito->transform.position.x, -1.5f, 1.5f);
 	dorito->transform.position.y = std::clamp(dorito->transform.position.y, -0.30f, 1.15f);
 
-	if (wnd.gamepad->Update())
+	if (wnd.gamepad.Update())
 	{
-		float joyX = wnd.gamepad->leftStickX;
-		float joyY = wnd.gamepad->leftStickY;
+		float joyX = wnd.gamepad.leftStickX;
+		float joyY = wnd.gamepad.leftStickY;
 		dorito->move(0.0f, joyY * dTime * 0.5f, 0.0f);
 		dorito->move(joyX * dTime * 0.5f, 0.0f, 0.0f);
 	}
@@ -310,27 +315,27 @@ void Game::UpdateScene()
 
 void Game::DrawScene()
 {
-	wnd.Gfx().Begin(0.0f, 0.0f, 0.5f);
+	wnd.getGraphics().Begin(0.0f, 0.0f, 0.5f);
 
-	dogModel->bind();
+	dogModel->bind(wnd.getGraphics().vertexShader, wnd.getGraphics().pixelShader);
 	dogModel->draw();
 	dogModel->unbind();
 
-	bagModel->bind();
+	bagModel->bind(wnd.getGraphics().vertexShader, wnd.getGraphics().pixelShader);
 	bagModel->draw();
 	bagModel->unbind();
 	
-	dorito->bind();
+	dorito->bind(wnd.getGraphics().vertexShader, wnd.getGraphics().pixelShader);
 	dorito->draw();
 	dorito->unbind();
 
-	floorModel->bind();
+	floorModel->bind(wnd.getGraphics().vertexShader, wnd.getGraphics().pixelShader);
 	floorModel->draw();
 	floorModel->unbind();
 
-	mtnDewModel->bind();
+	mtnDewModel->bind(wnd.getGraphics().vertexShader, wnd.getGraphics().pixelShader);
 	mtnDewModel->draw();
 	mtnDewModel->unbind();
 
-	wnd.Gfx().End();
+	wnd.getGraphics().End();
 }

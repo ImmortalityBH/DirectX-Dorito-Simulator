@@ -14,7 +14,7 @@ public:
 	~Game();
 	int run(HINSTANCE hInstance);
 
-	void Init();
+	void init();
 	void UpdateScene();
 	void DrawScene();
 
@@ -29,9 +29,10 @@ private:
 	std::unique_ptr<Model> bagModel;
 	std::unique_ptr<Model> mtnDewModel;
 
-	std::unique_ptr<DirectX::SoundEffect> intro;
-	std::unique_ptr<DirectX::SoundEffect> outro;
-	std::unique_ptr<DirectX::SoundEffect> effects[13];
+	//commented out for now
+	//std::unique_ptr<DirectX::SoundEffect> intro;
+	//std::unique_ptr<DirectX::SoundEffect> outro;
+	//std::unique_ptr<DirectX::SoundEffect> effects[13];
 
 	Camera camera;
 	int randomNum;

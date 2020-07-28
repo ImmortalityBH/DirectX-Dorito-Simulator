@@ -7,7 +7,18 @@
 
 using namespace DirectX;
 
-Graphics::Graphics(int width, int height, HWND hWnd)
+Graphics::~Graphics()
+{
+	ReleaseCOM(pSwapChain);
+	ReleaseCOM(pDevice);
+	ReleaseCOM(pContext);
+	ReleaseCOM(pTarget);
+	ReleaseCOM(pDepthStencilBuffer);
+	ReleaseCOM(pDepthStencilView);
+	ReleaseCOM(pWireframeState);
+}
+
+bool Graphics::init(unsigned int width, unsigned int height, HWND hWnd)
 {
 	HRESULT hr;
 	//Describe our Buffer
@@ -38,7 +49,7 @@ Graphics::Graphics(int width, int height, HWND hWnd)
 	sd.OutputWindow = hWnd;
 	sd.Windowed = TRUE;
 	sd.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
-	sd.Flags = 0;
+	sd.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
 
 	UINT creationFlags = D3D11_CREATE_DEVICE_BGRA_SUPPORT;
 #if defined(_DEBUG)
@@ -46,17 +57,17 @@ Graphics::Graphics(int width, int height, HWND hWnd)
 	creationFlags |= D3D11_CREATE_DEVICE_DEBUG;
 #endif
 	hr = D3D11CreateDeviceAndSwapChain(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr,
-		creationFlags, nullptr, NULL, D3D11_SDK_VERSION, &sd, &pSwap,
+		creationFlags, nullptr, NULL, D3D11_SDK_VERSION, &sd, &pSwapChain,
 		&pDevice, nullptr, &pContext);
 	DisplayError(hr, L"Create device and swapchain failed");
 
 	ID3D11Texture2D* BackBuffer; //Create our BackBuffer
-	hr = pSwap->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&BackBuffer));
+	hr = pSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&BackBuffer));
 	DisplayError(hr, L"GetBuffer failed");
 	//Create our Render Target
 	hr = pDevice->CreateRenderTargetView(BackBuffer, nullptr, &pTarget);
 	DisplayError(hr, L"Create Render Target view failed");
-	BackBuffer->Release();
+	ReleaseCOM(BackBuffer);
 
 	D3D11_TEXTURE2D_DESC ds = {};
 
@@ -97,55 +108,65 @@ Graphics::Graphics(int width, int height, HWND hWnd)
 	viewport.MaxDepth = 1.0f;
 
 	pContext->RSSetViewports(1u, &viewport);
+
+	D3D11_INPUT_ELEMENT_DESC layout[2] =
+	{
+		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+	};
+	UINT numElements = ARRAYSIZE(layout);
+
+	if (!vertexShader.init(pDevice, L"VertexShader.cso", layout, numElements))
+	{
+		DisplayError(L"Vertex shader failed to create");
+		return false;
+	}
+
+	if (!pixelShader.init(pDevice, L"PixelShader.cso"))
+	{
+		DisplayError(L"Pixel Shader failed to create");
+		return false;
+	}
+
+	return true;
 }
 
-Graphics::~Graphics()
+void Graphics::onSize(unsigned int width, unsigned int height)
 {
-	ReleaseCOM(pSwap);
-	ReleaseCOM(pDevice);
-	ReleaseCOM(pContext);
-	ReleaseCOM(pTarget);
-	ReleaseCOM(pDepthStencilBuffer);
-	ReleaseCOM(pDepthStencilView);
-	ReleaseCOM(pWireframeState);
+	pSwapChain->ResizeBuffers(1, width, height, DXGI_FORMAT_B8G8R8A8_UNORM, 0);
+
+	HRESULT hr = S_OK;
+	ID3D11Texture2D* BackBuffer; //Create our BackBuffer
+	hr = pSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&BackBuffer));
+	DisplayError(hr, L"GetBuffer failed");
+	//Create our Render Target
+	hr = pDevice->CreateRenderTargetView(BackBuffer, nullptr, &pTarget);
+	DisplayError(hr, L"Create Render Target view failed");
+	ReleaseCOM(BackBuffer);
+
+	D3D11_TEXTURE2D_DESC ds = {};
+
+	ds.Width = width;
+	ds.Height = height;
+	ds.MipLevels = 1;
+	ds.ArraySize = 1;
+	ds.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	ds.SampleDesc.Count = 1;
+	ds.SampleDesc.Quality = 0;
+	ds.Usage = D3D11_USAGE_DEFAULT;
+	ds.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+	ds.CPUAccessFlags = 0;
+	ds.MiscFlags = 0;
+
+	hr = pDevice->CreateTexture2D(&ds, nullptr, &pDepthStencilBuffer);
+	hr = pDevice->CreateDepthStencilView(pDepthStencilBuffer, nullptr, &pDepthStencilView);
+
 }
 
-ID3D11VertexShader* Graphics::createVertexShader(LPCWSTR fileName, ID3DBlob** ppBlob)
+void Graphics::setFullscreen(bool fullscreen, unsigned int width, unsigned int height)
 {
-	HRESULT hr;
-	ID3DBlob* Blob;
-	ID3D11VertexShader* pVertexShader;
-	hr = D3DReadFileToBlob(fileName, &Blob);
-	if (FAILED(hr)) {
-		MessageBox(nullptr, L"Failed to read file to blob",
-			L"Error", MB_OK | MB_ICONERROR);
-	}
-	hr = pDevice->CreateVertexShader(Blob->GetBufferPointer(),
-		Blob->GetBufferSize(), nullptr, &pVertexShader);
-	if (FAILED(hr)) {
-		MessageBox(nullptr, L"Failed to create vertex shader",
-			L"Error", MB_OK | MB_ICONERROR);
-	}
-	return pVertexShader;
-}
-
-ID3D11PixelShader* Graphics::createPixelShader(LPCWSTR fileName, ID3DBlob** ppBlob)
-{
-	HRESULT hr;
-	ID3DBlob* Blob;
-	ID3D11PixelShader* pPixelShader;
-	hr = D3DReadFileToBlob(fileName, &Blob);
-	if (FAILED(hr)) {
-		MessageBox(nullptr, L"Failed to read file to blob", 
-			L"Error", MB_OK | MB_ICONERROR);
-	}
-	hr = pDevice->CreatePixelShader(Blob->GetBufferPointer(),
-		Blob->GetBufferSize(), nullptr, &pPixelShader);
-	if (FAILED(hr)) {
-		MessageBox(nullptr, L"Failed create pixel shader",
-			L"Error", MB_OK | MB_ICONERROR);
-	}
-	return pPixelShader;
+	onSize(width, height);
+	pSwapChain->SetFullscreenState(fullscreen, nullptr);
 }
 
 void Graphics::setWireframe(bool value)
@@ -169,5 +190,5 @@ void Graphics::Begin(float r, float g, float b)
 
 void Graphics::End()
 {
-	pSwap->Present(1u, 0u);
+	pSwapChain->Present(1u, 0u);
 }

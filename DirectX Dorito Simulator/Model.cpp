@@ -16,29 +16,12 @@ Model::~Model()
 	ReleaseCOM(pConstantBuffer);
 	ReleaseCOM(pTexture);
 	ReleaseCOM(pTexSamplerState);
-	ReleaseCOM(pVertexLayout);
-	ReleaseCOM(pVertexShader);
-	ReleaseCOM(pPixelShader);
 	ReleaseCOM(pIndexBuffer);
 }
 
-void Model::create(std::vector<Vertex>& vertices, LPCWSTR vertexFileName, LPCWSTR pixelFileName)
+void Model::create(std::vector<Vertex>& vertices)
 {
-	HRESULT hr;
-	//res / shader / SHOULD BE THIS UPON RLEASE
-	//
-	//
-	hr = D3DReadFileToBlob(vertexFileName, &pVertexBlob);
-	DisplayError(hr, L"Vertex shader failed to load");
-	hr = D3DReadFileToBlob(pixelFileName, &pPixelBlob);
-	DisplayError(hr, L"Pixel shader failed to load");
-	//Create the Shader Objects
-	hr = pGfx->getDevice()->CreateVertexShader(pVertexBlob->GetBufferPointer(),
-		pVertexBlob->GetBufferSize(), nullptr, &pVertexShader);
-	DisplayError(hr, L"Vertex shader failed to create");
-	hr = pGfx->getDevice()->CreatePixelShader(pPixelBlob->GetBufferPointer(),
-		pPixelBlob->GetBufferSize(), nullptr, &pPixelShader);
-	DisplayError(hr, L"Pixel shader failed to create");
+	HRESULT hr = S_OK;
 
 	vertexCount = vertices.size();
 	D3D11_BUFFER_DESC bd = {};
@@ -53,10 +36,6 @@ void Model::create(std::vector<Vertex>& vertices, LPCWSTR vertexFileName, LPCWST
 
 	hr = pGfx->getDevice()->CreateBuffer(&bd, &sd, &pVertexBuffer);
 	DisplayError(hr, L"Create Buffer failed");
-
-	hr = pGfx->getDevice()->CreateInputLayout(layout, std::size(layout), pVertexBlob->GetBufferPointer(),
-		pVertexBlob->GetBufferSize(), &pVertexLayout);
-	DisplayError(hr, L"Create Input layout failed");
 
 	D3D11_BUFFER_DESC cbd = {};
 	cbd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
@@ -86,28 +65,11 @@ void Model::create(std::vector<Vertex>& vertices, LPCWSTR vertexFileName, LPCWST
 	hr = pGfx->getDevice()->CreateSamplerState(&tsd, &pTexSamplerState);
 	DisplayError(hr, L"Create sampler state failed.");
 
-	if (pVertexBlob) pVertexBlob->Release();
-	if (pPixelBlob) pPixelBlob->Release();
 }
 
-void Model::create(std::vector<Vertex>& vertices, std::vector<UINT>& indices, LPCWSTR vertexFileName, LPCWSTR pixelFileName)
+void Model::create(std::vector<Vertex>& vertices, std::vector<UINT>& indices)
 {
-	HRESULT hr;
-	//res / shader / SHOULD BE THIS UPON RLEASE
-	//
-	//
-	hr = D3DReadFileToBlob(vertexFileName, &pVertexBlob);
-	DisplayError(hr, L"Vertex shader failed to load");
-	hr = D3DReadFileToBlob(pixelFileName, &pPixelBlob);
-	DisplayError(hr, L"Pixel shader failed to load");
-	//Create the Shader Objects
-	hr = pGfx->getDevice()->CreateVertexShader(pVertexBlob->GetBufferPointer(),
-		pVertexBlob->GetBufferSize(), nullptr, &pVertexShader);
-	DisplayError(hr, L"Vertex shader failed to create");
-	hr = pGfx->getDevice()->CreatePixelShader(pPixelBlob->GetBufferPointer(),
-		pPixelBlob->GetBufferSize(), nullptr, &pPixelShader);
-	DisplayError(hr, L"Pixel shader failed to create");
-
+	HRESULT hr = S_OK;
 	//VERTEX BUFFER STUFF
 	vertexCount = vertices.size();
 	D3D11_BUFFER_DESC bd = {};
@@ -137,10 +99,6 @@ void Model::create(std::vector<Vertex>& vertices, std::vector<UINT>& indices, LP
 	hr = pGfx->getDevice()->CreateBuffer(&ibd, &isd, &pIndexBuffer);
 	DisplayError(hr, L"Creation of Index Buffer Failed");
 
-	hr = pGfx->getDevice()->CreateInputLayout(layout, std::size(layout), pVertexBlob->GetBufferPointer(),
-		pVertexBlob->GetBufferSize(), &pVertexLayout);
-	DisplayError(hr, L"Create Input layout failed");
-
 	D3D11_BUFFER_DESC cbd = {};
 	cbd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 	cbd.Usage = D3D11_USAGE_DEFAULT;
@@ -168,9 +126,6 @@ void Model::create(std::vector<Vertex>& vertices, std::vector<UINT>& indices, LP
 
 	hr = pGfx->getDevice()->CreateSamplerState(&tsd, &pTexSamplerState);
 	DisplayError(hr, L"Create sampler state failed.");
-
-	ReleaseCOM(pVertexBlob);
-	ReleaseCOM(pPixelBlob);
 }
 
 void Model::createFromOBJ(LPCWSTR fileName)
@@ -265,13 +220,13 @@ void Model::draw()
 		pGfx->getContext()->Draw(vertexCount, 0u);
 }
 
-void Model::bind()
+void Model::bind(VertexShader& vs, PixelShader& ps)
 {
-	pGfx->getContext()->VSSetShader(pVertexShader, nullptr, 0u);
-	pGfx->getContext()->PSSetShader(pPixelShader, nullptr, 0u);
+	pGfx->getContext()->VSSetShader(vs.getVertexShader(), nullptr, 0u);
+	pGfx->getContext()->PSSetShader(ps.getPixelShader(), nullptr, 0u);
 	pGfx->getContext()->IASetVertexBuffers(0u, 1u, &pVertexBuffer, &stride, &offset);
 	if (pIndexBuffer) pGfx->getContext()->IASetIndexBuffer(pIndexBuffer, DXGI_FORMAT_R32_UINT, 0u);
-	pGfx->getContext()->IASetInputLayout(pVertexLayout);
+	pGfx->getContext()->IASetInputLayout(pGfx->vertexShader.getInputLayout());
 	pGfx->getContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 }
 

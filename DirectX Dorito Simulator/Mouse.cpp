@@ -5,11 +5,11 @@ Mouse::Mouse()
 {
 }
 
-Mouse& Mouse::get()
+/*Mouse& Mouse::get()
 {
 	static Mouse instance;//singleton
 	return instance;
-}
+}*/
 
 const MousePos& Mouse::getPos() const
 {

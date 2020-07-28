@@ -16,10 +16,8 @@ public:
 	Model(const Model&) = delete;
 	~Model();
 
-	void create(std::vector<Vertex>& vertices, 
-		LPCWSTR vertexFileName, LPCWSTR pixelFileName);
-	void create(std::vector<Vertex>& vertices, std::vector<UINT>& indices, 
-		LPCWSTR vertexFileName, LPCWSTR pixelFileName);
+	void create(std::vector<Vertex>& vertices);
+	void create(std::vector<Vertex>& vertices, std::vector<UINT>& indices);
 	void createFromOBJ(LPCWSTR fileName);
 
 	void resetMatrix();
@@ -34,7 +32,7 @@ public:
 
 	void draw();
 
-	void bind();
+	void bind(VertexShader& vs, PixelShader& ps);
 	void unbind();
 
 	Transform transform;
@@ -46,12 +44,6 @@ private:
 	ID3D11ShaderResourceView* pTexture;
 	ID3D11SamplerState* pTexSamplerState;
 	LPCWSTR texFilename;
-
-	ID3D11InputLayout* pVertexLayout;
-	ID3D11VertexShader* pVertexShader;
-	ID3D11PixelShader* pPixelShader;
-	ID3DBlob* pVertexBlob;
-	ID3DBlob* pPixelBlob;
 private:
 	DirectX::XMMATRIX sca;
 	DirectX::XMMATRIX rotation;
@@ -64,11 +56,11 @@ private:
 
 	const UINT stride = sizeof(Vertex);
 	const UINT offset = 0;
-	const D3D11_INPUT_ELEMENT_DESC layout[2] =
+	/*const D3D11_INPUT_ELEMENT_DESC layout[2] =
 	{
 		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-	};
+	};*/
 	UINT vertexCount;
 	UINT indexCount;
 };

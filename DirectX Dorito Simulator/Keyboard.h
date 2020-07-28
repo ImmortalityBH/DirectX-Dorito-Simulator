@@ -1,15 +1,13 @@
 #pragma once
 
-#include <list>
+#include <deque>
+#include <string>
 
 class Keyboard
 {
-private:
-	Keyboard();
 public:
-	enum KeyCode
+	enum KeyCode //keycodes not defined by Microsoft
 	{
-		//numbers
 		VK_0 = 0x30,
 		VK_1 = 0x31,
 		VK_2 = 0x32,
@@ -47,20 +45,22 @@ public:
 		VK_Y = 0x59,
 		VK_Z = 0x5A,
 	};
-	static Keyboard& get();
 	bool isKeyPressed(const unsigned char keyCode);
 	void OnKeyPressed(const unsigned char keyCode);
 	void OnKeyReleased(const unsigned char keyCode);
 	void OnChar(const unsigned char keyCode);
 	void clearCharBuffer();
 
-	std::list<unsigned char>& getCharBuffer();
+	std::deque<unsigned char>& getCharBuffer();
+	std::wstring getCharAsString();
+	bool autoRepeatKeys = true;
+	bool autoRepeatChars = false;
 
+	Keyboard();
 	~Keyboard() = default;
 private:
-	bool autoRepeatKeys = false;
-	bool autoRepeatChars = false;
+	
 	bool keyStates[256];
-	std::list<unsigned char> charBuffer;
+	std::deque<unsigned char> charBuffer;
 };
 

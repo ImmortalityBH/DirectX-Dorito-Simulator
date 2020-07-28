@@ -19,7 +19,7 @@ public:
 
 	bool init(HINSTANCE hInstance);
 	void setTitle(LPCWSTR text);
-	Graphics& Gfx();
+	Graphics& getGraphics();
 
 	int getWidth() const { return width; }
 	int getHeight() const { return height; }
@@ -28,12 +28,12 @@ private:
 	static LRESULT CALLBACK WndProc(HWND hWnd, UINT Msg,
 		WPARAM wParam, LPARAM lParam);
 public:
-	//Mouse mouse;
-	//Keyboard kbd;
-	std::unique_ptr<Gamepad> gamepad;
+	Mouse mouse;
+	Keyboard kbd;
+	Gamepad gamepad;
 	std::unique_ptr<DirectX::AudioEngine> aud;
 private:
-	std::unique_ptr<Graphics> pGfx;
+	Graphics gfx;
 	int width, height;
 	LPCTSTR WndClassName = L"window";
 	LPCWSTR title;

@@ -13,7 +13,7 @@ private:
 	bool rightButton = false;
 	bool middleButton = false;
 	float wheelDelta;
-	Mouse();
+	
 public:
 	enum MouseButton
 	{
@@ -21,11 +21,12 @@ public:
 		BUTTON_RIGHT,
 		BUTTON_MIDDLE,
 	};
+	Mouse();
 	Mouse(const Mouse&) = delete;
 	Mouse& operator=(const Mouse&) = delete;
 	~Mouse() = default;
 
-	static Mouse& get();
+	//static Mouse& get();
 
 	const MousePos& getPos() const;
 	const float& getWheelDelta() const;
