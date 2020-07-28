@@ -4,6 +4,7 @@
 #include "Window.h"
 #include "Graphics.h"
 #include "ConstantBuffer.h"
+#include "Texture.h"
 #include "Camera.h"
 #include "Transform.h"
 
@@ -12,7 +13,7 @@
 class Model
 {
 public:
-	Model(Graphics& gfx, LPCWSTR texFilename);
+	Model(Graphics& gfx);
 	Model(const Model&) = delete;
 	~Model();
 
@@ -32,7 +33,7 @@ public:
 
 	void draw();
 
-	void bind(VertexShader& vs, PixelShader& ps);
+	void bind(VertexShader& vs, PixelShader& ps, Texture& tex);
 	void unbind();
 
 	Transform transform;
@@ -43,7 +44,6 @@ private:
 
 	ID3D11ShaderResourceView* pTexture;
 	ID3D11SamplerState* pTexSamplerState;
-	LPCWSTR texFilename;
 private:
 	DirectX::XMMATRIX sca;
 	DirectX::XMMATRIX rotation;
@@ -56,11 +56,6 @@ private:
 
 	const UINT stride = sizeof(Vertex);
 	const UINT offset = 0;
-	/*const D3D11_INPUT_ELEMENT_DESC layout[2] =
-	{
-		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-	};*/
 	UINT vertexCount;
 	UINT indexCount;
 };

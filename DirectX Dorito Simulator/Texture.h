@@ -12,10 +12,9 @@ public:
 	~Texture();
 
 	bool load(ID3D11Device* pDevice, std::wstring filePath);
-
-	ID3D11ShaderResourceView* getTexture() const { return pTexture; }
-	ID3D11SamplerState* getTexSamplerState() const { return pTexSamplerState; }
-
+	//return double ptr to objs for pssetblahblah functions
+	ID3D11ShaderResourceView** getTexture() { return &pTexture; }
+	ID3D11SamplerState** getSamplerState() { return &pTexSamplerState; }
 private:
 	ID3D11ShaderResourceView* pTexture;
 	ID3D11SamplerState* pTexSamplerState;

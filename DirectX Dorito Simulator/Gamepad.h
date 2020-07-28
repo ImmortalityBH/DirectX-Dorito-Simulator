@@ -20,7 +20,7 @@ private:
 public:
     Gamepad(UINT id);
     Gamepad(UINT id, float deadzoneX, float deadzoneY);
-    inline UINT getControllerID() const;
+    UINT getControllerID() const { return controllerID; }
     XINPUT_GAMEPAD* getGamepad();
     //XInputGetBatteryInformation is not supported for v1.4
     //XINPUT_BATTERY_INFORMATION* getBatteryInfo();

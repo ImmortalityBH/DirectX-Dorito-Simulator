@@ -6,6 +6,7 @@
 #include "Camera.h"
 #include <Audio.h>
 #include <memory>
+#include "Texture.h"
 
 class Game
 {
@@ -29,6 +30,7 @@ private:
 	std::unique_ptr<Model> bagModel;
 	std::unique_ptr<Model> mtnDewModel;
 
+	Texture dorTex, florTex, dogTex, bagTex, mtnTex, catTex;
 	//commented out for now
 	//std::unique_ptr<DirectX::SoundEffect> intro;
 	//std::unique_ptr<DirectX::SoundEffect> outro;

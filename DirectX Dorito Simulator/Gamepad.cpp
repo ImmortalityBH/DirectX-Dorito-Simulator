@@ -2,7 +2,7 @@
 #include <algorithm>
 #include <climits>
 
-float normalize(float input, float min, float max);
+float normalize(float input, const float min, const float max);
 
 Gamepad::Gamepad(UINT id) : controllerID(id),
 deadzoneX(XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE),
@@ -19,10 +19,6 @@ Gamepad::Gamepad(UINT id, float deadzoneX, float deadzoneY)
     ZeroMemory(&vibration, sizeof(XINPUT_VIBRATION));
 }
 
-UINT Gamepad::getControllerID() const
-{
-    return controllerID;
-}
 XINPUT_GAMEPAD* Gamepad::getGamepad()
 {
     return &state.Gamepad;
@@ -45,7 +41,7 @@ bool Gamepad::isConnected()
     }
 }
 
-float normalize(float input, float min, float max)
+float normalize(float input, const float min, const float max)
 {
     float average = (min + max) / 2;
     float range = (max - min) / 2;

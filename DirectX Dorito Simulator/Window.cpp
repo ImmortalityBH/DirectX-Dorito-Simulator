@@ -110,7 +110,7 @@ LRESULT Window::WndProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
         Window* window = reinterpret_cast<Window*>(GetWindowLongPtr(hWnd, GWLP_USERDATA));
         int newWidth = LOWORD(lParam);
         int newHeight = HIWORD(lParam);
-        //window->Gfx().onSize(newWidth, newHeight);
+        //window->getGraphics().onSize(newWidth, newHeight);
         break;
     }
     case WM_KEYDOWN:

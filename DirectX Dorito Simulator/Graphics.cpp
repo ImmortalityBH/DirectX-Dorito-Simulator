@@ -131,6 +131,9 @@ bool Graphics::init(unsigned int width, unsigned int height, HWND hWnd)
 
 void Graphics::onSize(unsigned int width, unsigned int height)
 {
+	ReleaseCOM(pDepthStencilBuffer);
+	ReleaseCOM(pDepthStencilView);
+
 	pSwapChain->ResizeBuffers(1, width, height, DXGI_FORMAT_B8G8R8A8_UNORM, 0);
 
 	HRESULT hr = S_OK;
@@ -163,7 +166,7 @@ void Graphics::onSize(unsigned int width, unsigned int height)
 
 void Graphics::setFullscreen(bool fullscreen, unsigned int width, unsigned int height)
 {
-	onSize(width, height);
+	//onSize(width, height);
 	pSwapChain->SetFullscreenState(fullscreen, nullptr);
 }
 

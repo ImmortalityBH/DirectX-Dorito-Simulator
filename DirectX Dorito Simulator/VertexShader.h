@@ -15,18 +15,9 @@ public:
 	VertexShader() = default;
 	~VertexShader();
 
-	ID3D11VertexShader* getVertexShader() const
-	{ 
-		return pVertexShader;
-	}
-	ID3D10Blob* getVertexBlob() const
-	{ 
-		return pVertexBlob; 
-	}
-	ID3D11InputLayout* getInputLayout() const
-	{ 
-		return pInputLayout; 
-	}
+	ID3D11VertexShader* getVertexShader() const { return pVertexShader; }
+	ID3D10Blob* getVertexBlob() const { return pVertexBlob; }
+	ID3D11InputLayout* getInputLayout() const{ return pInputLayout; }
 private:
 	ID3D11VertexShader* pVertexShader;
 	ID3D10Blob* pVertexBlob;

@@ -14,14 +14,8 @@ public:
 	PixelShader() = default;
 	~PixelShader();
 
-	ID3D11PixelShader* getPixelShader() const
-	{
-		return pPixelShader;
-	}
-	ID3D10Blob* getPixelBlob() const
-	{
-		return pPixelBlob;
-	}
+	ID3D11PixelShader* getPixelShader() const { return pPixelShader; }
+	ID3D10Blob* getPixelBlob() const { return pPixelBlob; }
 private:
 	ID3D11PixelShader* pPixelShader;
 	ID3D10Blob* pPixelBlob;

@@ -1,12 +1,11 @@
 #include "Model.h"
 #include "Error.h"
-#include <DDSTextureLoader.h>
 #include "d3dUtil.h"
 
 using namespace DirectX;
 
-Model::Model(Graphics& gfx, LPCWSTR texFilename)
-	: pGfx(&gfx), texFilename(texFilename)
+Model::Model(Graphics& gfx)
+	: pGfx(&gfx)
 {
 }
 
@@ -49,22 +48,6 @@ void Model::create(std::vector<Vertex>& vertices)
 	csd.pSysMem = &cb;
 	pGfx->getDevice()->CreateBuffer(&cbd, &csd, &pConstantBuffer);
 	DisplayError(hr, L"Create Buffer failed");
-
-	hr = CreateDDSTextureFromFile(pGfx->getDevice(), texFilename, nullptr, &pTexture);
-	DisplayError(hr, L"Texture failed to load!");
-
-	D3D11_SAMPLER_DESC tsd = {};
-	tsd.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-	tsd.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
-	tsd.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
-	tsd.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
-	tsd.ComparisonFunc = D3D11_COMPARISON_NEVER;
-	tsd.MinLOD = 0;
-	tsd.MaxLOD = D3D11_FLOAT32_MAX;
-
-	hr = pGfx->getDevice()->CreateSamplerState(&tsd, &pTexSamplerState);
-	DisplayError(hr, L"Create sampler state failed.");
-
 }
 
 void Model::create(std::vector<Vertex>& vertices, std::vector<UINT>& indices)
@@ -111,21 +94,6 @@ void Model::create(std::vector<Vertex>& vertices, std::vector<UINT>& indices)
 	csd.pSysMem = &cb;
 	hr = pGfx->getDevice()->CreateBuffer(&cbd, &csd, &pConstantBuffer);
 	DisplayError(hr, L"Create Buffer failed");
-
-	hr = CreateDDSTextureFromFile(pGfx->getDevice(), texFilename, nullptr, &pTexture);
-	DisplayError(hr, L"Texture failed to load!");
-
-	D3D11_SAMPLER_DESC tsd = {};
-	tsd.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-	tsd.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
-	tsd.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
-	tsd.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
-	tsd.ComparisonFunc = D3D11_COMPARISON_NEVER;
-	tsd.MinLOD = 0;
-	tsd.MaxLOD = D3D11_FLOAT32_MAX;
-
-	hr = pGfx->getDevice()->CreateSamplerState(&tsd, &pTexSamplerState);
-	DisplayError(hr, L"Create sampler state failed.");
 }
 
 void Model::createFromOBJ(LPCWSTR fileName)
@@ -210,20 +178,20 @@ void Model::draw()
 	pGfx->getContext()->Map(pConstantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 	pGfx->getContext()->VSSetConstantBuffers(0u, 1u, &pConstantBuffer);
 	pGfx->getContext()->Unmap(pConstantBuffer, 0);*/
-
-	pGfx->getContext()->PSSetShaderResources(0, 1, &pTexture);
-	pGfx->getContext()->PSSetSamplers(0, 1, &pTexSamplerState);
-
+	//pGfx->getContext()->PSSetShaderResources(0, 1, &pTexture);
+	//pGfx->getContext()->PSSetSamplers(0, 1, &pTexSamplerState);
 	if (pIndexBuffer) 
 		pGfx->getContext()->DrawIndexed(indexCount, 0u, 0u);
 	else
 		pGfx->getContext()->Draw(vertexCount, 0u);
 }
 
-void Model::bind(VertexShader& vs, PixelShader& ps)
+void Model::bind(VertexShader& vs, PixelShader& ps, Texture& tex)
 {
 	pGfx->getContext()->VSSetShader(vs.getVertexShader(), nullptr, 0u);
 	pGfx->getContext()->PSSetShader(ps.getPixelShader(), nullptr, 0u);
+	pGfx->getContext()->PSSetShaderResources(0, 1, tex.getTexture());
+	pGfx->getContext()->PSSetSamplers(0, 1, tex.getSamplerState());
 	pGfx->getContext()->IASetVertexBuffers(0u, 1u, &pVertexBuffer, &stride, &offset);
 	if (pIndexBuffer) pGfx->getContext()->IASetIndexBuffer(pIndexBuffer, DXGI_FORMAT_R32_UINT, 0u);
 	pGfx->getContext()->IASetInputLayout(pGfx->vertexShader.getInputLayout());

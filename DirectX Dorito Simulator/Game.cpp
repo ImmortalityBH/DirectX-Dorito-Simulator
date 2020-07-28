@@ -3,6 +3,7 @@
 #include <vector>
 #include <algorithm>
 #include "Error.h"
+#include <thread>
 
 using namespace DirectX;
 
@@ -43,49 +44,84 @@ int Game::run(HINSTANCE hInstance)
 
 void Game::init()
 {
-	dorito = std::make_unique<Model>(wnd.getGraphics(), L"res/img/dorito.dds");
-	floorModel = std::make_unique<Model>(wnd.getGraphics(), L"res/img/floor.dds");
-	dogModel = std::make_unique<Model>(wnd.getGraphics(), L"res/img/dog.dds");
-	bagModel = std::make_unique<Model>(wnd.getGraphics(), L"res/img/bag.dds");
-	mtnDewModel = std::make_unique<Model>(wnd.getGraphics(), L"res/img/mtndew.dds");
-	//DORITO
-	std::vector<Vertex> vertices =
-	{
-		Vertex(0.0f, 0.5f, 0.0f, 0.5f, 1.0f),
-		Vertex(0.5f, -0.5f, 0.0f, 1.0f, 0.0f),
-		Vertex(-0.5f, -0.5f, 0.0f, 0.0f, 0.0f),
-	};
-	//FLOOR
-	std::vector<Vertex> floorVertices =
-	{
-		Vertex(-0.5f, 0.5f, 0.0f, 0.0f, 0.0f),
-		Vertex(0.5f, -0.5f, 0.0f, 2.0f, 2.0f),
-		Vertex(-0.5f, -0.5f, 0.0f, 0.0f, 2.0f),
-		Vertex(0.5f, 0.5f, 0.0f, 2.0f, 0.0f),
-	};
-	std::vector<Vertex> bagVertices =
-	{
-		Vertex(-0.5f, 0.5f, 0.0f, 0.0f, 0.0f),
-		Vertex(0.5f, -0.5f, 0.0f, 1.0f, 1.0f),
-		Vertex(-0.5f, -0.5f, 0.0f, 0.0f, 1.0f),
-		Vertex(0.5f, 0.5f, 0.0f, 1.0f, 0.0f),
-	};
-	std::vector<UINT> floorIndices = 
-	{
-		0, 1, 2,
-		3, 1, 0,
-	};
-	dorito->create(vertices);
-	floorModel->create(floorVertices, floorIndices);
-	dogModel->create(bagVertices, floorIndices);
-	bagModel->create(bagVertices, floorIndices);
-	mtnDewModel->create(bagVertices, floorIndices);
-
-	dorito->setPos(0.0f, 0.35f, 1.5f);
 
 	//intro = std::make_unique<SoundEffect>(wnd.aud.get() , L"res/audio/intro.wav");
 	//outro = std::make_unique<SoundEffect>(wnd.aud.get(), L"res/audio/outro.wav");
 
+	auto loadModel = [this]() {
+		dorito = std::make_unique<Model>(wnd.getGraphics());
+		floorModel = std::make_unique<Model>(wnd.getGraphics());
+		dogModel = std::make_unique<Model>(wnd.getGraphics());
+		bagModel = std::make_unique<Model>(wnd.getGraphics());
+		mtnDewModel = std::make_unique<Model>(wnd.getGraphics());
+		//DORITO
+		std::vector<Vertex> vertices =
+		{
+			Vertex(0.0f, 0.5f, 0.0f, 0.5f, 1.0f),
+			Vertex(0.5f, -0.5f, 0.0f, 1.0f, 0.0f),
+			Vertex(-0.5f, -0.5f, 0.0f, 0.0f, 0.0f),
+		};
+		//FLOOR
+		std::vector<Vertex> floorVertices =
+		{
+			Vertex(-0.5f, 0.5f, 0.0f, 0.0f, 0.0f),
+			Vertex(0.5f, -0.5f, 0.0f, 2.0f, 2.0f),
+			Vertex(-0.5f, -0.5f, 0.0f, 0.0f, 2.0f),
+			Vertex(0.5f, 0.5f, 0.0f, 2.0f, 0.0f),
+		};
+		std::vector<Vertex> bagVertices =
+		{
+			Vertex(-0.5f, 0.5f, 0.0f, 0.0f, 0.0f),
+			Vertex(0.5f, -0.5f, 0.0f, 1.0f, 1.0f),
+			Vertex(-0.5f, -0.5f, 0.0f, 0.0f, 1.0f),
+			Vertex(0.5f, 0.5f, 0.0f, 1.0f, 0.0f),
+		};
+		std::vector<UINT> floorIndices =
+		{
+			0, 1, 2,
+			3, 1, 0,
+		};
+		dorito->create(vertices);
+		floorModel->create(floorVertices, floorIndices);
+		dogModel->create(bagVertices, floorIndices);
+		bagModel->create(bagVertices, floorIndices);
+		mtnDewModel->create(bagVertices, floorIndices);
+
+		dorito->setPos(0.0f, 0.35f, 1.5f);
+	};
+	auto loadTex = [this]() {
+		if (!dorTex.load(wnd.getGraphics().getDevice(), L"res/img/dorito.dds"))
+		{
+			DisplayError(L"Failed to load texture");
+		}
+		if (!florTex.load(wnd.getGraphics().getDevice(), L"res/img/floor.dds"))
+		{
+			DisplayError(L"Failed to load texture");
+		}
+		if (!dogTex.load(wnd.getGraphics().getDevice(), L"res/img/dog.dds"))
+		{
+			DisplayError(L"Failed to load texture");
+		}
+		if (!bagTex.load(wnd.getGraphics().getDevice(), L"res/img/bag.dds"))
+		{
+			DisplayError(L"Failed to load texture");
+		}
+		if (!mtnTex.load(wnd.getGraphics().getDevice(), L"res/img/mtndew.dds"))
+		{
+			DisplayError(L"Failed to load texture");
+		}
+		if (!catTex.load(wnd.getGraphics().getDevice(), L"res/img/winkcat.dds"))
+		{
+			DisplayError(L"Failed to load texture");
+		}
+	};                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+
+	std::thread modelThread(loadModel);
+	std::thread texThread(loadTex);
+
+	modelThread.join();
+	texThread.join();
+	wnd.getGraphics().setFullscreen(true, 0, 0);
 	/*std::vector<std::wstring> fileNames = {
 		L"res/audio/amazing.wav",
 		L"res/audio/awesome.wav",
@@ -317,23 +353,23 @@ void Game::DrawScene()
 {
 	wnd.getGraphics().Begin(0.0f, 0.0f, 0.5f);
 
-	dogModel->bind(wnd.getGraphics().vertexShader, wnd.getGraphics().pixelShader);
+	dogModel->bind(wnd.getGraphics().vertexShader, wnd.getGraphics().pixelShader, catTex);
 	dogModel->draw();
 	dogModel->unbind();
 
-	bagModel->bind(wnd.getGraphics().vertexShader, wnd.getGraphics().pixelShader);
+	bagModel->bind(wnd.getGraphics().vertexShader, wnd.getGraphics().pixelShader, bagTex);
 	bagModel->draw();
 	bagModel->unbind();
 	
-	dorito->bind(wnd.getGraphics().vertexShader, wnd.getGraphics().pixelShader);
+	dorito->bind(wnd.getGraphics().vertexShader, wnd.getGraphics().pixelShader, dorTex);
 	dorito->draw();
 	dorito->unbind();
 
-	floorModel->bind(wnd.getGraphics().vertexShader, wnd.getGraphics().pixelShader);
+	floorModel->bind(wnd.getGraphics().vertexShader, wnd.getGraphics().pixelShader, florTex);
 	floorModel->draw();
 	floorModel->unbind();
 
-	mtnDewModel->bind(wnd.getGraphics().vertexShader, wnd.getGraphics().pixelShader);
+	mtnDewModel->bind(wnd.getGraphics().vertexShader, wnd.getGraphics().pixelShader, mtnTex);
 	mtnDewModel->draw();
 	mtnDewModel->unbind();
 
