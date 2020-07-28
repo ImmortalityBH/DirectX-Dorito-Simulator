@@ -225,7 +225,7 @@
     <ClInclude Include="VertexShader.h" />
     <ClInclude Include="Win.h" />
     <ClInclude Include="Window.h" />
-    <ClInclude Include="WVP.h" />
+    <ClInclude Include="ConstantBuffer.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DirectX Dorito Simulator.rc" />
