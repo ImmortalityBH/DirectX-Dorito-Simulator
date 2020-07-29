@@ -2,7 +2,7 @@
 #include <string>
 #include <vector>
 #include <algorithm>
-#include "Utility/Error.h"
+#include <Utility/Error.h>
 #include <thread>
 
 //using namespace DirectX;
@@ -24,6 +24,18 @@ int Game::run(HINSTANCE hInstance)
 	wnd.init(hInstance);
 	MSG msg = {};
 	init();
+
+	try
+	{
+		HRESULT hr = E_FAIL;
+		THROW_IF_FAILED(hr, "Bruh error");
+	}
+	catch (BrianException& exception)
+	{
+		ErrorLogger::Log(exception);
+	}
+
+
 	while (true)
 	{
 		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
@@ -209,15 +221,15 @@ void Game::UpdateScene()
 
 	if (wnd.mouse.isButtonPressed(Mouse::BUTTON_LEFT))
 	{
-		DisplayMB(L"", L"Left Button Pressed");
+		ErrorLogger::Log(L"", L"Left Button Pressed");
 	}
 	else if (wnd.mouse.isButtonPressed(Mouse::BUTTON_RIGHT))
 	{
-		DisplayMB(L"", L"Right Button Pressed");
+		ErrorLogger::Log(L"", L"Right Button Pressed");
 	}
 	else if (wnd.mouse.isButtonPressed(Mouse::BUTTON_MIDDLE))
 	{
-		DisplayMB(L"", L"Middle Button Pressed");
+		ErrorLogger::Log(L"", L"Middle Button Pressed");
 	}
 
 #pragma region Game code

@@ -77,11 +77,11 @@ bool Window::init(HINSTANCE hInstance)
 
     if (!gfx.init(width, height, hWnd))
     {
-        DisplayError(L"Graphics creation failed");
+        ErrorLogger::Log(L"Graphics creation failed");
         return false;
     }
     if (!audioEngine.init()) {
-        DisplayError(L"audio engine creation failed");
+        ErrorLogger::Log(L"audio engine creation failed");
         return false;
     }
 

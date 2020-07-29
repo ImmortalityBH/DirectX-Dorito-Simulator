@@ -7,7 +7,6 @@
 #define DeletePtr(x) if (x) { delete x; x = nullptr; }
 
 
-
 namespace Color
 {
 	XMGLOBALCONST DirectX::XMVECTORF32 White = { 1.0f, 1.0f, 1.0f, 1.0f };
@@ -21,8 +20,3 @@ namespace Color
 	XMGLOBALCONST DirectX::XMVECTORF32 Silver = { 0.75f, 0.75f, 0.75f, 1.0f };
 	XMGLOBALCONST DirectX::XMVECTORF32 LightSteelBlue = { 0.69f, 0.77f, 0.87f, 1.0f };
 }
-
-class StringHelper
-{
-public:
-};

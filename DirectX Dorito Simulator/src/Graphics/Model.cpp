@@ -35,7 +35,7 @@ void Model::create(std::vector<Vertex>& vertices)
 	sd.pSysMem = vertices.data();
 
 	hr = pGfx->getDevice()->CreateBuffer(&bd, &sd, &pVertexBuffer);
-	DisplayError(hr, L"Create Buffer failed");
+	ErrorLogger::Log(hr, L"Create Buffer failed");
 
 	D3D11_BUFFER_DESC cbd = {};
 	cbd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
@@ -48,7 +48,7 @@ void Model::create(std::vector<Vertex>& vertices)
 	D3D11_SUBRESOURCE_DATA csd = {};
 	csd.pSysMem = &cb;
 	pGfx->getDevice()->CreateBuffer(&cbd, &csd, &pConstantBuffer);
-	DisplayError(hr, L"Create Buffer failed");
+	ErrorLogger::Log(hr, L"Create Buffer failed");
 }
 
 void Model::create(std::vector<Vertex>& vertices, std::vector<UINT>& indices)
@@ -67,7 +67,7 @@ void Model::create(std::vector<Vertex>& vertices, std::vector<UINT>& indices)
 	sd.pSysMem = vertices.data();
 
 	hr = pGfx->getDevice()->CreateBuffer(&bd, &sd, &pVertexBuffer);
-	DisplayError(hr, L"Create Buffer failed");
+	ErrorLogger::Log(hr, L"Create Buffer failed");
 
 	//INDEX BUFFER STUFF
 	indexCount = indices.size();
@@ -81,7 +81,7 @@ void Model::create(std::vector<Vertex>& vertices, std::vector<UINT>& indices)
 	D3D11_SUBRESOURCE_DATA isd = {};
 	isd.pSysMem = indices.data();
 	hr = pGfx->getDevice()->CreateBuffer(&ibd, &isd, &pIndexBuffer);
-	DisplayError(hr, L"Creation of Index Buffer Failed");
+	ErrorLogger::Log(hr, L"Creation of Index Buffer Failed");
 
 	D3D11_BUFFER_DESC cbd = {};
 	cbd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
@@ -94,7 +94,7 @@ void Model::create(std::vector<Vertex>& vertices, std::vector<UINT>& indices)
 	D3D11_SUBRESOURCE_DATA csd = {};
 	csd.pSysMem = &cb;
 	hr = pGfx->getDevice()->CreateBuffer(&cbd, &csd, &pConstantBuffer);
-	DisplayError(hr, L"Create Buffer failed");
+	ErrorLogger::Log(hr, L"Create Buffer failed");
 }
 
 void Model::createFromOBJ(LPCWSTR fileName)
