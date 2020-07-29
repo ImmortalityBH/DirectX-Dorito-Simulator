@@ -16,8 +16,8 @@ public:
 	ID3D10Blob* getVertexBlob() const { return pVertexBlob; }
 	ID3D11InputLayout* getInputLayout() const{ return pInputLayout; }
 private:
-	ID3D11VertexShader* pVertexShader;
-	ID3D10Blob* pVertexBlob;
-	ID3D11InputLayout* pInputLayout;
+	ID3D11VertexShader* pVertexShader = nullptr;
+	ID3D10Blob* pVertexBlob = nullptr;
+	ID3D11InputLayout* pInputLayout = nullptr;
 };
 

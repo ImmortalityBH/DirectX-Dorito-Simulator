@@ -363,7 +363,7 @@ void Game::UpdateScene()
 
 	dogModel->setPos(-3.0f, .45f, 5.0f);
 	dogModel->rotate(0.0f, 1.0f, 0.0f, -25.0f);
-	dogModel->setScale(4.0f, 4.0f, 1.0f);
+	dogModel->setScale(sin(eTime) * 5, sin(eTime) * 5, 0.0f);
 
 	dogModel->update(timer.Peek(), camera);
 
@@ -378,7 +378,8 @@ void Game::UpdateScene()
 	mtnDewModel->resetMatrix();
 	
 	mtnDewModel->setPos(sin(eTime) / 1.0f, 2.0f, 8.0f);
-	mtnDewModel->rotate(0.0, 0.0f, 1.0f, eTime * 32);
+	mtnDewModel->rotate(0.0, 0.5f, 1.0f, eTime * 32);
+	//mtnDewModel->rotate(0.0, 1.0f, 0.0f, sin(eTime) * 35.0f);
 	mtnDewModel->setScale(3.0f, 4.0f, 1.0f);
 
 	mtnDewModel->update(timer.Peek(), camera);

@@ -222,6 +222,7 @@
     <ClInclude Include="src\Audio\Audio.h" />
     <ClInclude Include="src\Camera.h" />
     <ClInclude Include="src\Graphics\CubemapTexture.h" />
+    <ClInclude Include="src\Graphics\Vertex.h" />
     <ClInclude Include="src\Utility\d3dUtil.h" />
     <ClInclude Include="src\Utility\Error.h" />
     <ClInclude Include="src\Game\Game.h" />

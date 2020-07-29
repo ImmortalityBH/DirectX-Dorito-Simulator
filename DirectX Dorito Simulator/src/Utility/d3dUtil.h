@@ -6,7 +6,6 @@
 
 #define DeletePtr(x) if (x) { delete x; x = nullptr; }
 
-
 namespace Color
 {
 	XMGLOBALCONST DirectX::XMVECTORF32 White = { 1.0f, 1.0f, 1.0f, 1.0f };

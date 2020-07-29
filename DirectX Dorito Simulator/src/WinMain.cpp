@@ -1,4 +1,6 @@
 /********DIRECTX DORITO SIMULATOR: DELUXE EDITION*********
+//TODO: name engine and keep adding to abstractions,
+skybox, assimp, xaudio2
 
 *********************************************************/
 #include "Game/Game.h"

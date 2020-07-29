@@ -177,6 +177,7 @@ void Graphics::onSize(unsigned int width, unsigned int height)
 void Graphics::setFullscreen(bool fullscreen, unsigned int width, unsigned int height)
 {
 	//onSize(width, height);
+	this->isFullscreen = fullscreen;
 	pSwapChain->SetFullscreenState(fullscreen, nullptr);
 }
 

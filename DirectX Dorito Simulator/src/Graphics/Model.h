@@ -10,7 +10,6 @@
 
 #include <vector>
 
-//namespace XD {
 class Model
 {
 public:
@@ -39,12 +38,9 @@ public:
 
 	Transform transform;
 private:
-	ID3D11Buffer* pVertexBuffer;
-	ID3D11Buffer* pIndexBuffer;
-	ID3D11Buffer* pConstantBuffer;
-
-	ID3D11ShaderResourceView* pTexture;
-	ID3D11SamplerState* pTexSamplerState;
+	ID3D11Buffer* pVertexBuffer = nullptr;
+	ID3D11Buffer* pIndexBuffer = nullptr;
+	ID3D11Buffer* pConstantBuffer = nullptr;
 private:
 	DirectX::XMMATRIX sca;
 	DirectX::XMMATRIX rotation;
@@ -60,7 +56,3 @@ private:
 	UINT vertexCount;
 	UINT indexCount;
 };
-
-
-//}
-

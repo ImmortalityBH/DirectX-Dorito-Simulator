@@ -14,7 +14,7 @@ public:
 	ID3D11ShaderResourceView** getTexture() { return &pTexture; }
 	ID3D11SamplerState** getSamplerState() { return &pTexSamplerState; }
 private:
-	ID3D11ShaderResourceView* pTexture;
-	ID3D11SamplerState* pTexSamplerState;
+	ID3D11ShaderResourceView* pTexture = nullptr;
+	ID3D11SamplerState* pTexSamplerState = nullptr;
 };
 

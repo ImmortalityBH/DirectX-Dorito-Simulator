@@ -23,7 +23,8 @@ inline std::string wstring_to_string(const std::wstring& str)
 class BrianException
 {
 public:
-	BrianException(HRESULT hr, const std::string& msg, const std::string& file, const std::string& function, std::size_t line)
+	BrianException(HRESULT hr, const std::string& msg, const std::string& file, 
+		const std::string& function, std::size_t line)
 	{
 		_com_error err(hr);
 		whatStr = string_to_wstring(msg) + L"\n";

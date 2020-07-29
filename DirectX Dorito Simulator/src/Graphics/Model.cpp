@@ -4,7 +4,6 @@
 
 using namespace DirectX;
 
-//namespace XD {
 Model::Model(Graphics& gfx)
 	: pGfx(&gfx)
 {
@@ -14,8 +13,6 @@ Model::~Model()
 {
 	ReleaseCOM(pVertexBuffer);
 	ReleaseCOM(pConstantBuffer);
-	ReleaseCOM(pTexture);
-	ReleaseCOM(pTexSamplerState);
 	ReleaseCOM(pIndexBuffer);
 }
 
@@ -206,6 +203,3 @@ void Model::unbind()
 	pGfx->getContext()->IASetVertexBuffers(0u, 0u, nullptr, nullptr, nullptr);
 	if (pIndexBuffer) pGfx->getContext()->IASetIndexBuffer(nullptr, DXGI_FORMAT_R32_UINT, 0u);
 }
-//}
-
-

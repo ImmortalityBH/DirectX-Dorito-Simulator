@@ -18,6 +18,6 @@ public:
 	//ID3D11SamplerState** getSamplerState() { return &pTexSamplerState; }
 private:
 	static constexpr std::size_t numOfSides = 6;
-	ID3D11ShaderResourceView* pTexture;
+	ID3D11ShaderResourceView* pTexture = nullptr;
 	ID3D11Texture2D* pTexArray[6];
 };

@@ -14,6 +14,6 @@ public:
 	ID3D11PixelShader* getPixelShader() const { return pPixelShader; }
 	ID3D10Blob* getPixelBlob() const { return pPixelBlob; }
 private:
-	ID3D11PixelShader* pPixelShader;
-	ID3D10Blob* pPixelBlob;
+	ID3D11PixelShader* pPixelShader = nullptr;
+	ID3D10Blob* pPixelBlob = nullptr;
 };
