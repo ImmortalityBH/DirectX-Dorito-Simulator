@@ -4,11 +4,10 @@
 #include "Graphics.h"
 #include <memory>
 
-#include "Keyboard.h"
-//#include <Mouse.h>
-#include "Gamepad.h"
-#include <Audio.h>
 #include "Mouse.h"
+#include "Keyboard.h"
+#include "Gamepad.h"
+#include "Audio.h"
 
 class Window
 {
@@ -31,7 +30,7 @@ public:
 	Mouse mouse;
 	Keyboard kbd;
 	Gamepad gamepad;
-	std::unique_ptr<DirectX::AudioEngine> aud;
+	AudioEngine audioEngine;
 private:
 	Graphics gfx;
 	int width, height;

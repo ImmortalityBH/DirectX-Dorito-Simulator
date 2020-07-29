@@ -1,7 +1,4 @@
 #include "Graphics.h"
-
-#pragma comment(lib, "d3dcompiler.lib")
-#include <d3dcompiler.h>
 #include "Error.h"
 #include "d3dUtil.h"
 
@@ -134,8 +131,6 @@ void Graphics::onSize(unsigned int width, unsigned int height)
 	ReleaseCOM(pDepthStencilBuffer);
 	ReleaseCOM(pDepthStencilView);
 
-	pSwapChain->ResizeBuffers(1, width, height, DXGI_FORMAT_B8G8R8A8_UNORM, 0);
-
 	HRESULT hr = S_OK;
 	ID3D11Texture2D* BackBuffer; //Create our BackBuffer
 	hr = pSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&BackBuffer));
@@ -161,6 +156,8 @@ void Graphics::onSize(unsigned int width, unsigned int height)
 
 	hr = pDevice->CreateTexture2D(&ds, nullptr, &pDepthStencilBuffer);
 	hr = pDevice->CreateDepthStencilView(pDepthStencilBuffer, nullptr, &pDepthStencilView);
+
+	pSwapChain->ResizeBuffers(1, width, height, DXGI_FORMAT_B8G8R8A8_UNORM, 0);
 
 }
 

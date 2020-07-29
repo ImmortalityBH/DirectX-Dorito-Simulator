@@ -1,3 +1,6 @@
+/********DIRECTX DORITO SIMULATOR: DELUXE EDITION*********
+
+*********************************************************/
 #include "Game.h"
 
 #include <random>

@@ -1,8 +1,53 @@
 #include "Audio.h"
 #include "Error.h"
-#include "d3dUtil.h"
+//#include "d3dUtil.h"
+using namespace irrklang;
 
-AudioEngine::AudioEngine()
+AudioEngine::~AudioEngine()
+{
+	//while (engine != nullptr)
+	//{
+		engine->drop();
+	//}
+}
+
+bool AudioEngine::init()
+{
+	engine = createIrrKlangDevice();
+	//if (engine == nullptr)
+	//{
+	//	return false;//no error displayed left up to window class
+	//}
+	return true;
+}
+
+void AudioEngine::playSound2D(std::string filePath, bool looped)
+{
+	engine->play2D(filePath.c_str(), looped);
+}
+
+void AudioEngine::playSound3D(Sound& sound, float x, float y, 
+	float z, bool looped)
+{
+	vec3df pos(x, y, z);
+	engine->play3D(sound.getSource(), pos, looped);
+}
+
+Sound::Sound(AudioEngine& engine, std::string filePath)
+{
+	source = engine.getEngine()->addSoundSourceFromFile(filePath.c_str());
+}
+
+Sound::~Sound()
+{
+	source->drop();
+}
+
+void Sound::setVolume(float volume)
+{
+	source->setDefaultVolume(volume);
+}
+/*AudioEngine::AudioEngine()
 {
 }
 
@@ -99,4 +144,6 @@ bool AudioEngine::loadFile(const std::wstring& filename, std::vector<BYTE>& audi
 
 	ReleaseCOM(pMediaType);
 	return true;
-}
+}*/
+
+

@@ -81,6 +81,49 @@ void Game::init()
 			0, 1, 2,
 			3, 1, 0,
 		};
+		/*td::vector<Vertex> boxVertices = {
+			{ -1.0f,  1.0f, -1.0f, },
+			{ -1.0f, -1.0f, -1.0f, },
+			{1.0f, -1.0f, -1.0f,},
+			{1.0f, -1.0f, -1.0f,},
+			{1.0f,  1.0f, -1.0f,},
+			{-1.0f,  1.0f, -1.0f,},
+
+			{-1.0f, -1.0f,  1.0f,},
+			{-1.0f, -1.0f, -1.0f,},
+			{-1.0f,  1.0f, -1.0f,},
+			{-1.0f,  1.0f, -1.0f,},
+			{-1.0f,  1.0f,  1.0f,},
+			{-1.0f, -1.0f,  1.0f,},
+
+			{1.0f, -1.0f, -1.0f,},
+			{1.0f, -1.0f,  1.0f,},
+			{ 1.0f,  1.0f,  1.0f,},
+			{1.0f,  1.0f,  1.0f,},
+			{1.0f,  1.0f, -1.0f,},
+			{1.0f, -1.0f, -1.0f,},
+
+			{-1.0f, -1.0f,  1.0f,},
+			{-1.0f,  1.0f,  1.0f,},
+			{1.0f,  1.0f,  1.0f,},
+			{1.0f,  1.0f,  1.0f,},
+			{1.0f, -1.0f,  1.0f,},
+			{-1.0f, -1.0f,  1.0f,},
+
+			{-1.0f,  1.0f, -1.0f,},
+			{ 1.0f,  1.0f, -1.0f,},
+			{ 1.0f,  1.0f,  1.0f,},
+			{ 1.0f,  1.0f,  1.0f,},
+			{-1.0f,  1.0f,  1.0f,},
+			{-1.0f,  1.0f, -1.0f,},
+
+			{-1.0f, -1.0f, -1.0f,},
+			{-1.0f, -1.0f,  1.0f,},
+			{ 1.0f, -1.0f, -1.0f,},
+			{ 1.0f, -1.0f, -1.0f,},
+			{-1.0f, -1.0f,  1.0f,},
+			{ 1.0f, -1.0f,  1.0f},
+		};*/
 		dorito->create(vertices);
 		floorModel->create(floorVertices, floorIndices);
 		dogModel->create(bagVertices, floorIndices);
@@ -89,31 +132,13 @@ void Game::init()
 
 		dorito->setPos(0.0f, 0.35f, 1.5f);
 	};
-	auto loadTex = [this]() {
-		if (!dorTex.load(wnd.getGraphics().getDevice(), L"res/img/dorito.dds"))
-		{
-			DisplayError(L"Failed to load texture");
-		}
-		if (!florTex.load(wnd.getGraphics().getDevice(), L"res/img/floor.dds"))
-		{
-			DisplayError(L"Failed to load texture");
-		}
-		if (!dogTex.load(wnd.getGraphics().getDevice(), L"res/img/dog.dds"))
-		{
-			DisplayError(L"Failed to load texture");
-		}
-		if (!bagTex.load(wnd.getGraphics().getDevice(), L"res/img/bag.dds"))
-		{
-			DisplayError(L"Failed to load texture");
-		}
-		if (!mtnTex.load(wnd.getGraphics().getDevice(), L"res/img/mtndew.dds"))
-		{
-			DisplayError(L"Failed to load texture");
-		}
-		if (!catTex.load(wnd.getGraphics().getDevice(), L"res/img/winkcat.dds"))
-		{
-			DisplayError(L"Failed to load texture");
-		}
+	auto loadTex = [this]() { //no need to check return types handling done in class
+		dorTex.load(wnd.getGraphics().getDevice(), L"res/img/dorito.dds");
+		florTex.load(wnd.getGraphics().getDevice(), L"res/img/floor.dds");
+		dogTex.load(wnd.getGraphics().getDevice(), L"res/img/dog.dds");
+		bagTex.load(wnd.getGraphics().getDevice(), L"res/img/bag.dds");
+		mtnTex.load(wnd.getGraphics().getDevice(), L"res/img/mtndew.dds");
+		catTex.load(wnd.getGraphics().getDevice(), L"res/img/winkcat.dds");
 	};                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
 
 	std::thread modelThread(loadModel);
@@ -121,7 +146,9 @@ void Game::init()
 
 	modelThread.join();
 	texThread.join();
-	wnd.getGraphics().setFullscreen(true, 0, 0);
+
+	//Sound sound(wnd.audioEngine, "res/audio/poop.wav");
+	wnd.audioEngine.playSound2D("res/audio/poop.wav");
 	/*std::vector<std::wstring> fileNames = {
 		L"res/audio/amazing.wav",
 		L"res/audio/awesome.wav",
@@ -149,10 +176,6 @@ void Game::UpdateScene()
 	float eTime = elapsedTimer.Peek();
 	timer.Mark();
 
-	if (!wnd.aud->Update())
-	{
-		
-	}
 	//std::wstring title = L"Mouse Pos (" + std::to_wstring(wnd.mouse.getPos().x) + L", " + 
 		//std::to_wstring(wnd.mouse.getPos().y) + L", Wheel: " + std::to_wstring(wnd.mouse.getWheelDelta()) + L")";
 

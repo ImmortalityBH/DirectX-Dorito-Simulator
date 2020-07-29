@@ -78,9 +78,9 @@ bool Window::init(HINSTANCE hInstance)
         DisplayError(L"Graphics creation failed");
         return false;
     }
-    aud = std::make_unique<DirectX::AudioEngine>();
-    if (!aud) {
+    if (!audioEngine.init()) {
         DisplayError(L"audio engine creation failed");
+        return false;
     }
     return true;
 }

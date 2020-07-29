@@ -1,6 +1,40 @@
 #pragma once
 
-#include "Win.h"
+#include <irrKlang.h>
+#include <string>
+
+class Sound;
+
+class AudioEngine
+{
+public:
+	AudioEngine() = default;
+	AudioEngine(const AudioEngine&) = delete;
+	AudioEngine& operator=(const AudioEngine&) = delete;
+	~AudioEngine();
+
+	bool init();
+	void playSound2D(std::string filePath, bool looped = false);
+	void playSound3D(Sound& sound, float x, float y, 
+		float z, bool looped = false);
+
+	irrklang::ISoundEngine* getEngine() const { return engine; }
+private:
+	irrklang::ISoundEngine* engine = nullptr;
+};
+
+class Sound
+{
+public:
+	Sound(AudioEngine& engine, std::string filePath);
+	~Sound();
+
+	void setVolume(float volume);
+	irrklang::ISoundSource* getSource() const { return source; }
+private:
+	irrklang::ISoundSource* source;
+};
+/*#include "Win.h"
 #include <xaudio2.h>
 
 #include <mfapi.h>
@@ -36,7 +70,7 @@ private:
 	IXAudio2MasteringVoice* pMusicMasterVoice = nullptr;
 };*/
 
-class AudioEngine
+/*class AudioEngine
 {
 public:
 	AudioEngine();
@@ -51,5 +85,5 @@ private:
 	IXAudio2MasteringVoice* pMasterVoice = nullptr;
 	IMFAttributes* pReaderConfig = nullptr;
 	IMFSourceReader* pSourceReader = nullptr;
-};
+};*/
 
