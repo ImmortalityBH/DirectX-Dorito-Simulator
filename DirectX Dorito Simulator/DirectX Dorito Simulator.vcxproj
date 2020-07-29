@@ -91,7 +91,7 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>D:\sdk\irrKlang-32bit-1.6.0\irrKlang-1.6.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\Visual Studio Projects\DirectX Dorito Simulator\DirectX Dorito Simulator\src;D:\sdk\irrKlang-32bit-1.6.0\irrKlang-1.6.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -109,7 +109,7 @@
       <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>D:\sdk\irrKlang-32bit-1.6.0\irrKlang-1.6.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\Visual Studio Projects\DirectX Dorito Simulator\DirectX Dorito Simulator\src;D:\sdk\irrKlang-32bit-1.6.0\irrKlang-1.6.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -129,7 +129,7 @@
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>D:\sdk\irrKlang-32bit-1.6.0\irrKlang-1.6.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\Visual Studio Projects\DirectX Dorito Simulator\DirectX Dorito Simulator\src;D:\sdk\irrKlang-32bit-1.6.0\irrKlang-1.6.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -151,7 +151,7 @@
       <PreprocessorDefinitions>NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>D:\sdk\irrKlang-32bit-1.6.0\irrKlang-1.6.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\Visual Studio Projects\DirectX Dorito Simulator\DirectX Dorito Simulator\src;D:\sdk\irrKlang-32bit-1.6.0\irrKlang-1.6.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -163,27 +163,33 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Audio.cpp" />
-    <ClCompile Include="Camera.cpp" />
-    <ClCompile Include="CubemapTexture.cpp" />
-    <ClCompile Include="Game.cpp" />
-    <ClCompile Include="Gamepad.cpp" />
-    <ClCompile Include="Graphics.cpp" />
-    <ClCompile Include="Keyboard.cpp" />
-    <ClCompile Include="Mouse.cpp" />
-    <ClCompile Include="PixelShader.cpp" />
-    <ClCompile Include="Texture.cpp" />
-    <ClCompile Include="VertexShader.cpp" />
-    <ClCompile Include="WinMain.cpp" />
-    <ClCompile Include="Model.cpp" />
-    <ClCompile Include="Timer.cpp" />
-    <ClCompile Include="Window.cpp" />
+    <ClCompile Include="src\Audio\Audio.cpp" />
+    <ClCompile Include="src\Camera.cpp" />
+    <ClCompile Include="src\Graphics\CubemapTexture.cpp" />
+    <ClCompile Include="src\Game\Game.cpp" />
+    <ClCompile Include="src\Input\Gamepad.cpp" />
+    <ClCompile Include="src\Graphics\Graphics.cpp" />
+    <ClCompile Include="imgui\imgui.cpp" />
+    <ClCompile Include="imgui\imgui_demo.cpp" />
+    <ClCompile Include="imgui\imgui_draw.cpp" />
+    <ClCompile Include="imgui\imgui_impl_dx11.cpp" />
+    <ClCompile Include="imgui\imgui_impl_win32.cpp" />
+    <ClCompile Include="imgui\imgui_widgets.cpp" />
+    <ClCompile Include="src\Input\Keyboard.cpp" />
+    <ClCompile Include="src\Input\Mouse.cpp" />
+    <ClCompile Include="src\Graphics\PixelShader.cpp" />
+    <ClCompile Include="src\Graphics\Texture.cpp" />
+    <ClCompile Include="src\Graphics\VertexShader.cpp" />
+    <ClCompile Include="src\WinMain.cpp" />
+    <ClCompile Include="src\Graphics\Model.cpp" />
+    <ClCompile Include="src\Utility\Timer.cpp" />
+    <ClCompile Include="src\Window\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="PixelShader.hlsl">
+    <FxCompile Include="src\Graphics\PixelShader.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
@@ -213,28 +219,35 @@
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Audio.h" />
-    <ClInclude Include="Bindable.h" />
-    <ClInclude Include="Camera.h" />
-    <ClInclude Include="CubemapTexture.h" />
-    <ClInclude Include="d3dUtil.h" />
-    <ClInclude Include="Error.h" />
-    <ClInclude Include="Game.h" />
-    <ClInclude Include="Gamepad.h" />
-    <ClInclude Include="Graphics.h" />
-    <ClInclude Include="Keyboard.h" />
-    <ClInclude Include="Model.h" />
-    <ClInclude Include="Mouse.h" />
-    <ClInclude Include="PixelShader.h" />
+    <ClInclude Include="src\Audio\Audio.h" />
+    <ClInclude Include="src\Camera.h" />
+    <ClInclude Include="src\Graphics\CubemapTexture.h" />
+    <ClInclude Include="src\Utility\d3dUtil.h" />
+    <ClInclude Include="src\Utility\Error.h" />
+    <ClInclude Include="src\Game\Game.h" />
+    <ClInclude Include="src\Input\Gamepad.h" />
+    <ClInclude Include="src\Graphics\Graphics.h" />
+    <ClInclude Include="imgui\imconfig.h" />
+    <ClInclude Include="imgui\imgui.h" />
+    <ClInclude Include="imgui\imgui_impl_dx11.h" />
+    <ClInclude Include="imgui\imgui_impl_win32.h" />
+    <ClInclude Include="imgui\imgui_internal.h" />
+    <ClInclude Include="imgui\imstb_rectpack.h" />
+    <ClInclude Include="imgui\imstb_textedit.h" />
+    <ClInclude Include="imgui\imstb_truetype.h" />
+    <ClInclude Include="src\Input\Keyboard.h" />
+    <ClInclude Include="src\Graphics\Model.h" />
+    <ClInclude Include="src\Input\Mouse.h" />
+    <ClInclude Include="src\Graphics\PixelShader.h" />
     <ClInclude Include="resource.h" />
-    <ClInclude Include="Scene.h" />
-    <ClInclude Include="Texture.h" />
-    <ClInclude Include="Timer.h" />
-    <ClInclude Include="Transform.h" />
-    <ClInclude Include="VertexShader.h" />
-    <ClInclude Include="Win.h" />
-    <ClInclude Include="Window.h" />
-    <ClInclude Include="ConstantBuffer.h" />
+    <ClInclude Include="src\Scene.h" />
+    <ClInclude Include="src\Graphics\Texture.h" />
+    <ClInclude Include="src\Utility\Timer.h" />
+    <ClInclude Include="src\Transform.h" />
+    <ClInclude Include="src\Graphics\VertexShader.h" />
+    <ClInclude Include="src\Win.h" />
+    <ClInclude Include="src\Window\Window.h" />
+    <ClInclude Include="src\Graphics\ConstantBuffer.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DirectX Dorito Simulator.rc" />
