@@ -7,7 +7,7 @@
 
 #include <memory>
 #include "Graphics/Texture.h"
-#include <Graphics\Model.h>
+#include "Graphics/Model.h"
 
 class Game
 {

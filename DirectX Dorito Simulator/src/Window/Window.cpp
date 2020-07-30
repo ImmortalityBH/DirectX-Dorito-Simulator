@@ -2,7 +2,7 @@
 #include "Utility/Error.h"
 #include "../resource.h"
 //#include "imgui/imgui.h"
-//#include "imgui/imgui_impl_win32.h"
+//#include <imgui_impl_win32.h>
 
 using namespace DirectX;
 
@@ -19,72 +19,70 @@ Window::~Window()
 
 bool Window::init(HINSTANCE hInstance)
 {
-    HRESULT hr;
-    WNDCLASSEX wc;
-
-    HICON hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_ICON1));
-
-    wc.cbSize = sizeof(WNDCLASSEX);
-    wc.style = CS_HREDRAW | CS_VREDRAW;
-    wc.lpfnWndProc = WndProc;
-    wc.cbClsExtra = NULL;
-    wc.cbWndExtra = NULL;
-    wc.hInstance = hInstance;
-    wc.hIcon = hIcon;
-    wc.hCursor = LoadCursor(nullptr, IDC_ARROW);
-    wc.hbrBackground = (HBRUSH)(COLOR_WINDOW + 2);
-    wc.lpszMenuName = nullptr;
-    wc.lpszClassName = WndClassName;
-    wc.hIconSm = hIcon;
-
-    if (!RegisterClassEx(&wc))
+    try
     {
-        MessageBox(NULL, L"Error registering class",
-            L"Error", MB_OK | MB_ICONERROR);
-        return 1;
+        HRESULT hr = S_OK;
+        WNDCLASSEX wc;
+
+        HICON hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_ICON1));
+
+        wc.cbSize = sizeof(WNDCLASSEX);
+        wc.style = CS_HREDRAW | CS_VREDRAW;
+        wc.lpfnWndProc = WndProc;
+        wc.cbClsExtra = NULL;
+        wc.cbWndExtra = NULL;
+        wc.hInstance = hInstance;
+        wc.hIcon = hIcon;
+        wc.hCursor = LoadCursor(nullptr, IDC_ARROW);
+        wc.hbrBackground = (HBRUSH)(COLOR_WINDOW + 2);
+        wc.lpszMenuName = nullptr;
+        wc.lpszClassName = WndClassName;
+        wc.hIconSm = hIcon;
+
+        if (!RegisterClassEx(&wc)) {
+            THROW_NORMAL("Error registering window class");
+        }
+
+        RECT wr;
+        wr.left = 100;
+        wr.right = width + wr.left;
+        wr.top = 100;
+        wr.bottom = height + wr.top;
+        AdjustWindowRect(&wr, WS_CAPTION | WS_MINIMIZEBOX | WS_SYSMENU, FALSE);
+        hWnd = CreateWindowEx(
+            NULL,
+            WndClassName,
+            title,
+            WS_CAPTION | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_SYSMENU,
+            CW_USEDEFAULT, CW_USEDEFAULT,
+            wr.right - wr.left, wr.bottom - wr.top,
+            nullptr,
+            nullptr,
+            hInstance,
+            NULL
+        );
+
+        if (!hWnd) {
+            THROW_NORMAL("Error creating window");
+        }
+
+        ShowWindow(hWnd, TRUE);
+        UpdateWindow(hWnd);
+
+        SetWindowLongPtr(hWnd, GWLP_USERDATA, (LONG_PTR)this);
+
+        if (!gfx.init(width, height, hWnd)) {
+            THROW_NORMAL("graphics creation failed");
+        }
+        if (!audioEngine.init()) {
+            THROW_NORMAL("audio engine creation failed");
+        }
     }
-
-    RECT wr;
-    wr.left = 100;
-    wr.right = width + wr.left;
-    wr.top = 100;
-    wr.bottom = height + wr.top;
-    AdjustWindowRect(&wr, WS_CAPTION | WS_MINIMIZEBOX | WS_SYSMENU, FALSE);
-    hWnd = CreateWindowEx(
-        NULL,
-        WndClassName,
-        title,
-        WS_CAPTION | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_SYSMENU,
-        CW_USEDEFAULT, CW_USEDEFAULT,
-        wr.right - wr.left, wr.bottom - wr.top,
-        nullptr,
-        nullptr,
-        hInstance,
-        NULL
-    );
-
-    if (!hWnd)
+    catch (BrianException& e)
     {
-        MessageBox(NULL, L"Error creating window",
-            L"Error", MB_OK | MB_ICONERROR);
+        ErrorLogger::Log(e);
         return false;
     }
-
-    ShowWindow(hWnd, TRUE);
-    UpdateWindow(hWnd);
-
-    SetWindowLongPtr(hWnd, GWLP_USERDATA, (LONG_PTR)this);
-
-    if (!gfx.init(width, height, hWnd))
-    {
-        ErrorLogger::Log(L"Graphics creation failed");
-        return false;
-    }
-    if (!audioEngine.init()) {
-        ErrorLogger::Log(L"audio engine creation failed");
-        return false;
-    }
-
     return true;
 }
 
@@ -98,9 +96,12 @@ Graphics& Window::getGraphics()
     return gfx;
 }
 
+extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT Msg, 
+    WPARAM wParam, LPARAM lParam);
 LRESULT Window::WndProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
 {
-
+    if (ImGui_ImplWin32_WndProcHandler(hWnd, Msg, wParam, lParam))
+        return true;
     switch (Msg)
     {
     case WM_CREATE:

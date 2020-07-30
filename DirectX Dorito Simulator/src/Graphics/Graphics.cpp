@@ -7,7 +7,9 @@ using namespace DirectX;
 
 Graphics::~Graphics()
 {
-	//ImGui_ImplDX11_Shutdown();
+	ImGui_ImplDX11_Shutdown();
+	ImGui_ImplWin32_Shutdown();
+	ImGui::DestroyContext();
 	ReleaseCOM(pSwapChain);
 	ReleaseCOM(pDevice);
 	ReleaseCOM(pContext);
@@ -127,8 +129,13 @@ bool Graphics::init(unsigned int width, unsigned int height, HWND hWnd)
 			ErrorLogger::Log(L"Pixel Shader failed to create");
 			return false;
 		}
-		//ImGui_ImplDX11_Init(pDevice, pContext);
-
+		//setup imgui
+		IMGUI_CHECKVERSION();
+		ImGui::CreateContext();
+		ImGuiIO& io = ImGui::GetIO();
+		ImGui_ImplWin32_Init(hWnd);
+		ImGui_ImplDX11_Init(this->pDevice, this->pContext);
+		ImGui::StyleColorsDark();
 	}
 	catch (BrianException& e)
 	{

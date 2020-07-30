@@ -7,6 +7,7 @@
 
 class BrianException;
 #define THROW_IF_FAILED(hr, msg) if (FAILED(hr)) throw BrianException(hr, msg, __FILE__, __FUNCTION__, __LINE__)
+#define THROW_NORMAL(msg) throw BrianException(msg, __FILE__, __FUNCTION__, __LINE__)
 
 inline std::wstring string_to_wstring(const std::string & str)
 {
@@ -29,6 +30,14 @@ public:
 		_com_error err(hr);
 		whatStr = string_to_wstring(msg) + L"\n";
 		whatStr += err.ErrorMessage();
+		whatStr += L"\nFile: " + string_to_wstring(file);
+		whatStr += L"\nFunction: " + string_to_wstring(function);
+		whatStr += L"\nLine: " + string_to_wstring(std::to_string(line));
+	}
+	BrianException(const std::string& msg, const std::string& file,
+		const std::string& function, std::size_t line)
+	{
+		whatStr = string_to_wstring(msg) + L"\n";
 		whatStr += L"\nFile: " + string_to_wstring(file);
 		whatStr += L"\nFunction: " + string_to_wstring(function);
 		whatStr += L"\nLine: " + string_to_wstring(std::to_string(line));

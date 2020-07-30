@@ -25,17 +25,6 @@ int Game::run(HINSTANCE hInstance)
 	MSG msg = {};
 	init();
 
-	try
-	{
-		HRESULT hr = E_FAIL;
-		THROW_IF_FAILED(hr, "Bruh error");
-	}
-	catch (BrianException& exception)
-	{
-		ErrorLogger::Log(exception);
-	}
-
-
 	while (true)
 	{
 		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
@@ -219,7 +208,7 @@ void Game::UpdateScene()
 		dorito->move(dTime * 0.5f, 0.0f, 0.0f);
 	}
 
-	if (wnd.mouse.isButtonPressed(Mouse::BUTTON_LEFT))
+	/*if (wnd.mouse.isButtonPressed(Mouse::BUTTON_LEFT))
 	{
 		ErrorLogger::Log(L"", L"Left Button Pressed");
 	}
@@ -230,7 +219,7 @@ void Game::UpdateScene()
 	else if (wnd.mouse.isButtonPressed(Mouse::BUTTON_MIDDLE))
 	{
 		ErrorLogger::Log(L"", L"Middle Button Pressed");
-	}
+	}*/
 
 #pragma region Game code
 /*
@@ -408,6 +397,18 @@ void Game::DrawScene()
 	mtnDewModel->bind(wnd.getGraphics().vertexShader, wnd.getGraphics().pixelShader, mtnTex);
 	mtnDewModel->draw();
 	mtnDewModel->unbind();
+
+	ImGui_ImplDX11_NewFrame();
+	ImGui_ImplWin32_NewFrame();
+	ImGui::NewFrame();
+
+	ImGui::Begin("Debug");
+	ImGui::Text("Hello bossman");
+	ImGui::Button("HOWDY");
+	ImGui::End();
+
+	ImGui::Render();
+	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 
 	wnd.getGraphics().End();
 }

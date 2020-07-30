@@ -1,6 +1,10 @@
 /********DIRECTX DORITO SIMULATOR: DELUXE EDITION*********
+ENGINE NAMES: Bruh Engine, 
 //TODO: name engine and keep adding to abstractions,
-skybox, assimp, xaudio2
+skybox, assimp, xaudio2, imgui, text drawing, color shaders,
+lighting, animation, blending states for alpha transparency,
+frustum culling, transform.h changes, abstract vertex and index
+buffers, 
 
 *********************************************************/
 #include "Game/Game.h"
