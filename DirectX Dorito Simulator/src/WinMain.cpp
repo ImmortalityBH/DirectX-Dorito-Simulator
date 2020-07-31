@@ -18,8 +18,10 @@ int WINAPI WinMain(HINSTANCE hInstance,
     int nShowCmd)
 {
     srand(time(nullptr));
+
     Game game;
     game.init(hInstance);
+
     MSG msg = {};
     while (true)
     {

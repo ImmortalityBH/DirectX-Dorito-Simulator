@@ -13,16 +13,15 @@ class Window
 {
 public:
 	Window() = default;
-	Window(int width, int height, LPCWSTR title);
+	Window(LPCWSTR title);
 	~Window();
 
 	bool init(HINSTANCE hInstance);
 	void setTitle(LPCWSTR text);
 	Graphics& getGraphics();
 
-	int getWidth() const { return width; }
-	int getHeight() const { return height; }
-
+	UINT getWidth() const { return width; }
+	UINT getHeight() const { return height; }
 private:
 	static LRESULT CALLBACK WndProc(HWND hWnd, UINT Msg,
 		WPARAM wParam, LPARAM lParam);
@@ -33,9 +32,11 @@ public:
 	AudioEngine audioEngine;
 private:
 	Graphics gfx;
-	int width, height;
+	UINT width, height;
 	LPCTSTR WndClassName = L"window";
 	LPCWSTR title;
 	HWND hWnd;
 };
 
+static bool load_config(const char* filePath, bool& isFullscreen, UINT& width,
+	UINT& height, bool& isVysnc);

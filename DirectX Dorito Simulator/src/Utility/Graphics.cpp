@@ -55,10 +55,10 @@ bool Graphics::init(unsigned int width, unsigned int height, HWND hWnd)
 		sd.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
 
 		UINT creationFlags = D3D11_CREATE_DEVICE_BGRA_SUPPORT;
-#if defined(_DEBUG)
+	#if defined(_DEBUG)
 		// If the project is in a debug build, enable the debug layer.
 		creationFlags |= D3D11_CREATE_DEVICE_DEBUG;
-#endif
+	#endif
 		hr = D3D11CreateDeviceAndSwapChain(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr,
 			creationFlags, nullptr, NULL, D3D11_SDK_VERSION, &sd, &pSwapChain,
 			&pDevice, nullptr, &pContext);

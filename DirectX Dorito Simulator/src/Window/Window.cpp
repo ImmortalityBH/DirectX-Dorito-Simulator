@@ -1,13 +1,12 @@
 #include "Window/Window.h"
 #include "Utility/Error.h"
 #include "../resource.h"
-//#include "imgui/imgui.h"
-//#include <imgui_impl_win32.h>
+#include <fstream>
 
 using namespace DirectX;
 
-Window::Window(int width, int height, LPCWSTR title)
-    : width(width), height(height), title(title), hWnd(nullptr), 
+Window::Window(LPCWSTR title)
+    : width(800), height(600), title(title), hWnd(nullptr), 
     mouse(), kbd(), gamepad(1)
 {
 }
@@ -21,6 +20,10 @@ bool Window::init(HINSTANCE hInstance)
 {
     try
     {
+        bool isFullscreen, isVsync;
+        if (!load_config("config.ini", isFullscreen, this->width, this->height, isVsync))
+            THROW_NORMAL("Failed to load config.ini file. Please reinstall.");
+
         HRESULT hr = S_OK;
         WNDCLASSEX wc;
 
@@ -115,7 +118,6 @@ LRESULT Window::WndProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
         Window* window = reinterpret_cast<Window*>(GetWindowLongPtr(hWnd, GWLP_USERDATA));
         int newWidth = LOWORD(lParam);
         int newHeight = HIWORD(lParam);
-        //window->getGraphics().onSize(newWidth, newHeight);
         break;
     }
     case WM_KEYDOWN:
@@ -234,4 +236,57 @@ LRESULT Window::WndProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
     default:
         return DefWindowProc(hWnd, Msg, wParam, lParam);
     }
+}
+
+bool load_config(const char* filePath, bool& isFullscreen, UINT& width, UINT& height, bool& isVysnc)
+{
+    std::ifstream file;
+    std::string line;
+
+    try
+    {
+        file.open(filePath);
+        if (!file.is_open())
+            throw std::ios::failure("The config.ini file has been misplaced. Please reinstall the application.");
+
+        int index = 1;
+        while (std::getline(file, line))
+        {
+            switch (index)
+            {
+            case 2:
+            {
+                int boolInt = std::stoi(line);
+                if (boolInt == 0)
+                    isFullscreen = false;
+                else
+                    isFullscreen = true;
+                break;
+            }
+            case 4:
+                width = std::stoi(line);
+                break;
+            case 6:
+                height = std::stoi(line);
+                break;
+            case 8:
+            {
+                int boolInt = std::stoi(line);
+                if (boolInt == 0)
+                    isVysnc = false;
+                else
+                    isVysnc = true;
+                break;
+            }
+            }
+            index++;
+        }
+        file.close();
+    }
+    catch (const std::exception & e)
+    {
+        ErrorLogger::Log(string_to_wstring(e.what()));
+        return false;
+    }
+    return true;
 }

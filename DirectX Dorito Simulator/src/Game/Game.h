@@ -29,7 +29,6 @@ private:
 	Timer timer;
 	Timer elapsedTimer;
 	Timer fpsTimer;
-	int fps = 0;
 private:
 	std::unique_ptr<Model> dorito;
 	std::unique_ptr<Model> floorModel;

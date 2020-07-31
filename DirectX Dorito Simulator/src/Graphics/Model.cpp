@@ -11,9 +11,6 @@ Model::Model(Graphics& gfx)
 
 Model::~Model()
 {
-	ReleaseCOM(pVertexBuffer);
-	ReleaseCOM(pConstantBuffer);
-	ReleaseCOM(pIndexBuffer);
 }
 
 void Model::create(std::vector<Vertex>& vertices)
@@ -22,6 +19,9 @@ void Model::create(std::vector<Vertex>& vertices)
 	
 	hr = vertexBuffer.init(pGfx->getDevice(), vertices.data(), vertices.size());
 	ErrorLogger::Log(hr, L"Vertex buffer initialization failed");
+
+	hr = constantBuffer.init(pGfx->getDevice(), pGfx->getContext());
+	ErrorLogger::Log(hr, L"const buffer init failed");
 	/*vertexCount = vertices.size();
 	D3D11_BUFFER_DESC bd = {};
 	bd.Usage = D3D11_USAGE_DEFAULT;
@@ -34,7 +34,7 @@ void Model::create(std::vector<Vertex>& vertices)
 	sd.pSysMem = vertices.data();
 
 	hr = pGfx->getDevice()->CreateBuffer(&bd, &sd, &pVertexBuffer);
-	ErrorLogger::Log(hr, L"Create Buffer failed");*/
+	ErrorLogger::Log(hr, L"Create Buffer failed");
 
 	D3D11_BUFFER_DESC cbd = {};
 	cbd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
@@ -49,15 +49,25 @@ void Model::create(std::vector<Vertex>& vertices)
 	D3D11_SUBRESOURCE_DATA csd = {};
 	csd.pSysMem = &cb;
 	pGfx->getDevice()->CreateBuffer(&cbd, &csd, &pConstantBuffer);
-	ErrorLogger::Log(hr, L"Create Buffer failed");
+	ErrorLogger::Log(hr, L"Create Buffer failed");*/
 }
 
-void Model::create(std::vector<Vertex>& vertices, std::vector<UINT>& indices)
+void Model::create(std::vector<Vertex>& vertices, std::vector<DWORD>& indices)
 {
+	//////////////////////////////////////////////////
+	this->isIndexed = true;
+	//////////////////////////////////////////////////
+
 	HRESULT hr = S_OK;
 
 	hr = vertexBuffer.init(pGfx->getDevice(), vertices.data(), vertices.size());
 	ErrorLogger::Log(hr, L"Vertex buffer init failed");
+
+	hr = indexBuffer.init(pGfx->getDevice(), indices.data(), indices.size());
+	ErrorLogger::Log(hr, L"Index buffer init failed");
+
+	hr = constantBuffer.init(pGfx->getDevice(), pGfx->getContext());
+	ErrorLogger::Log(hr, L"const buffer init failed");
 	/*//VERTEX BUFFER STUFF
 	vertexCount = vertices.size();
 	D3D11_BUFFER_DESC bd = {};
@@ -71,7 +81,7 @@ void Model::create(std::vector<Vertex>& vertices, std::vector<UINT>& indices)
 	sd.pSysMem = vertices.data();
 
 	hr = pGfx->getDevice()->CreateBuffer(&bd, &sd, &pVertexBuffer);
-	ErrorLogger::Log(hr, L"Create Buffer failed");*/
+	ErrorLogger::Log(hr, L"Create Buffer failed");
 
 	//INDEX BUFFER STUFF
 	indexCount = indices.size();
@@ -98,12 +108,7 @@ void Model::create(std::vector<Vertex>& vertices, std::vector<UINT>& indices)
 	//D3D11_SUBRESOURCE_DATA csd = {};
 	//csd.pSysMem = &cb;
 	hr = pGfx->getDevice()->CreateBuffer(&cbd, nullptr, &pConstantBuffer);
-	ErrorLogger::Log(hr, L"Create Buffer failed");
-}
-
-void Model::createFromOBJ(LPCWSTR fileName)
-{
-
+	ErrorLogger::Log(hr, L"Create Buffer failed");*/
 }
 
 void Model::resetMatrix()
@@ -127,7 +132,7 @@ void Model::update(float dt, Camera& camera)
 	world = sca * rotation * translation;
 
 	WVP = world * camera.getView() * camera.getProjection();
-	cb.WVP = XMMatrixTranspose(WVP);
+	constantBuffer.data.WVP = XMMatrixTranspose(WVP);
 
 }
 
@@ -180,7 +185,7 @@ void Model::setScale(float x, float y, float z)
 
 void Model::draw()
 {
-	//pGfx->getContext()->UpdateSubresource(pConstantBuffer, 0, NULL, &cb, 0, 0);
+	/*pGfx->getContext()->UpdateSubresource(pConstantBuffer, 0, NULL, &cb, 0, 0);
 	pGfx->getContext()->VSSetConstantBuffers(0, 1, &pConstantBuffer);
 	D3D11_MAPPED_SUBRESOURCE mappedResource = {};
 
@@ -188,12 +193,15 @@ void Model::draw()
 
 	CopyMemory(mappedResource.pData, &cb, sizeof(CB_WVP));
 
-	pGfx->getContext()->Unmap(pConstantBuffer, 0);
+	pGfx->getContext()->Unmap(pConstantBuffer, 0);*/
 
-	if (pIndexBuffer) 
-		pGfx->getContext()->DrawIndexed(indexCount, 0u, 0u);
+	pGfx->getContext()->VSSetConstantBuffers(0, 1, constantBuffer.getBuffer());
+	constantBuffer.update();
+
+	if (isIndexed) 
+		pGfx->getContext()->DrawIndexed(indexBuffer.getIndexCount(), 0u, 0u);
 	else
-		pGfx->getContext()->Draw(vertexCount, 0u);
+		pGfx->getContext()->Draw(vertexBuffer.getVertexCount(), 0u);
 }
 
 void Model::bind(VertexShader& vs, PixelShader& ps, Texture& tex)
@@ -203,17 +211,9 @@ void Model::bind(VertexShader& vs, PixelShader& ps, Texture& tex)
 	pGfx->getContext()->PSSetShaderResources(0, 1, tex.getTexture());
 	pGfx->getContext()->PSSetSamplers(0, 1, tex.getSamplerState());
 	pGfx->getContext()->IASetVertexBuffers(0u, 1u, vertexBuffer.getBuffer(), vertexBuffer.getStridePtr(), &offset);
-	if (pIndexBuffer) pGfx->getContext()->IASetIndexBuffer(pIndexBuffer, DXGI_FORMAT_R32_UINT, 0u);
+	if (isIndexed) pGfx->getContext()->IASetIndexBuffer(indexBuffer.getBuffer(), DXGI_FORMAT_R32_UINT, 0u);
 	pGfx->getContext()->IASetInputLayout(vs.getInputLayout());
 	pGfx->getContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	/*pGfx->getContext()->VSSetShader(vs.getVertexShader(), nullptr, 0u);
-	pGfx->getContext()->PSSetShader(ps.getPixelShader(), nullptr, 0u);
-	pGfx->getContext()->PSSetShaderResources(0, 1, tex.getTexture());
-	pGfx->getContext()->PSSetSamplers(0, 1, tex.getSamplerState());
-	pGfx->getContext()->IASetVertexBuffers(0u, 1u, &pVertexBuffer, &stride, &offset);
-	if (pIndexBuffer) pGfx->getContext()->IASetIndexBuffer(pIndexBuffer, DXGI_FORMAT_R32_UINT, 0u);
-	pGfx->getContext()->IASetInputLayout(vs.getInputLayout());
-	pGfx->getContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);*/
 }
 
 void Model::unbind()
@@ -221,5 +221,5 @@ void Model::unbind()
 	pGfx->getContext()->VSSetShader(nullptr, nullptr, 0u);
 	pGfx->getContext()->PSSetShader(nullptr, nullptr, 0u);
 	pGfx->getContext()->IASetVertexBuffers(0u, 0u, nullptr, nullptr, nullptr);
-	if (pIndexBuffer) pGfx->getContext()->IASetIndexBuffer(nullptr, DXGI_FORMAT_R32_UINT, 0u);
+	if (isIndexed) pGfx->getContext()->IASetIndexBuffer(nullptr, DXGI_FORMAT_R32_UINT, 0u);
 }

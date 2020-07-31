@@ -163,14 +163,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\Graphics\IndexBuffer.cpp" />
     <ClCompile Include="src\Audio\Audio.cpp" />
     <ClCompile Include="src\Camera.cpp" />
-    <ClCompile Include="src\Graphics\ConstantBuffer.cpp" />
     <ClCompile Include="src\Graphics\CubemapTexture.cpp" />
     <ClCompile Include="src\Game\Game.cpp" />
     <ClCompile Include="src\Input\Gamepad.cpp" />
-    <ClCompile Include="src\Graphics\Graphics.cpp" />
+    <ClCompile Include="src\Utility\Graphics.cpp" />
     <ClCompile Include="imgui\imgui.cpp" />
     <ClCompile Include="imgui\imgui_demo.cpp" />
     <ClCompile Include="imgui\imgui_draw.cpp" />
@@ -186,12 +184,11 @@
     <ClCompile Include="src\Graphics\Model.cpp" />
     <ClCompile Include="src\Utility\Timer.cpp" />
     <ClCompile Include="src\Window\Window.cpp" />
-    <ClCompile Include="src\Graphics\VertexBuffer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
     <None Include="PixelShaderColor.cso" />
-    <None Include="src\Graphics\config.ini" />
+    <None Include="config.ini" />
     <None Include="VertexShaderColor.cso" />
   </ItemGroup>
   <ItemGroup>
@@ -253,6 +250,7 @@
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Graphics\ConstantBuffer.h" />
     <ClInclude Include="src\Graphics\IndexBuffer.h" />
     <ClInclude Include="src\Audio\Audio.h" />
     <ClInclude Include="src\Camera.h" />
@@ -283,7 +281,6 @@
     <ClInclude Include="src\Graphics\VertexShader.h" />
     <ClInclude Include="src\Win.h" />
     <ClInclude Include="src\Window\Window.h" />
-    <ClInclude Include="src\Graphics\ConstantBuffer.h" />
     <ClInclude Include="src\Graphics\VertexBuffer.h" />
   </ItemGroup>
   <ItemGroup>

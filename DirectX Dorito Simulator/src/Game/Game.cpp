@@ -9,7 +9,7 @@
 //using namespace DirectX;
 
 Game::Game()
-	: wnd(800, 600, L"DirectX Dorito Simulator: Deluxe Edition"),
+	: wnd(L"DirectX Dorito Simulator: Deluxe Edition"),
 	  camera(wnd),
 	  randomNum(0),
 	  taskNum(0)
@@ -51,7 +51,7 @@ void Game::init(HINSTANCE hInstance)
 			Vertex(-0.5f, -0.5f, 0.0f, 0.0f, 1.0f),
 			Vertex(0.5f, 0.5f, 0.0f, 1.0f, 0.0f),
 		};
-		std::vector<UINT> floorIndices = {
+		std::vector<DWORD> floorIndices = {
 			0, 1, 2,
 			3, 1, 0,
 		};
