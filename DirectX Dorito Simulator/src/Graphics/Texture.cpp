@@ -8,7 +8,7 @@ using namespace DirectX;
 Texture::~Texture()
 {
 	ReleaseCOM(pTexture);
-	ReleaseCOM(pTexSamplerState);
+	//ReleaseCOM(pTexSamplerState);
 }
 
 bool Texture::load(ID3D11Device* pDevice, std::wstring filePath)
@@ -20,7 +20,7 @@ bool Texture::load(ID3D11Device* pDevice, std::wstring filePath)
 		hr = CreateDDSTextureFromFile(pDevice, filePath.c_str(), nullptr, &pTexture);
 		THROW_IF_FAILED(hr, "Texture failed to load");
 
-		D3D11_SAMPLER_DESC tsd = {};
+		/*D3D11_SAMPLER_DESC tsd = {};
 		tsd.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
 		tsd.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
 		tsd.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
@@ -30,7 +30,7 @@ bool Texture::load(ID3D11Device* pDevice, std::wstring filePath)
 		tsd.MaxLOD = D3D11_FLOAT32_MAX;
 
 		hr = pDevice->CreateSamplerState(&tsd, &pTexSamplerState);
-		THROW_IF_FAILED(hr, "Create sampler state failed");
+		THROW_IF_FAILED(hr, "Create sampler state failed");*/
 	}
 	catch (BrianException& e)
 	{

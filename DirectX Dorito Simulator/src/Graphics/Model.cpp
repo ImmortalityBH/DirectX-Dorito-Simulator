@@ -185,15 +185,7 @@ void Model::setScale(float x, float y, float z)
 
 void Model::draw()
 {
-	/*pGfx->getContext()->UpdateSubresource(pConstantBuffer, 0, NULL, &cb, 0, 0);
-	pGfx->getContext()->VSSetConstantBuffers(0, 1, &pConstantBuffer);
-	D3D11_MAPPED_SUBRESOURCE mappedResource = {};
-
-	pGfx->getContext()->Map(pConstantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-
-	CopyMemory(mappedResource.pData, &cb, sizeof(CB_WVP));
-
-	pGfx->getContext()->Unmap(pConstantBuffer, 0);*/
+	//pGfx->getContext()->UpdateSubresource(pConstantBuffer, 0, NULL, &cb, 0, 0);
 
 	pGfx->getContext()->VSSetConstantBuffers(0, 1, constantBuffer.getBuffer());
 	constantBuffer.update();
@@ -209,7 +201,7 @@ void Model::bind(VertexShader& vs, PixelShader& ps, Texture& tex)
 	pGfx->getContext()->VSSetShader(vs.getVertexShader(), nullptr, 0u);
 	pGfx->getContext()->PSSetShader(ps.getPixelShader(), nullptr, 0u);
 	pGfx->getContext()->PSSetShaderResources(0, 1, tex.getTexture());
-	pGfx->getContext()->PSSetSamplers(0, 1, tex.getSamplerState());
+	pGfx->getContext()->PSSetSamplers(0, 1, pGfx->getSamplerState());
 	pGfx->getContext()->IASetVertexBuffers(0u, 1u, vertexBuffer.getBuffer(), vertexBuffer.getStridePtr(), &offset);
 	if (isIndexed) pGfx->getContext()->IASetIndexBuffer(indexBuffer.getBuffer(), DXGI_FORMAT_R32_UINT, 0u);
 	pGfx->getContext()->IASetInputLayout(vs.getInputLayout());

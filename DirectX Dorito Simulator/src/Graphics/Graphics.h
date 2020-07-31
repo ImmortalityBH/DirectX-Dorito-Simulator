@@ -21,7 +21,7 @@ public:
 	Graphics& operator=(const Graphics&) = delete;
 	~Graphics();
 
-	bool init(unsigned int width, unsigned int height, HWND hWnd);
+	bool init(bool isFullscreen, bool isVsync, unsigned int width, unsigned int height, HWND hWnd);
 
 	void onSize(unsigned int width, unsigned int height);
 	void setFullscreen(bool fullscreen, unsigned int widhth, unsigned int height);
@@ -34,12 +34,16 @@ public:
 	ID3D11Device* getDevice() { return pDevice; }
 	ID3D11DeviceContext* getContext() { return pContext; }
 
+	ID3D11SamplerState* const* getSamplerState() { return &pTexSamplerState; }
+
 	VertexShader vertexShader;
 	PixelShader pixelShader;
 	VertexShader vertexShaderColor;
 	PixelShader pixelShaderColor;
+	//VertexShader vertexShaderSkybox;
+	//PixelShader pixelShaderSkybox;
 private:
-	bool isVysnc = false;
+	bool isVsync = false;
 	bool isFullscreen = false;
 	bool isWireframeEnabled = false;
 	IDXGISwapChain* pSwapChain = nullptr;
@@ -49,5 +53,6 @@ private:
 	ID3D11DepthStencilView* pDepthStencilView = nullptr;
 	ID3D11RasterizerState* pWireframeState = nullptr;
 	ID3D11Texture2D* pDepthStencilBuffer = nullptr;
+	ID3D11SamplerState* pTexSamplerState = nullptr;
 };
 

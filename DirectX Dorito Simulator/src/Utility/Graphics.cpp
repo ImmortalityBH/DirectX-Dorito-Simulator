@@ -17,12 +17,16 @@ Graphics::~Graphics()
 	ReleaseCOM(pDepthStencilBuffer);
 	ReleaseCOM(pDepthStencilView);
 	ReleaseCOM(pWireframeState);
+	ReleaseCOM(pTexSamplerState);
 }
 
-bool Graphics::init(unsigned int width, unsigned int height, HWND hWnd)
+bool Graphics::init(bool isFullscreen, bool isVsync, unsigned int width, unsigned int height, HWND hWnd)
 {
 	try
 	{
+		this->isFullscreen = isFullscreen;
+		this->isVsync = isVsync;
+
 		HRESULT hr = S_OK;
 		//Describe our Buffer
 		DXGI_MODE_DESC bd = {};
@@ -100,15 +104,8 @@ bool Graphics::init(unsigned int width, unsigned int height, HWND hWnd)
 		hr = pDevice->CreateRasterizerState(&rsd, &pWireframeState);
 		THROW_IF_FAILED(hr, "Create rasterizer state failed");
 
-		D3D11_VIEWPORT viewport = {};
-
-		viewport.TopLeftX = 0;
-		viewport.TopLeftY = 0;
-		viewport.Width = width;
-		viewport.Height = height;
-		viewport.MinDepth = 0.0f;
-		viewport.MaxDepth = 1.0f;
-
+		//viewport with C for constructor and convience 
+		CD3D11_VIEWPORT viewport(0.0f, 0.0f, width, height, 0.0f, 1.0f);
 		pContext->RSSetViewports(1u, &viewport);
 
 		D3D11_INPUT_ELEMENT_DESC layout[2] =
@@ -134,6 +131,19 @@ bool Graphics::init(unsigned int width, unsigned int height, HWND hWnd)
 			THROW_NORMAL("Vertex Shader failed to create");
 		if (!pixelShaderColor.init(pDevice, L"PixelShaderColor.cso"))
 			THROW_NORMAL("Pixel Shader failed to create");*/
+
+		//create texture sampler state
+		D3D11_SAMPLER_DESC tsd = {};
+		tsd.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+		tsd.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+		tsd.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+		tsd.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+		tsd.ComparisonFunc = D3D11_COMPARISON_NEVER;
+		tsd.MinLOD = 0;
+		tsd.MaxLOD = D3D11_FLOAT32_MAX;
+
+		hr = pDevice->CreateSamplerState(&tsd, &pTexSamplerState);
+		THROW_IF_FAILED(hr, "Create sampler state failed");
 
 		//setup imgui
 		IMGUI_CHECKVERSION();
@@ -196,16 +206,11 @@ void Graphics::setFullscreen(bool fullscreen, unsigned int width, unsigned int h
 
 void Graphics::setWireframe(bool value)
 {
+	isWireframeEnabled = value;
 	if (value)
-	{
-		isWireframeEnabled = true;
 		pContext->RSSetState(pWireframeState);
-	}
 	else
-	{
-		isWireframeEnabled = false;
 		pContext->RSSetState(nullptr);
-	}
 }
 
 void Graphics::Begin(float r, float g, float b)
@@ -217,5 +222,5 @@ void Graphics::Begin(float r, float g, float b)
 
 void Graphics::End()
 {
-	pSwapChain->Present(1u, 0u);
+	pSwapChain->Present(isVsync, 0u);
 }

@@ -17,6 +17,8 @@ public:
 
 	HRESULT init(ID3D11Device* pDevice, T* data, UINT numVertices)
 	{
+		if (pBuffer != nullptr)
+			ReleaseCOM(pBuffer);
 		this->vertexCount = numVertices;
 		this->stride = sizeof(T);
 

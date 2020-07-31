@@ -3,6 +3,16 @@
 #include <d3d11.h>
 #include "Utility/Error.h"
 
+
+////////ConstantBuffer types
+struct CB_WVP {
+	DirectX::XMMATRIX WVP;
+};
+
+struct CB_SKYBOX {
+	DirectX::XMMATRIX bruh;
+};
+
 template<class T>
 class ConstantBuffer
 {
@@ -18,6 +28,9 @@ public:
 
 	HRESULT init(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	{
+		if (pBuffer != nullptr)
+			ReleaseCOM(pBuffer);
+
 		this->pContext = pContext;
 
 		D3D11_BUFFER_DESC cbd = {};
@@ -106,7 +119,3 @@ public://getters
 	ID3D11Buffer* getBuffer() const { return pBuffer; }
 	//bool mapped = false;
 };*/
-
-struct CB_WVP {
-	DirectX::XMMATRIX WVP;
-};

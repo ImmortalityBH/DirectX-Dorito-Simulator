@@ -74,7 +74,7 @@ bool Window::init(HINSTANCE hInstance)
 
         SetWindowLongPtr(hWnd, GWLP_USERDATA, (LONG_PTR)this);
 
-        if (!gfx.init(width, height, hWnd)) {
+        if (!gfx.init(isFullscreen, isVsync, width, height, hWnd)) {
             THROW_NORMAL("graphics creation failed");
         }
         if (!audioEngine.init()) {

@@ -13,6 +13,8 @@ public:
 
 	HRESULT init(ID3D11Device* pDevice, DWORD* data, UINT numIndices)
 	{
+		if (pBuffer != nullptr)
+			ReleaseCOM(pBuffer);
 		this->indexCount = numIndices;
 
 		D3D11_BUFFER_DESC ibd = {};
