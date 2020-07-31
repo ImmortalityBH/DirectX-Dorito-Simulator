@@ -9,21 +9,27 @@
 #include "Graphics/Texture.h"
 #include "Graphics/Model.h"
 
+enum GAME_STATE 
+{
+
+};
+
 class Game
 {
 public:
 	Game();
 	~Game();
-	int run(HINSTANCE hInstance);
 
-	void init();
-	void UpdateScene();
-	void DrawScene();
+	void init(HINSTANCE hInstance);
+	void update();
+	void draw();
 
 private:
 	Window wnd; 
 	Timer timer;
 	Timer elapsedTimer;
+	Timer fpsTimer;
+	int fps = 0;
 private:
 	std::unique_ptr<Model> dorito;
 	std::unique_ptr<Model> floorModel;

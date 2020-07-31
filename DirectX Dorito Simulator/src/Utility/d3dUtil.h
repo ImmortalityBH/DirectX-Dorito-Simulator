@@ -6,6 +6,8 @@
 
 #define DeletePtr(x) if (x) { delete x; x = nullptr; }
 
+#define CONFIG_PATH "config.ini"
+
 namespace Color
 {
 	XMGLOBALCONST DirectX::XMVECTORF32 White = { 1.0f, 1.0f, 1.0f, 1.0f };

@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <Utility/Error.h>
 #include <thread>
+#include <cmath>
 
 //using namespace DirectX;
 
@@ -19,33 +20,9 @@ Game::~Game()
 {
 }
 
-int Game::run(HINSTANCE hInstance)
+void Game::init(HINSTANCE hInstance)
 {
 	wnd.init(hInstance);
-	MSG msg = {};
-	init();
-
-	while (true)
-	{
-		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
-		{
-			if (msg.message == WM_QUIT)
-				break;
-			TranslateMessage(&msg);
-			DispatchMessage(&msg);
-		}
-		else
-		{
-			UpdateScene();
-			DrawScene();
-		}
-	}
-	return static_cast<int>(msg.wParam);
-}
-
-void Game::init()
-{
-
 	//intro = std::make_unique<SoundEffect>(wnd.aud.get() , L"res/audio/intro.wav");
 	//outro = std::make_unique<SoundEffect>(wnd.aud.get(), L"res/audio/outro.wav");
 
@@ -167,7 +144,7 @@ void Game::init()
 	}*/
 }
 
-void Game::UpdateScene()
+void Game::update()
 {
 	float dTime = timer.Peek();
 	float eTime = elapsedTimer.Peek();
@@ -331,7 +308,7 @@ void Game::UpdateScene()
 		dorito->move(joyX * dTime * 0.5f, 0.0f, 0.0f);
 	}
 	dorito->rotate(0.0f, 1.0f, 0.0f, sin(eTime) * 35.0f);
-	//dorito->setScale(1.0f, 1.0f, 1.0f);
+	dorito->setScale(1.0f, 1.0f, 1.0f);
 
 	dorito->update(timer.Peek(), camera);
 
@@ -370,7 +347,7 @@ void Game::UpdateScene()
 	mtnDewModel->update(timer.Peek(), camera);
  }
 
-void Game::DrawScene()
+void Game::draw()
 {
 	wnd.getGraphics().Begin(0.0f, 0.0f, 0.5f);
 
@@ -410,6 +387,9 @@ void Game::DrawScene()
 	ImGui::End();*/
 	
 	ImGui::Begin("Debug");
+	float currentTime = fpsTimer.Mark();
+	float framerate = 1.0f / currentTime;
+	ImGui::Text(std::to_string(std::stoi(std::to_string(round((framerate))))).c_str());
 	ImGui::InputText("Window Title", title, IM_ARRAYSIZE(title));
 	if (ImGui::Button("Set Window Title"))
 	{

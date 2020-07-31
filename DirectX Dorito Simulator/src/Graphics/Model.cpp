@@ -202,10 +202,18 @@ void Model::bind(VertexShader& vs, PixelShader& ps, Texture& tex)
 	pGfx->getContext()->PSSetShader(ps.getPixelShader(), nullptr, 0u);
 	pGfx->getContext()->PSSetShaderResources(0, 1, tex.getTexture());
 	pGfx->getContext()->PSSetSamplers(0, 1, tex.getSamplerState());
-	pGfx->getContext()->IASetVertexBuffers(0u, 1u, &pVertexBuffer, &stride, &offset);
+	pGfx->getContext()->IASetVertexBuffers(0u, 1u, vertexBuffer.getBuffer(), vertexBuffer.getStridePtr(), &offset);
 	if (pIndexBuffer) pGfx->getContext()->IASetIndexBuffer(pIndexBuffer, DXGI_FORMAT_R32_UINT, 0u);
 	pGfx->getContext()->IASetInputLayout(vs.getInputLayout());
 	pGfx->getContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	/*pGfx->getContext()->VSSetShader(vs.getVertexShader(), nullptr, 0u);
+	pGfx->getContext()->PSSetShader(ps.getPixelShader(), nullptr, 0u);
+	pGfx->getContext()->PSSetShaderResources(0, 1, tex.getTexture());
+	pGfx->getContext()->PSSetSamplers(0, 1, tex.getSamplerState());
+	pGfx->getContext()->IASetVertexBuffers(0u, 1u, &pVertexBuffer, &stride, &offset);
+	if (pIndexBuffer) pGfx->getContext()->IASetIndexBuffer(pIndexBuffer, DXGI_FORMAT_R32_UINT, 0u);
+	pGfx->getContext()->IASetInputLayout(vs.getInputLayout());
+	pGfx->getContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);*/
 }
 
 void Model::unbind()

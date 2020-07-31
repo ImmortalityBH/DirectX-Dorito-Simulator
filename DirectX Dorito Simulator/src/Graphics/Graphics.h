@@ -39,6 +39,7 @@ public:
 	VertexShader vertexShaderColor;
 	PixelShader pixelShaderColor;
 private:
+	bool isVysnc = false;
 	bool isFullscreen = false;
 	bool isWireframeEnabled = false;
 	IDXGISwapChain* pSwapChain = nullptr;

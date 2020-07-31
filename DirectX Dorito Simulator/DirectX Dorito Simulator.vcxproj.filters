@@ -98,6 +98,7 @@
     <None Include="packages.config" />
     <None Include="PixelShaderColor.cso" />
     <None Include="VertexShaderColor.cso" />
+    <None Include="src\Graphics\config.ini" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="VertexShader.hlsl">

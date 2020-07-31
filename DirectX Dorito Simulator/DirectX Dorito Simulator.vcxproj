@@ -191,6 +191,7 @@
   <ItemGroup>
     <None Include="packages.config" />
     <None Include="PixelShaderColor.cso" />
+    <None Include="src\Graphics\config.ini" />
     <None Include="VertexShaderColor.cso" />
   </ItemGroup>
   <ItemGroup>

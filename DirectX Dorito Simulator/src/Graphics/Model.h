@@ -17,6 +17,7 @@ class Model
 public:
 	Model(Graphics& gfx);
 	Model(const Model&) = delete;
+	Model& operator=(const Model&) = delete;
 	~Model();
 
 	void create(std::vector<Vertex>& vertices);

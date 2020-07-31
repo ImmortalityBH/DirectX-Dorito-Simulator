@@ -1,7 +1,7 @@
 #include "VertexBuffer.h"
 #include "Utility/d3dUtil.h"
 
-template<class T>
+/*template<class T>
 inline VertexBuffer<T>::~VertexBuffer()
 {
 	ReleaseCOM(pBuffer);
@@ -25,4 +25,4 @@ inline HRESULT VertexBuffer<T>::init(ID3D11Device* pDevice, T* data, UINT numVer
 
 	HRESULT hr = pDevice->CreateBuffer(&vbd, &sd, &pBuffer);
 	return hr;//handle exceptions later
-}
+}*/

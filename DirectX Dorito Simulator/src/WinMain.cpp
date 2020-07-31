@@ -4,7 +4,7 @@ ENGINE NAMES: Bruh Engine,
 skybox, assimp, xaudio2, imgui, text drawing, color shaders,
 lighting, animation, blending states for alpha transparency,
 frustum culling, transform.h changes, abstract vertex and index
-buffers, 
+buffers, load config function in window class
 
 *********************************************************/
 #include "Game/Game.h"
@@ -18,7 +18,26 @@ int WINAPI WinMain(HINSTANCE hInstance,
     int nShowCmd)
 {
     srand(time(nullptr));
-    return Game{}.run(hInstance);
+    Game game;
+    game.init(hInstance);
+    MSG msg = {};
+    while (true)
+    {
+        if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
+        {
+            if (msg.message == WM_QUIT)
+                break;
+            TranslateMessage(&msg);
+            DispatchMessage(&msg);
+        }
+        else
+        {
+            game.update();
+            game.draw();
+        }
+    }
+    return static_cast<int>(msg.wParam);
+    //return Game{}.run(hInstance);
 }
 
 /*#pragma comment(lib, "d3d11.lib")
