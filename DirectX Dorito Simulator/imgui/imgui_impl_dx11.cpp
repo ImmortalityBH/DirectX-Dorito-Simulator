@@ -548,4 +548,8 @@ void ImGui_ImplDX11_NewFrame()
 {
     if (!g_pFontSampler)
         ImGui_ImplDX11_CreateDeviceObjects();
+   // RECT rect;
+   // ImGuiIO& io = ImGui::GetIO();
+   // GetClientRect(hWnd, &rect);
+    //io.DisplaySize = ImVec2(static_cast<float>(rect.right - rect.left), static_cast<float>(rect.bottom - rect.top));
 }

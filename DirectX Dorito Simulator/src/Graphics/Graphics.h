@@ -36,6 +36,8 @@ public:
 
 	VertexShader vertexShader;
 	PixelShader pixelShader;
+	VertexShader vertexShaderColor;
+	PixelShader pixelShaderColor;
 private:
 	bool isFullscreen = false;
 	bool isWireframeEnabled = false;

@@ -56,29 +56,25 @@ void Game::init()
 		bagModel = std::make_unique<Model>(wnd.getGraphics());
 		mtnDewModel = std::make_unique<Model>(wnd.getGraphics());
 		//DORITO
-		std::vector<Vertex> vertices =
-		{
+		std::vector<Vertex> vertices = {
 			Vertex(0.0f, 0.5f, 0.0f, 0.5f, 1.0f),
 			Vertex(0.5f, -0.5f, 0.0f, 1.0f, 0.0f),
 			Vertex(-0.5f, -0.5f, 0.0f, 0.0f, 0.0f),
 		};
 		//FLOOR
-		std::vector<Vertex> floorVertices =
-		{
+		std::vector<Vertex> floorVertices = {
 			Vertex(-0.5f, 0.5f, 0.0f, 0.0f, 0.0f),
 			Vertex(0.5f, -0.5f, 0.0f, 2.0f, 2.0f),
 			Vertex(-0.5f, -0.5f, 0.0f, 0.0f, 2.0f),
 			Vertex(0.5f, 0.5f, 0.0f, 2.0f, 0.0f),
 		};
-		std::vector<Vertex> bagVertices =
-		{
+		std::vector<Vertex> bagVertices = {
 			Vertex(-0.5f, 0.5f, 0.0f, 0.0f, 0.0f),
 			Vertex(0.5f, -0.5f, 0.0f, 1.0f, 1.0f),
 			Vertex(-0.5f, -0.5f, 0.0f, 0.0f, 1.0f),
 			Vertex(0.5f, 0.5f, 0.0f, 1.0f, 0.0f),
 		};
-		std::vector<UINT> floorIndices =
-		{
+		std::vector<UINT> floorIndices = {
 			0, 1, 2,
 			3, 1, 0,
 		};
@@ -130,8 +126,8 @@ void Game::init()
 		dogModel->create(bagVertices, floorIndices);
 		bagModel->create(bagVertices, floorIndices);
 		mtnDewModel->create(bagVertices, floorIndices);
-
 		dorito->setPos(0.0f, 0.35f, 1.5f);
+		dorito->setScale(1.0f, 1.0f, 1.0f);
 	};
 	auto loadTex = [this]() { //no need to check return types handling done in class
 		dorTex.load(wnd.getGraphics().getDevice(), L"res/img/dorito.dds");
@@ -180,10 +176,10 @@ void Game::UpdateScene()
 	//std::wstring title = L"Mouse Pos (" + std::to_wstring(wnd.mouse.getPos().x) + L", " + 
 		//std::to_wstring(wnd.mouse.getPos().y) + L", Wheel: " + std::to_wstring(wnd.mouse.getWheelDelta()) + L")";
 
-	if (elapsedTimer.Peek() > 10.0f)
-	{
-		wnd.setTitle(wnd.kbd.getCharAsString().c_str());
-	}
+	//if (elapsedTimer.Peek() > 10.0f)
+	//{
+	//	wnd.setTitle(wnd.kbd.getCharAsString().c_str());
+	//}
 
 	//std::wstring title =  L"Elapsed Time: " + std::to_wstring(elapsedTimer.Peek()) + L", Delta Time: " + std::to_wstring(dTime);
 	//std::wstring forito = L"X: " + std::to_wstring(dorito->transform.position.x) + L", Y:" + std::to_wstring(dorito->transform.position.y);
@@ -335,7 +331,7 @@ void Game::UpdateScene()
 		dorito->move(joyX * dTime * 0.5f, 0.0f, 0.0f);
 	}
 	dorito->rotate(0.0f, 1.0f, 0.0f, sin(eTime) * 35.0f);
-	dorito->setScale(1.0f, 1.0f, 1.0f);
+	//dorito->setScale(1.0f, 1.0f, 1.0f);
 
 	dorito->update(timer.Peek(), camera);
 
@@ -367,12 +363,12 @@ void Game::UpdateScene()
 	mtnDewModel->resetMatrix();
 	
 	mtnDewModel->setPos(sin(eTime) / 1.0f, 2.0f, 8.0f);
-	mtnDewModel->rotate(0.0, 0.5f, 1.0f, eTime * 32);
+	mtnDewModel->rotate(0.0, 0.0f, 1.0f, eTime * 32);
 	//mtnDewModel->rotate(0.0, 1.0f, 0.0f, sin(eTime) * 35.0f);
 	mtnDewModel->setScale(3.0f, 4.0f, 1.0f);
 
 	mtnDewModel->update(timer.Peek(), camera);
-}
+ }
 
 void Game::DrawScene()
 {
@@ -402,10 +398,25 @@ void Game::DrawScene()
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
 
-	ImGui::Begin("Debug");
-	ImGui::Text("Hello bossman");
+	/*ImGui::Begin("Debug");
+	ImGui::Text("DirectX Dorito Simulator: Deluxe Edition debug menu");
+	float* pos[3] = { &dorito->transform.position.x, &dorito->transform.position.y, &dorito->transform.position.z };
+	ImGui::SliderFloat3("Position", *pos, -1.0, 10.0);
+	float* scale[3] = { &dorito->transform.scale.x, &dorito->transform.scale.y, &dorito->transform.scale.z };
+	ImGui::SliderFloat3("Scale", *scale, -5.0f, 5.0f);
+	float* rotation[3] = { &dorito->transform.rotation.x, &dorito->transform.rotation.y, &dorito->transform.rotation.z };
+	ImGui::InputFloat3("Rotation", *rotation, 0);
 	ImGui::Button("HOWDY");
+	ImGui::End();*/
+	
+	ImGui::Begin("Debug");
+	ImGui::InputText("Window Title", title, IM_ARRAYSIZE(title));
+	if (ImGui::Button("Set Window Title"))
+	{
+		wnd.setTitle(string_to_wstring(std::string(title)).c_str());
+	}
 	ImGui::End();
+
 
 	ImGui::Render();
 	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());

@@ -3,10 +3,12 @@
 #include "Win.h"
 #include "Window/Window.h"
 #include "Graphics/Graphics.h"
+#include "Graphics/VertexBuffer.h"
+#include <Graphics/IndexBuffer.h>
 #include "Graphics/ConstantBuffer.h"
 #include "Graphics/Texture.h"
 #include "Camera.h"
-#include "Transform.h"
+#include "Component/Transform.h"
 
 #include <vector>
 
@@ -38,6 +40,7 @@ public:
 
 	Transform transform;
 private:
+	VertexBuffer<Vertex> vertexBuffer;
 	ID3D11Buffer* pVertexBuffer = nullptr;
 	ID3D11Buffer* pIndexBuffer = nullptr;
 	ID3D11Buffer* pConstantBuffer = nullptr;
@@ -47,7 +50,7 @@ private:
 	DirectX::XMMATRIX translation;
 	DirectX::XMMATRIX world;
 	DirectX::XMMATRIX WVP;
-	ConstantBuffer cb;
+	CB_WVP cb;
 
 	Graphics* pGfx;
 

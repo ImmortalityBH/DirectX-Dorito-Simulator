@@ -36,7 +36,7 @@ private:
 	//std::unique_ptr<DirectX::SoundEffect> intro;
 	//std::unique_ptr<DirectX::SoundEffect> outro;
 	//std::unique_ptr<DirectX::SoundEffect> effects[13];
-
+	char title[12] = { 0 };
 	Camera camera;
 	int randomNum;
 	int taskNum;

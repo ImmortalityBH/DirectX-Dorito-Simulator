@@ -119,16 +119,22 @@ bool Graphics::init(unsigned int width, unsigned int height, HWND hWnd)
 		UINT numElements = ARRAYSIZE(layout);
 
 		if (!vertexShader.init(pDevice, L"VertexShader.cso", layout, numElements))
-		{
-			ErrorLogger::Log(L"Vertex shader failed to create");
-			return false;
-		}
-
+			THROW_NORMAL("Vertex Shader failed to create");
 		if (!pixelShader.init(pDevice, L"PixelShader.cso"))
+			THROW_NORMAL("Pixel Shader failed to create");
+
+		/*D3D11_INPUT_ELEMENT_DESC layout2[2] = 
 		{
-			ErrorLogger::Log(L"Pixel Shader failed to create");
-			return false;
-		}
+			{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		};
+		numElements = ARRAYSIZE(layout);
+
+		if (!vertexShaderColor.init(pDevice, L"VertexShaderColor.cso", layout2, numElements))
+			THROW_NORMAL("Vertex Shader failed to create");
+		if (!pixelShaderColor.init(pDevice, L"PixelShaderColor.cso"))
+			THROW_NORMAL("Pixel Shader failed to create");*/
+
 		//setup imgui
 		IMGUI_CHECKVERSION();
 		ImGui::CreateContext();
