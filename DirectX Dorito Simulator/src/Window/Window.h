@@ -7,7 +7,8 @@
 #include "Input/Mouse.h"
 #include "Input/Keyboard.h"
 #include "Input/Gamepad.h"
-#include "Audio/Audio.h"
+//#include "Audio/Audio.h"
+#include <Audio.h>
 
 class Window
 {
@@ -29,7 +30,8 @@ public:
 	Mouse mouse;
 	Keyboard kbd;
 	Gamepad gamepad;
-	AudioEngine audioEngine;
+	//AudioEngine audioEngine;
+	std::unique_ptr<DirectX::AudioEngine> aud;
 private:
 	Graphics gfx;
 	UINT width, height;

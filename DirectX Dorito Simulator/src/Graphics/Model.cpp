@@ -4,8 +4,7 @@
 
 using namespace DirectX;
 
-Model::Model(Graphics& gfx)
-	: pGfx(&gfx)
+Model::Model()
 {
 }
 
@@ -13,130 +12,87 @@ Model::~Model()
 {
 }
 
-void Model::create(std::vector<Vertex>& vertices)
+void Model::create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, std::vector<Vertex>& vertices)
 {
+	this->pContext = pContext;
+
 	HRESULT hr = S_OK;
 	
-	hr = vertexBuffer.init(pGfx->getDevice(), vertices.data(), vertices.size());
+	hr = vertexBuffer.init(pDevice, vertices.data(), vertices.size());
 	ErrorLogger::Log(hr, L"Vertex buffer initialization failed");
 
-	hr = constantBuffer.init(pGfx->getDevice(), pGfx->getContext());
+	hr = constantBuffer.init(pDevice, pContext);
 	ErrorLogger::Log(hr, L"const buffer init failed");
-	/*vertexCount = vertices.size();
-	D3D11_BUFFER_DESC bd = {};
-	bd.Usage = D3D11_USAGE_DEFAULT;
-	bd.ByteWidth = sizeof(Vertex) * vertexCount;
-	bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	bd.CPUAccessFlags = 0;
-	bd.MiscFlags = 0;
-
-	D3D11_SUBRESOURCE_DATA sd = {};
-	sd.pSysMem = vertices.data();
-
-	hr = pGfx->getDevice()->CreateBuffer(&bd, &sd, &pVertexBuffer);
-	ErrorLogger::Log(hr, L"Create Buffer failed");
-
-	D3D11_BUFFER_DESC cbd = {};
-	cbd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	cbd.Usage = D3D11_USAGE_DYNAMIC;
-	cbd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-	//cbd.Usage = D3D11_USAGE_DEFAULT;//D3D11_USAGE_DYNAMIC
-	//cbd.CPUAccessFlags = 0u;//D3D11_CPU_ACCESS_WRITE
-	cbd.MiscFlags = 0u;
-	cbd.ByteWidth = sizeof(CB_WVP);
-	cbd.StructureByteStride = 0u;
-
-	D3D11_SUBRESOURCE_DATA csd = {};
-	csd.pSysMem = &cb;
-	pGfx->getDevice()->CreateBuffer(&cbd, &csd, &pConstantBuffer);
-	ErrorLogger::Log(hr, L"Create Buffer failed");*/
 }
 
-void Model::create(std::vector<Vertex>& vertices, std::vector<DWORD>& indices)
+void Model::create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, std::vector<Vertex>& vertices, std::vector<DWORD>& indices)
 {
 	//////////////////////////////////////////////////
 	this->isIndexed = true;
+	this->pContext = pContext;
 	//////////////////////////////////////////////////
 
 	HRESULT hr = S_OK;
 
-	hr = vertexBuffer.init(pGfx->getDevice(), vertices.data(), vertices.size());
+	hr = vertexBuffer.init(pDevice, vertices.data(), vertices.size());
 	ErrorLogger::Log(hr, L"Vertex buffer init failed");
 
-	hr = indexBuffer.init(pGfx->getDevice(), indices.data(), indices.size());
+	hr = indexBuffer.init(pDevice, indices.data(), indices.size());
 	ErrorLogger::Log(hr, L"Index buffer init failed");
 
-	hr = constantBuffer.init(pGfx->getDevice(), pGfx->getContext());
+	hr = constantBuffer.init(pDevice, pContext);
 	ErrorLogger::Log(hr, L"const buffer init failed");
-	/*//VERTEX BUFFER STUFF
-	vertexCount = vertices.size();
-	D3D11_BUFFER_DESC bd = {};
-	bd.Usage = D3D11_USAGE_DEFAULT;
-	bd.ByteWidth = sizeof(Vertex) * vertexCount;
-	bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	bd.CPUAccessFlags = 0;
-	bd.MiscFlags = 0;
+}
 
-	D3D11_SUBRESOURCE_DATA sd = {};
-	sd.pSysMem = vertices.data();
+bool Model::isColliding(Model& model)
+{
+	const float boxSize = 0.5f;
+	XMFLOAT4 min = { model.transform.position.x - boxSize, model.transform.position.y - boxSize, model.transform.position.z - boxSize, 0.0f };
+	XMFLOAT4 max = { model.transform.position.x + boxSize, model.transform.position.y + boxSize, model.transform.position.z + boxSize, 0.0f };
 
-	hr = pGfx->getDevice()->CreateBuffer(&bd, &sd, &pVertexBuffer);
-	ErrorLogger::Log(hr, L"Create Buffer failed");
-
-	//INDEX BUFFER STUFF
-	indexCount = indices.size();
-	D3D11_BUFFER_DESC ibd = {};
-	ibd.Usage = D3D11_USAGE_DEFAULT;
-	ibd.ByteWidth = sizeof(UINT) * indexCount;
-	ibd.BindFlags = D3D11_BIND_INDEX_BUFFER;
-	ibd.CPUAccessFlags = 0;
-	ibd.MiscFlags = 0;
-
-	D3D11_SUBRESOURCE_DATA isd = {};
-	isd.pSysMem = indices.data();
-	hr = pGfx->getDevice()->CreateBuffer(&ibd, &isd, &pIndexBuffer);
-	ErrorLogger::Log(hr, L"Creation of Index Buffer Failed");
-
-	D3D11_BUFFER_DESC cbd = {};
-	cbd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	cbd.Usage = D3D11_USAGE_DYNAMIC;
-	cbd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-	cbd.MiscFlags = 0u;
-	cbd.ByteWidth = sizeof(CB_WVP);
-	cbd.StructureByteStride = 0u;
-
-	//D3D11_SUBRESOURCE_DATA csd = {};
-	//csd.pSysMem = &cb;
-	hr = pGfx->getDevice()->CreateBuffer(&cbd, nullptr, &pConstantBuffer);
-	ErrorLogger::Log(hr, L"Create Buffer failed");*/
+	if ((transform.position.x >= min.x && transform.position.x <= max.x) &&
+		(transform.position.y >= min.y && transform.position.y <= max.y) &&
+		(transform.position.y >= min.y && transform.position.z <= max.z))
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
 }
 
 void Model::resetMatrix()
 {
-	sca = XMMatrixIdentity();
-	rotation = XMMatrixIdentity();
 	translation = XMMatrixIdentity();
+	rotation = XMMatrixIdentity();
+	sca = XMMatrixIdentity();
 }
 
-void Model::update(float dt, Camera& camera)
+void Model::updateMatrix(Camera& camera)
 {
-	//move
-	translation = XMMatrixTranslation(transform.position.x, 
-		transform.position.y, transform.position.z);
 	//scale
-	sca = XMMatrixScaling(transform.scale.x, transform.scale.y, transform.scale.z);
-	//rotation
-	//XMVECTOR quat = XMQuaternionRotationRollPitchYaw(transform.rotation.x, transform.rotation.y, transform.rotation.z);
-	//rotation = XMMatrixRotationQuaternion(quat);
+	/*XMMATRIX sca = XMMatrixScaling(transform.scale.x, transform.scale.y,
+		transform.scale.z);
+	//rotate
+	//XMMATRIX rotation = XMMatrixRotationRollPitchYaw(transform.rotation.x,
+		//transform.rotation.y, transform.rotation.z);
+	//translate
+	XMMATRIX translation = XMMatrixTranslation(transform.position.x,
+		transform.position.y, transform.position.z);*/
+
+	sca = XMMatrixScaling(transform.scale.x, transform.scale.y,
+		transform.scale.z);
+	translation = XMMatrixTranslation(transform.position.x,
+		transform.position.y, transform.position.z);
 
 	world = sca * rotation * translation;
 
 	WVP = world * camera.getView() * camera.getProjection();
 	constantBuffer.data.WVP = XMMatrixTranspose(WVP);
-
 }
 
-void Model::move(float x, float y, float z)
+void Model::adjustPos(float x, float y, float z)
 {
 	transform.position.x += x;
 	transform.position.y += y;
@@ -152,19 +108,22 @@ void Model::setPos(float x, float y, float z)
 	transform.position.w = 1.0f;
 }
 
-void Model::rotate(float x, float y, float z, float Angle)
+void Model::adjustRot(float x, float y, float z, float angle)
 {
-	XMVECTOR vec = XMVectorSet(x, y, z, 1.0f);
-	rotation = XMMatrixRotationAxis(vec, XMConvertToRadians(Angle));
+	/*transform.rotation.x += x;
+	transform.rotation.y += y;
+	transform.rotation.z += z;
+	transform.rotation.w += 1.0f;*/
+	XMVECTOR vect = XMVectorSet(x, y, z, 1.0f);
+	rotation = XMMatrixRotationAxis(vect, XMConvertToRadians(angle));
 }
 
-void Model::setRotation(float x, float y, float z, float Angle)
+void Model::setRot(float x, float y, float z)
 {
-	XMVECTOR vec = XMVectorSet(x, y, z, 1.0f);
-	rotation = XMMatrixRotationAxis(vec, XMConvertToRadians(Angle));
-	//transform.rotation.x = x;
-	//transform.rotation.y = y;
-	//transform.rotation.z = z;
+	/*transform.rotation.x = x;
+	transform.rotation.y = y;
+	transform.rotation.z = z;
+	transform.rotation.w = 1.0f;*/
 }
 
 void Model::scale(float x, float y, float z)
@@ -187,31 +146,32 @@ void Model::draw()
 {
 	//pGfx->getContext()->UpdateSubresource(pConstantBuffer, 0, NULL, &cb, 0, 0);
 
-	pGfx->getContext()->VSSetConstantBuffers(0, 1, constantBuffer.getBuffer());
+	pContext->VSSetConstantBuffers(0, 1, constantBuffer.getBuffer());
 	constantBuffer.update();
 
 	if (isIndexed) 
-		pGfx->getContext()->DrawIndexed(indexBuffer.getIndexCount(), 0u, 0u);
+		pContext->DrawIndexed(indexBuffer.getIndexCount(), 0u, 0u);
 	else
-		pGfx->getContext()->Draw(vertexBuffer.getVertexCount(), 0u);
+		pContext->Draw(vertexBuffer.getVertexCount(), 0u);
 }
 
 void Model::bind(VertexShader& vs, PixelShader& ps, Texture& tex)
 {
-	pGfx->getContext()->VSSetShader(vs.getVertexShader(), nullptr, 0u);
-	pGfx->getContext()->PSSetShader(ps.getPixelShader(), nullptr, 0u);
-	pGfx->getContext()->PSSetShaderResources(0, 1, tex.getTexture());
-	pGfx->getContext()->PSSetSamplers(0, 1, pGfx->getSamplerState());
-	pGfx->getContext()->IASetVertexBuffers(0u, 1u, vertexBuffer.getBuffer(), vertexBuffer.getStridePtr(), &offset);
-	if (isIndexed) pGfx->getContext()->IASetIndexBuffer(indexBuffer.getBuffer(), DXGI_FORMAT_R32_UINT, 0u);
-	pGfx->getContext()->IASetInputLayout(vs.getInputLayout());
-	pGfx->getContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	const UINT offset = 0;
+	pContext->VSSetShader(vs.getVertexShader(), nullptr, 0u);
+	pContext->PSSetShader(ps.getPixelShader(), nullptr, 0u);
+	pContext->PSSetShaderResources(0, 1, tex.getTexture());
+	//pContext->PSSetSamplers(0, 1, pGfx->getSamplerState());
+	pContext->IASetVertexBuffers(0u, 1u, vertexBuffer.getBuffer(), vertexBuffer.getStridePtr(), &offset);
+	if (isIndexed) pContext->IASetIndexBuffer(indexBuffer.getBuffer(), DXGI_FORMAT_R32_UINT, 0u);
+	pContext->IASetInputLayout(vs.getInputLayout());
+	pContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 }
 
 void Model::unbind()
 {
-	pGfx->getContext()->VSSetShader(nullptr, nullptr, 0u);
-	pGfx->getContext()->PSSetShader(nullptr, nullptr, 0u);
-	pGfx->getContext()->IASetVertexBuffers(0u, 0u, nullptr, nullptr, nullptr);
-	if (isIndexed) pGfx->getContext()->IASetIndexBuffer(nullptr, DXGI_FORMAT_R32_UINT, 0u);
+	pContext->VSSetShader(nullptr, nullptr, 0u);
+	pContext->PSSetShader(nullptr, nullptr, 0u);
+	pContext->IASetVertexBuffers(0u, 0u, nullptr, nullptr, nullptr);
+	if (isIndexed) pContext->IASetIndexBuffer(nullptr, DXGI_FORMAT_R32_UINT, 0u);
 }

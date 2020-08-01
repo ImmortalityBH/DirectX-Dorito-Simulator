@@ -171,7 +171,7 @@
     <ClCompile Include="src\Graphics\CubemapTexture.cpp" />
     <ClCompile Include="src\Game\Game.cpp" />
     <ClCompile Include="src\Input\Gamepad.cpp" />
-    <ClCompile Include="src\Utility\Graphics.cpp" />
+    <ClCompile Include="src\Graphics\Graphics.cpp" />
     <ClCompile Include="imgui\imgui.cpp" />
     <ClCompile Include="imgui\imgui_demo.cpp" />
     <ClCompile Include="imgui\imgui_draw.cpp" />

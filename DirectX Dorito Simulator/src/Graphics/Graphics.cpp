@@ -218,6 +218,7 @@ void Graphics::Begin(float r, float g, float b)
 	float color[4] = { r, g, b, 1.0f };
 	pContext->ClearRenderTargetView(pTarget, color);
 	pContext->ClearDepthStencilView(pDepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+	pContext->PSSetSamplers(0u, 1u, &pTexSamplerState);
 }
 
 void Graphics::End()

@@ -35,16 +35,19 @@ private:
 	std::unique_ptr<Model> dogModel;
 	std::unique_ptr<Model> bagModel;
 	std::unique_ptr<Model> mtnDewModel;
+	std::unique_ptr<Model> coinModel;
 
-	Texture dorTex, florTex, dogTex, bagTex, mtnTex, catTex;
+	Texture dorTex, florTex, dogTex, bagTex, mtnTex, catTex, coinTex;
 	//commented out for now
-	//std::unique_ptr<DirectX::SoundEffect> intro;
+	std::unique_ptr<DirectX::SoundEffect> intro;
+	std::unique_ptr<DirectX::SoundEffect> coinSound;
 	//std::unique_ptr<DirectX::SoundEffect> outro;
 	//std::unique_ptr<DirectX::SoundEffect> effects[13];
 	char title[12] = { 0 };
 	Camera camera;
 	int randomNum;
 	int taskNum;
+	bool doOnce = false;
 	bool didRequest = true;
 };
 

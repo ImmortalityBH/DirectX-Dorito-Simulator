@@ -77,9 +77,10 @@ bool Window::init(HINSTANCE hInstance)
         if (!gfx.init(isFullscreen, isVsync, width, height, hWnd)) {
             THROW_NORMAL("graphics creation failed");
         }
-        if (!audioEngine.init()) {
+        aud = std::make_unique<AudioEngine>();
+        /*if (!audioEngine.init()) {
             THROW_NORMAL("audio engine creation failed");
-        }
+        }*/
     }
     catch (BrianException& e)
     {
