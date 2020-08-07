@@ -163,8 +163,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="GeometryShader.cpp" />
+    <ClCompile Include="src\Graphics\Shader\DomainShader.cpp" />
     <ClCompile Include="GameObject.cpp" />
+    <ClCompile Include="src\Graphics\Shader\HullShader.cpp" />
     <ClCompile Include="Mesh.cpp" />
+    <ClCompile Include="Shader.cpp" />
     <ClCompile Include="Skybox.cpp" />
     <ClCompile Include="src\Audio\Audio.cpp" />
     <ClCompile Include="src\Camera.cpp" />
@@ -180,9 +184,9 @@
     <ClCompile Include="imgui\imgui_widgets.cpp" />
     <ClCompile Include="src\Input\Keyboard.cpp" />
     <ClCompile Include="src\Input\Mouse.cpp" />
-    <ClCompile Include="src\Graphics\PixelShader.cpp" />
+    <ClCompile Include="src\Graphics\Shader\PixelShader.cpp" />
     <ClCompile Include="src\Graphics\Texture.cpp" />
-    <ClCompile Include="src\Graphics\VertexShader.cpp" />
+    <ClCompile Include="src\Graphics\Shader\VertexShader.cpp" />
     <ClCompile Include="src\WinMain.cpp" />
     <ClCompile Include="src\Graphics\Model.cpp" />
     <ClCompile Include="src\Utility\Timer.cpp" />
@@ -253,8 +257,12 @@
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="GeometryShader.h" />
+    <ClInclude Include="src\Graphics\Shader\DomainShader.h" />
     <ClInclude Include="GameObject.h" />
+    <ClInclude Include="src\Graphics\Shader\HullShader.h" />
     <ClInclude Include="Mesh.h" />
+    <ClInclude Include="Shader.h" />
     <ClInclude Include="Skybox.h" />
     <ClInclude Include="src\Graphics\ConstantBuffer.h" />
     <ClInclude Include="src\Graphics\IndexBuffer.h" />
@@ -278,13 +286,13 @@
     <ClInclude Include="src\Input\Keyboard.h" />
     <ClInclude Include="src\Graphics\Model.h" />
     <ClInclude Include="src\Input\Mouse.h" />
-    <ClInclude Include="src\Graphics\PixelShader.h" />
+    <ClInclude Include="src\Graphics\Shader\PixelShader.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="src\Scene.h" />
     <ClInclude Include="src\Graphics\Texture.h" />
     <ClInclude Include="src\Utility\Timer.h" />
     <ClInclude Include="src\Component\Transform.h" />
-    <ClInclude Include="src\Graphics\VertexShader.h" />
+    <ClInclude Include="src\Graphics\Shader\VertexShader.h" />
     <ClInclude Include="src\Win.h" />
     <ClInclude Include="src\Window\Window.h" />
     <ClInclude Include="src\Graphics\VertexBuffer.h" />
