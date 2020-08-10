@@ -82,7 +82,7 @@ bool Window::init(HINSTANCE hInstance)
             THROW_NORMAL("audio engine creation failed");
         }*/
     }
-    catch (BrianException& e)
+    catch (HrException& e)
     {
         ErrorLogger::Log(e);
         return false;
@@ -128,7 +128,7 @@ LRESULT Window::WndProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
         //window->setTitle(str.c_str());
         //if (window->getGraphics().getDevice())
         //{
-            window->getGraphics().onSize(newWidth, newHeight);
+            //window->getGraphics().onSize(newWidth, newHeight);
        // }
         break;
     }

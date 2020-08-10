@@ -49,7 +49,7 @@ public:
 	void OnKeyPressed(const unsigned char keyCode);
 	void OnKeyReleased(const unsigned char keyCode);
 	void OnChar(const unsigned char keyCode);
-	void clearCharBuffer();
+	void flush();
 
 	std::deque<unsigned char>& getCharBuffer();
 	std::wstring getCharAsString();

@@ -175,7 +175,7 @@ bool Graphics::init(bool isFullscreen, bool isVsync, unsigned int width, unsigne
 		ImGui_ImplDX11_Init(this->pDevice, this->pContext);
 		ImGui::StyleColorsDark();
 	}
-	catch (BrianException& e)
+	catch (HrException& e)
 	{
 		ErrorLogger::Log(e);
 		return false;

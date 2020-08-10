@@ -5,13 +5,7 @@ Mouse::Mouse()
 {
 }
 
-/*Mouse& Mouse::get()
-{
-	static Mouse instance;//singleton
-	return instance;
-}*/
-
-const MousePos& Mouse::getPos() const
+const Mouse::MousePos& Mouse::getPos() const
 {
 	return pos;
 }
@@ -90,4 +84,22 @@ void Mouse::OnWheelMove(int x, int y, float wheelDelta)
 	pos.x = x;
 	pos.y = y;
 	this->wheelDelta = wheelDelta;
+}
+
+void Mouse::updateBuffer(MouseButton& button)
+{
+	if (buffer.size() <= bufferLimit)
+	{
+		buffer.push_front(button);
+	}
+	else
+	{
+		buffer.push_front(button);
+		buffer.pop_back();
+	}
+}
+
+void Mouse::flush()
+{
+	buffer.clear();
 }

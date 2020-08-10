@@ -165,10 +165,10 @@
   <ItemGroup>
     <ClCompile Include="src\Graphics\Shader\GeometryShader.cpp" />
     <ClCompile Include="src\Graphics\Shader\DomainShader.cpp" />
-    <ClCompile Include="GameObject.cpp" />
+    <ClCompile Include="src\Entity\GameObject.cpp" />
     <ClCompile Include="src\Graphics\Shader\HullShader.cpp" />
-    <ClCompile Include="Mesh.cpp" />
-    <ClCompile Include="Skybox.cpp" />
+    <ClCompile Include="src\Graphics\Mesh.cpp" />
+    <ClCompile Include="src\Graphics\Skybox.cpp" />
     <ClCompile Include="src\Audio\Audio.cpp" />
     <ClCompile Include="src\Camera.cpp" />
     <ClCompile Include="src\Graphics\CubemapTexture.cpp" />
@@ -186,6 +186,7 @@
     <ClCompile Include="src\Graphics\Shader\PixelShader.cpp" />
     <ClCompile Include="src\Graphics\Texture.cpp" />
     <ClCompile Include="src\Graphics\Shader\VertexShader.cpp" />
+    <ClCompile Include="src\Utility\Error.cpp" />
     <ClCompile Include="src\WinMain.cpp" />
     <ClCompile Include="src\Graphics\Model.cpp" />
     <ClCompile Include="src\Utility\Timer.cpp" />
@@ -258,11 +259,11 @@
   <ItemGroup>
     <ClInclude Include="src\Graphics\Shader\GeometryShader.h" />
     <ClInclude Include="src\Graphics\Shader\DomainShader.h" />
-    <ClInclude Include="GameObject.h" />
+    <ClInclude Include="src\Entity\GameObject.h" />
     <ClInclude Include="src\Graphics\Shader\HullShader.h" />
-    <ClInclude Include="Mesh.h" />
+    <ClInclude Include="src\Graphics\Mesh.h" />
     <ClInclude Include="src\Graphics\Shader\Shader.h" />
-    <ClInclude Include="Skybox.h" />
+    <ClInclude Include="src\Graphics\Skybox.h" />
     <ClInclude Include="src\Graphics\ConstantBuffer.h" />
     <ClInclude Include="src\Graphics\IndexBuffer.h" />
     <ClInclude Include="src\Audio\Audio.h" />

@@ -1,7 +1,7 @@
 #pragma once
 
 #include <DirectXMath.h>
-
+#include <string>
 //#define ReleaseCOM(x) if (x != nullptr) { x->Release(); x = nullptr; }
 
 template<class T>
@@ -39,4 +39,16 @@ namespace Color
 	XMGLOBALCONST DirectX::XMVECTORF32 Magenta = { 1.0f, 0.0f, 1.0f, 1.0f };
 	XMGLOBALCONST DirectX::XMVECTORF32 Silver = { 0.75f, 0.75f, 0.75f, 1.0f };
 	XMGLOBALCONST DirectX::XMVECTORF32 LightSteelBlue = { 0.69f, 0.77f, 0.87f, 1.0f };
+}
+
+inline std::wstring string_to_wstring(const std::string& str)
+{
+	std::wstring wideStr(str.cbegin(), str.cend());
+	return wideStr;
+}
+
+inline std::string wstring_to_string(const std::wstring& str)
+{
+	std::string normStr(str.cbegin(), str.cend());
+	return normStr;
 }

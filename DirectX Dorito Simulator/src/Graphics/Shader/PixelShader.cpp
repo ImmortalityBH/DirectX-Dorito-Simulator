@@ -17,7 +17,7 @@ bool PixelShader::init(ID3D11Device* pDevice, std::wstring filePath)
 			pBlob->GetBufferSize(), nullptr, &pPixelShader);
 		THROW_IF_FAILED(hr, "Pixel shader failed to create");
 	}
-	catch (BrianException& e)
+	catch (HrException& e)
 	{
 		ErrorLogger::Log(e);
 		return false;

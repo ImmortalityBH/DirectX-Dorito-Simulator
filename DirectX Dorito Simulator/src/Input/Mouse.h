@@ -1,19 +1,9 @@
 #pragma once
 
-struct MousePos
-{
-	int x, y;
-};
+#include <deque>
 
 class Mouse
 {
-private:
-	MousePos pos;
-	bool leftButton = false;
-	bool rightButton = false;
-	bool middleButton = false;
-	float wheelDelta;
-	
 public:
 	enum MouseButton
 	{
@@ -21,12 +11,22 @@ public:
 		BUTTON_RIGHT,
 		BUTTON_MIDDLE,
 	};
+private:
+	struct MousePos
+	{
+		int x, y;
+	} pos;
+	bool leftButton = false;
+	bool rightButton = false;
+	bool middleButton = false;
+	float wheelDelta;
+	std::deque<MouseButton> buffer;
+	static constexpr std::size_t bufferLimit = 52;
+public:	
 	Mouse();
 	Mouse(const Mouse&) = delete;
 	Mouse& operator=(const Mouse&) = delete;
 	~Mouse() = default;
-
-	//static Mouse& get();
 
 	const MousePos& getPos() const;
 	const float& getWheelDelta() const;
@@ -41,5 +41,11 @@ public:
 	void OnRightReleased(int x, int y);
 	void OnMiddleReleased(int x, int y);
 	void OnWheelMove(int x, int y, float wheelDelta);
+
+	int GetX() const { return pos.x; }
+	int GetY() const { return pos.y; }
+
+	void updateBuffer(MouseButton& button);
+	void flush();
 };
 

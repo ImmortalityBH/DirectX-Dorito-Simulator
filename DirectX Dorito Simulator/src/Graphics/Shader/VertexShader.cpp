@@ -20,7 +20,7 @@ bool VertexShader::init(ID3D11Device* pDevice, std::wstring filePath, D3D11_INPU
 			pBlob->GetBufferSize(), &pInputLayout);
 		THROW_IF_FAILED(hr, "Could not create input layout");
 	}
-	catch (BrianException& e)
+	catch (HrException& e)
 	{
 		ErrorLogger::Log(e);
 		return false;

@@ -25,7 +25,7 @@ void Keyboard::OnKeyReleased(const unsigned char keyCode)
 
 void Keyboard::OnChar(const unsigned char keyCode)
 {
-	if (charBuffer.size() < charBufferLimit)
+	if (charBuffer.size() <= charBufferLimit)
 	{
 		charBuffer.push_back(keyCode);
 	}
@@ -36,7 +36,7 @@ void Keyboard::OnChar(const unsigned char keyCode)
 	}
 }
 
-inline void Keyboard::clearCharBuffer()
+inline void Keyboard::flush()
 {
 	charBuffer.clear();
 }

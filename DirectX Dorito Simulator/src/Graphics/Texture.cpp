@@ -32,7 +32,7 @@ bool Texture::load(ID3D11Device* pDevice, std::wstring filePath)
 		hr = pDevice->CreateSamplerState(&tsd, &pTexSamplerState);
 		THROW_IF_FAILED(hr, "Create sampler state failed");*/
 	}
-	catch (BrianException& e)
+	catch (HrException& e)
 	{
 		ErrorLogger::Log(e);
 		return false;
