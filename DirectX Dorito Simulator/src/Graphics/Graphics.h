@@ -5,8 +5,8 @@
 #include <DirectXMath.h>
 
 #include "Graphics/Vertex.h"
-#include "Graphics/VertexShader.h"
-#include "Graphics/PixelShader.h"
+#include "Graphics/Shader/VertexShader.h"
+#include "Graphics/Shader/PixelShader.h"
 #include "Utility/d3dUtil.h"
 
 #include <imgui.h>
@@ -16,6 +16,14 @@
 class Graphics
 {
 public:
+	enum SAMPLE_LEVEL
+	{
+		LEVEL_NONE = 1,
+		LEVEL_4 = 4,
+		LEVEL_8 = 8,
+		LEVEL_16 = 16,
+	} samplingLevel;
+public:
 	Graphics() = default;
 	Graphics(const Graphics&) = delete;
 	Graphics& operator=(const Graphics&) = delete;
@@ -23,7 +31,7 @@ public:
 
 	bool init(bool isFullscreen, bool isVsync, unsigned int width, unsigned int height, HWND hWnd);
 
-	void onSize(unsigned int width, unsigned int height);
+	void onSize(unsigned int newWidth, unsigned int newHeight);
 	void setFullscreen(bool fullscreen, unsigned int widhth, unsigned int height);
 	bool getFullscreen() const { return isFullscreen; }
 	void setWireframe(bool value);
@@ -35,21 +43,22 @@ public:
 	ID3D11DeviceContext* getContext() { return pContext; }
 
 	ID3D11SamplerState* const* getSamplerState() { return &pTexSamplerState; }
-
+public:
 	VertexShader vertexShader;
 	PixelShader pixelShader;
-	VertexShader vertexShaderColor;
-	PixelShader pixelShaderColor;
+	//VertexShader vertexShaderColor;
+	//PixelShader pixelShaderColor;
 	//VertexShader vertexShaderSkybox;
 	//PixelShader pixelShaderSkybox;
 private:
 	bool isVsync = false;
 	bool isFullscreen = false;
 	bool isWireframeEnabled = false;
+	UINT sampleQuality = 0;
 	IDXGISwapChain* pSwapChain = nullptr;
 	ID3D11Device* pDevice = nullptr;
 	ID3D11DeviceContext* pContext = nullptr;
-	ID3D11RenderTargetView* pTarget = nullptr;
+	ID3D11RenderTargetView* pRenderTarget = nullptr;
 	ID3D11DepthStencilView* pDepthStencilView = nullptr;
 	ID3D11RasterizerState* pWireframeState = nullptr;
 	ID3D11Texture2D* pDepthStencilBuffer = nullptr;

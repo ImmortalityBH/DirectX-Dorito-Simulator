@@ -1,20 +1,20 @@
 #pragma once
 
 #include "Win.h"
-#include "Graphics/Graphics.h"
 #include <memory>
+#include <string>
 
+#include "Graphics/Graphics.h"
 #include "Input/Mouse.h"
 #include "Input/Keyboard.h"
 #include "Input/Gamepad.h"
-//#include "Audio/Audio.h"
 #include <Audio.h>
+//#include "Audio/Audio.h"
 
 class Window
 {
 public:
-	Window() = default;
-	Window(LPCWSTR title);
+	Window();
 	~Window();
 
 	bool init(HINSTANCE hInstance);
@@ -36,7 +36,7 @@ private:
 	Graphics gfx;
 	UINT width, height;
 	LPCTSTR WndClassName = L"window";
-	LPCWSTR title;
+	std::wstring title;
 	HWND hWnd;
 };
 

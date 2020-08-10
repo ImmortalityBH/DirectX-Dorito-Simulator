@@ -163,12 +163,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="GeometryShader.cpp" />
+    <ClCompile Include="src\Graphics\Shader\GeometryShader.cpp" />
     <ClCompile Include="src\Graphics\Shader\DomainShader.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="src\Graphics\Shader\HullShader.cpp" />
     <ClCompile Include="Mesh.cpp" />
-    <ClCompile Include="Shader.cpp" />
     <ClCompile Include="Skybox.cpp" />
     <ClCompile Include="src\Audio\Audio.cpp" />
     <ClCompile Include="src\Camera.cpp" />
@@ -257,12 +256,12 @@
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="GeometryShader.h" />
+    <ClInclude Include="src\Graphics\Shader\GeometryShader.h" />
     <ClInclude Include="src\Graphics\Shader\DomainShader.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="src\Graphics\Shader\HullShader.h" />
     <ClInclude Include="Mesh.h" />
-    <ClInclude Include="Shader.h" />
+    <ClInclude Include="src\Graphics\Shader\Shader.h" />
     <ClInclude Include="Skybox.h" />
     <ClInclude Include="src\Graphics\ConstantBuffer.h" />
     <ClInclude Include="src\Graphics\IndexBuffer.h" />

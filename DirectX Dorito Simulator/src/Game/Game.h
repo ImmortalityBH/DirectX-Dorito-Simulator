@@ -20,7 +20,8 @@ public:
 	Game();
 	~Game();
 
-	void init(HINSTANCE hInstance);
+	bool init();
+	int run(HINSTANCE hInst);
 	void update();
 	void draw();
 

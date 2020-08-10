@@ -1,10 +1,9 @@
 #pragma once
 
 #include <d3d11.h>
-#include <d3dcompiler.h>
-#include <string>
+#include "Graphics/Shader/Shader.h"
 
-class PixelShader
+class PixelShader : public Shader
 {
 public:
 	bool init(ID3D11Device* pDevice, std::wstring filePath);
@@ -12,8 +11,6 @@ public:
 	~PixelShader();
 
 	ID3D11PixelShader* getPixelShader() const { return pPixelShader; }
-	ID3D10Blob* getPixelBlob() const { return pPixelBlob; }
 private:
 	ID3D11PixelShader* pPixelShader = nullptr;
-	ID3D10Blob* pPixelBlob = nullptr;
 };

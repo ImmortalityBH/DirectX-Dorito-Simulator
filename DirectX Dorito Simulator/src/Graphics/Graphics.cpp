@@ -13,7 +13,7 @@ Graphics::~Graphics()
 	ReleaseCOM(pSwapChain);
 	ReleaseCOM(pDevice);
 	ReleaseCOM(pContext);
-	ReleaseCOM(pTarget);
+	ReleaseCOM(pRenderTarget);
 	ReleaseCOM(pDepthStencilBuffer);
 	ReleaseCOM(pDepthStencilView);
 	ReleaseCOM(pWireframeState);
@@ -26,65 +26,86 @@ bool Graphics::init(bool isFullscreen, bool isVsync, unsigned int width, unsigne
 	{
 		this->isFullscreen = isFullscreen;
 		this->isVsync = isVsync;
-
+		this->samplingLevel = LEVEL_4;
 		HRESULT hr = S_OK;
-		//Describe our Buffer
-		DXGI_MODE_DESC bd = {};
 
-		bd.Width = width;
-		bd.Height = height;
-		bd.RefreshRate.Numerator = 60;
-		bd.RefreshRate.Denominator = 1;
-		bd.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-		bd.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
-		bd.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
+		UINT creationFlags = D3D11_CREATE_DEVICE_BGRA_SUPPORT;
+	#if defined(_DEBUG)
+		creationFlags |= D3D11_CREATE_DEVICE_DEBUG;
+	#endif
+		D3D_FEATURE_LEVEL feature_level;
 
-		//Describe our SwapChain
+		hr = D3D11CreateDevice(
+			nullptr,
+			D3D_DRIVER_TYPE_HARDWARE, 
+			nullptr,
+			creationFlags, 
+			nullptr, 
+			NULL,
+			D3D11_SDK_VERSION,
+			&pDevice, 
+			&feature_level,
+			&pContext
+		);
+		THROW_IF_FAILED(hr, "Create device and swapchain failed");
+		if (feature_level < D3D_FEATURE_LEVEL_11_0) {
+			THROW_NORMAL("You must have DirectX 11 Compatible graphics card!");
+		}
+		hr = pDevice->CheckMultisampleQualityLevels(DXGI_FORMAT_R8G8B8A8_UNORM, samplingLevel, &sampleQuality);
+		if (!(sampleQuality > 0)) {
+			THROW_NORMAL("Sampling level not supported");
+		}
+
+		//Create SwapChain
 		DXGI_SWAP_CHAIN_DESC sd = {};
 
 		sd.BufferDesc.Width = width;
 		sd.BufferDesc.Height = height;
-		sd.BufferDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
+		sd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 		sd.BufferDesc.RefreshRate.Numerator = 60;
 		sd.BufferDesc.RefreshRate.Denominator = 1;
 		sd.BufferDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
 		sd.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
-		sd.SampleDesc.Count = 1;
-		sd.SampleDesc.Quality = 0;
+		sd.SampleDesc.Count = samplingLevel;
+		sd.SampleDesc.Quality = sampleQuality - 1;
 		sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 		sd.BufferCount = 1;
 		sd.OutputWindow = hWnd;
 		sd.Windowed = TRUE;
 		sd.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
-		sd.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
+		sd.Flags = 0;
 
-		UINT creationFlags = D3D11_CREATE_DEVICE_BGRA_SUPPORT;
-	#if defined(_DEBUG)
-		// If the project is in a debug build, enable the debug layer.
-		creationFlags |= D3D11_CREATE_DEVICE_DEBUG;
-	#endif
-		hr = D3D11CreateDeviceAndSwapChain(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr,
-			creationFlags, nullptr, NULL, D3D11_SDK_VERSION, &sd, &pSwapChain,
-			&pDevice, nullptr, &pContext);
-		THROW_IF_FAILED(hr, "Create device and swapchain failed");
+		IDXGIDevice* dxgiDevice = nullptr;
+		hr = pDevice->QueryInterface(__uuidof(IDXGIDevice), reinterpret_cast<void**>(&dxgiDevice));
+		THROW_IF_FAILED(hr, "BRO");
+		IDXGIAdapter* dxgiAdapter = nullptr;
+		dxgiDevice->GetParent(__uuidof(IDXGIAdapter), reinterpret_cast<void**>(&dxgiAdapter));
 
+		IDXGIFactory* dxgiFactory = nullptr;
+		dxgiAdapter->GetParent(__uuidof(IDXGIFactory), reinterpret_cast<void**>(&dxgiFactory));
+		THROW_IF_FAILED(hr, "Facotry");
+		dxgiFactory->CreateSwapChain(pDevice, &sd, &pSwapChain);
+		ReleaseCOM(dxgiDevice);
+		ReleaseCOM(dxgiAdapter);
+		ReleaseCOM(dxgiFactory);
+
+		//onSize(width, height);
 		ID3D11Texture2D* BackBuffer; //Create our BackBuffer
 		hr = pSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&BackBuffer));
 		THROW_IF_FAILED(hr, "GetBuffer failed");
 		//Create our Render Target
-		hr = pDevice->CreateRenderTargetView(BackBuffer, nullptr, &pTarget);
+		hr = pDevice->CreateRenderTargetView(BackBuffer, nullptr, &pRenderTarget);
 		ReleaseCOM(BackBuffer);//release backbuffer incase of exception
 		THROW_IF_FAILED(hr, "Create render target view failed");
 
 		D3D11_TEXTURE2D_DESC ds = {};
-
 		ds.Width = width;
 		ds.Height = height;
 		ds.MipLevels = 1;
 		ds.ArraySize = 1;
 		ds.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-		ds.SampleDesc.Count = 1;
-		ds.SampleDesc.Quality = 0;
+		ds.SampleDesc.Count = samplingLevel;
+		ds.SampleDesc.Quality = sampleQuality - 1;
 		ds.Usage = D3D11_USAGE_DEFAULT;
 		ds.BindFlags = D3D11_BIND_DEPTH_STENCIL;
 		ds.CPUAccessFlags = 0;
@@ -95,7 +116,11 @@ bool Graphics::init(bool isFullscreen, bool isVsync, unsigned int width, unsigne
 		hr = pDevice->CreateDepthStencilView(pDepthStencilBuffer, nullptr, &pDepthStencilView);
 		THROW_IF_FAILED(hr, "DepthStencilView could not be created");
 		//Set our Render Target
-		pContext->OMSetRenderTargets(1, &pTarget, pDepthStencilView);
+		pContext->OMSetRenderTargets(1, &pRenderTarget, pDepthStencilView);
+		
+		//viewport declared with C for constructor and convience 
+		CD3D11_VIEWPORT viewport(0.0f, 0.0f, static_cast<float>(width), static_cast<float>(height), 0.0f, 1.0f);
+		pContext->RSSetViewports(1u, &viewport);
 
 		D3D11_RASTERIZER_DESC rsd = {};
 		rsd.FillMode = D3D11_FILL_WIREFRAME;
@@ -103,10 +128,6 @@ bool Graphics::init(bool isFullscreen, bool isVsync, unsigned int width, unsigne
 
 		hr = pDevice->CreateRasterizerState(&rsd, &pWireframeState);
 		THROW_IF_FAILED(hr, "Create rasterizer state failed");
-
-		//viewport with C for constructor and convience 
-		CD3D11_VIEWPORT viewport(0.0f, 0.0f, width, height, 0.0f, 1.0f);
-		pContext->RSSetViewports(1u, &viewport);
 
 		D3D11_INPUT_ELEMENT_DESC layout[2] =
 		{
@@ -162,39 +183,45 @@ bool Graphics::init(bool isFullscreen, bool isVsync, unsigned int width, unsigne
 
 }
 
-void Graphics::onSize(unsigned int width, unsigned int height)
+void Graphics::onSize(unsigned int newWidth, unsigned int newHeight)
 {
-	ReleaseCOM(pDepthStencilBuffer);
+	ReleaseCOM(pRenderTarget);
 	ReleaseCOM(pDepthStencilView);
+	ReleaseCOM(pDepthStencilBuffer);
 
 	HRESULT hr = S_OK;
+
+	hr = pSwapChain->ResizeBuffers(1, newWidth, newHeight, DXGI_FORMAT_B8G8R8A8_UNORM, 0);
 	ID3D11Texture2D* BackBuffer; //Create our BackBuffer
 	hr = pSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&BackBuffer));
-	ErrorLogger::Log(hr, L"GetBuffer failed");
+	THROW_IF_FAILED(hr, "GetBuffer failed");
 	//Create our Render Target
-	hr = pDevice->CreateRenderTargetView(BackBuffer, nullptr, &pTarget);
-	ErrorLogger::Log(hr, L"Create Render Target view failed");
-	ReleaseCOM(BackBuffer);
+	hr = pDevice->CreateRenderTargetView(BackBuffer, nullptr, &pRenderTarget);
+	ReleaseCOM(BackBuffer);//release backbuffer incase of exception
+	THROW_IF_FAILED(hr, "Create render target view failed");
 
 	D3D11_TEXTURE2D_DESC ds = {};
-
-	ds.Width = width;
-	ds.Height = height;
+	ds.Width = newWidth;
+	ds.Height = newHeight;
 	ds.MipLevels = 1;
 	ds.ArraySize = 1;
 	ds.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-	ds.SampleDesc.Count = 1;
-	ds.SampleDesc.Quality = 0;
+	ds.SampleDesc.Count = samplingLevel;
+	ds.SampleDesc.Quality = sampleQuality - 1;
 	ds.Usage = D3D11_USAGE_DEFAULT;
 	ds.BindFlags = D3D11_BIND_DEPTH_STENCIL;
 	ds.CPUAccessFlags = 0;
 	ds.MiscFlags = 0;
 
 	hr = pDevice->CreateTexture2D(&ds, nullptr, &pDepthStencilBuffer);
+	THROW_IF_FAILED(hr, "DepthStencilBuffer could not be created");
 	hr = pDevice->CreateDepthStencilView(pDepthStencilBuffer, nullptr, &pDepthStencilView);
+	THROW_IF_FAILED(hr, "DepthStencilView could not be created");
+	//Set our Render Target
+	pContext->OMSetRenderTargets(1, &pRenderTarget, pDepthStencilView);
 
-	pSwapChain->ResizeBuffers(1, width, height, DXGI_FORMAT_B8G8R8A8_UNORM, 0);
-
+	CD3D11_VIEWPORT viewport(0.0f, 0.0f, static_cast<float>(newWidth), static_cast<float>(newHeight), 0.0f, 1.0f);
+	pContext->RSSetViewports(1, &viewport);
 }
 
 void Graphics::setFullscreen(bool fullscreen, unsigned int width, unsigned int height)
@@ -216,7 +243,7 @@ void Graphics::setWireframe(bool value)
 void Graphics::Begin(float r, float g, float b)
 {
 	float color[4] = { r, g, b, 1.0f };
-	pContext->ClearRenderTargetView(pTarget, color);
+	pContext->ClearRenderTargetView(pRenderTarget, color);
 	pContext->ClearDepthStencilView(pDepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 	pContext->PSSetSamplers(0u, 1u, &pTexSamplerState);
 }

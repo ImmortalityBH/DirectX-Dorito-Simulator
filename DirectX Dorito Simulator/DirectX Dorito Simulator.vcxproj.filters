@@ -87,9 +87,6 @@
     <ClCompile Include="src\Graphics\Graphics.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Shader.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\Graphics\Shader\VertexShader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -102,7 +99,7 @@
     <ClCompile Include="src\Graphics\Shader\DomainShader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GeometryShader.cpp">
+    <ClCompile Include="src\Graphics\Shader\GeometryShader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -222,9 +219,6 @@
     <ClInclude Include="GameObject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Shader.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\Graphics\Shader\VertexShader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -237,7 +231,10 @@
     <ClInclude Include="src\Graphics\Shader\DomainShader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="GeometryShader.h">
+    <ClInclude Include="src\Graphics\Shader\Shader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Graphics\Shader\GeometryShader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

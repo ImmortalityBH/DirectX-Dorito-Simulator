@@ -5,8 +5,8 @@
 
 using namespace DirectX;
 
-Window::Window(LPCWSTR title)
-    : width(800), height(600), title(title), hWnd(nullptr), 
+Window::Window()
+    : width(800), height(600), title(L"DirectX Dorito Simulator : Deluxe Edition"), hWnd(nullptr),
     mouse(), kbd(), gamepad(1)
 {
 }
@@ -55,8 +55,8 @@ bool Window::init(HINSTANCE hInstance)
         hWnd = CreateWindowEx(
             NULL,
             WndClassName,
-            title,
-            WS_CAPTION | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_SYSMENU,
+            title.c_str(),
+            WS_OVERLAPPEDWINDOW,
             CW_USEDEFAULT, CW_USEDEFAULT,
             wr.right - wr.left, wr.bottom - wr.top,
             nullptr,
@@ -116,9 +116,20 @@ LRESULT Window::WndProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
         break;
     case WM_SIZE:
     {
-        Window* window = reinterpret_cast<Window*>(GetWindowLongPtr(hWnd, GWLP_USERDATA));
         int newWidth = LOWORD(lParam);
         int newHeight = HIWORD(lParam);
+        
+        Window* window = reinterpret_cast<Window*>(GetWindowLongPtr(hWnd, GWLP_USERDATA));
+        
+        std::wstring str = L"Width: ";
+        str.append(std::to_wstring(newWidth));
+        str.append(L", Height:" + std::to_wstring(newHeight));
+        OutputDebugStringW(str.c_str());
+        //window->setTitle(str.c_str());
+       // if (window->getGraphics().getDevice())
+       // {
+            //window->getGraphics().onSize(newWidth, newHeight);
+       // }
         break;
     }
     case WM_KEYDOWN:

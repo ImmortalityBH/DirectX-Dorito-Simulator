@@ -1,4 +1,4 @@
-#include "Graphics/PixelShader.h"
+#include "Graphics/Shader/PixelShader.h"
 #include "Utility/Error.h"
 #include "Utility/d3dUtil.h"
 
@@ -8,13 +8,13 @@ bool PixelShader::init(ID3D11Device* pDevice, std::wstring filePath)
 	{
 		HRESULT hr = S_OK;
 
-		hr = D3DReadFileToBlob(filePath.c_str(), &pPixelBlob);
+		hr = D3DReadFileToBlob(filePath.c_str(), &pBlob);
 		std::wstring errMsg = L"Pixel shader could not be loaded at: ";
 		errMsg += filePath;
 		THROW_IF_FAILED(hr, wstring_to_string(errMsg));
 
-		hr = pDevice->CreatePixelShader(pPixelBlob->GetBufferPointer(),
-			pPixelBlob->GetBufferSize(), nullptr, &pPixelShader);
+		hr = pDevice->CreatePixelShader(pBlob->GetBufferPointer(),
+			pBlob->GetBufferSize(), nullptr, &pPixelShader);
 		THROW_IF_FAILED(hr, "Pixel shader failed to create");
 	}
 	catch (BrianException& e)
@@ -28,5 +28,4 @@ bool PixelShader::init(ID3D11Device* pDevice, std::wstring filePath)
 PixelShader::~PixelShader()
 {
 	ReleaseCOM(pPixelShader);
-	ReleaseCOM(pPixelBlob);
 }

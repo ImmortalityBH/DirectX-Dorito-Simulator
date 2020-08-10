@@ -1,9 +1,9 @@
 #pragma once
 
 #include <d3d11.h>
-#include <string>
+#include "Graphics/Shader/Shader.h"
 
-class GeometryShader
+class GeometryShader : public Shader
 {
 public:
 	bool init(ID3D11Device* pDevice, std::wstring& filePath);
@@ -11,9 +11,7 @@ public:
 	~GeometryShader();
 
 	ID3D11GeometryShader* getGeometryShader() const { return pGeometryShader; }
-	ID3D10Blob* getBlob() const { return pBlob; }
 private:
 	ID3D11GeometryShader* pGeometryShader = nullptr;
-	ID3D10Blob* pBlob = nullptr;
 };
 

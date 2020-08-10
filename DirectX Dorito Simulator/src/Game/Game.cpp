@@ -9,7 +9,7 @@
 //using namespace DirectX;
 
 Game::Game()
-	: wnd(L"DirectX Dorito Simulator: Deluxe Edition"),
+	: wnd(),
 	  camera(wnd),
 	  randomNum(0),
 	  taskNum(0)
@@ -20,9 +20,8 @@ Game::~Game()
 {
 }
 
-void Game::init(HINSTANCE hInstance)
+bool Game::init()
 {
-	wnd.init(hInstance);
 	//intro = std::make_unique<SoundEffect>(wnd.aud.get() , L"res/audio/intro.wav");
 	//outro = std::make_unique<SoundEffect>(wnd.aud.get(), L"res/audio/outro.wav");
 
@@ -147,6 +146,28 @@ void Game::init(HINSTANCE hInstance)
 	{
 		effects[i] = std::make_unique<SoundEffect>(wnd.aud.get(), fileNames[i].c_str());
 	}*/
+	return true;
+}
+
+int Game::run(HINSTANCE hInst)
+{
+	wnd.init(hInst);
+	this->init();
+	MSG msg = {};
+	while (msg.message != WM_QUIT)
+	{
+		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
+		{
+			TranslateMessage(&msg);
+			DispatchMessage(&msg);
+		}
+		else
+		{
+			this->update();
+			this->draw();
+		}
+	}
+	return static_cast<int>(msg.wParam);
 }
 
 void Game::update()
@@ -169,8 +190,8 @@ void Game::update()
 	//}
 
 	//std::wstring title =  L"Elapsed Time: " + std::to_wstring(elapsedTimer.Peek()) + L", Delta Time: " + std::to_wstring(dTime);
-	std::wstring forito = L"X: " + std::to_wstring(dorito->transform.position.x) + L", Y:" + std::to_wstring(dorito->transform.position.y);
-	wnd.setTitle(forito.c_str());
+	//std::wstring forito = L"X: " + std::to_wstring(dorito->transform.position.x) + L", Y:" + std::to_wstring(dorito->transform.position.y);
+	//wnd.setTitle(forito.c_str());
 
 	camera.update(timer.Peek(), wnd);
 	//model->resetMatrix();
@@ -363,7 +384,7 @@ void Game::update()
 	
 	if (dorito->isColliding(*coinModel))
 	{
-		if (wnd.gamepad.isButtonPressed(XINPUT_GAMEPAD_A))
+		if (wnd.gamepad.isButtonPressed(XINPUT_GAMEPAD_A) || wnd.kbd.isKeyPressed(VK_SPACE));
 		{
 			wnd.setTitle(L"YOU PICKED UP A COIN");
 			if (!doOnce)

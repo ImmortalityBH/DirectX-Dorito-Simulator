@@ -9,7 +9,7 @@ class BrianException;
 #define THROW_IF_FAILED(hr, msg) if (FAILED(hr)) throw BrianException(hr, msg, __FILE__, __FUNCTION__, __LINE__)
 #define THROW_NORMAL(msg) throw BrianException(msg, __FILE__, __FUNCTION__, __LINE__)
 
-inline std::wstring string_to_wstring(const std::string & str)
+inline std::wstring string_to_wstring(const std::string& str)
 {
 	std::wstring wideStr(str.cbegin(), str.cend());
 	return wideStr;

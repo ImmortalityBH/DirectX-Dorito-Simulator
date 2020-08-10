@@ -2,7 +2,26 @@
 
 #include <DirectXMath.h>
 
-#define ReleaseCOM(x) if (x) { x->Release(); x = nullptr; }
+//#define ReleaseCOM(x) if (x != nullptr) { x->Release(); x = nullptr; }
+
+template<class T>
+inline void ReleaseCOM(T* pInterface)
+{
+	if (pInterface != nullptr)
+	{
+		pInterface->Release();
+		pInterface = nullptr;
+	}
+}
+template<class T>
+inline void ReleaseCOM(T** ppInterface)
+{
+	if (*ppInterface != nullptr)
+	{
+		(*ppInterface)->Release();
+		(*ppInterface) = nullptr;
+	}
+}
 
 #define DeletePtr(x) if (x) { delete x; x = nullptr; }
 

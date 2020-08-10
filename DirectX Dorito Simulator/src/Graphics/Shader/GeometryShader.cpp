@@ -1,8 +1,8 @@
-#include "Graphics/Shader/DomainShader.h"
+#include "Graphics/Shader/GeometryShader.h"
 #include "Utility/Error.h"
 #include "Utility/d3dUtil.h"
 
-bool DomainShader::init(ID3D11Device* pDevice, std::wstring& filePath)
+bool GeometryShader::init(ID3D11Device* pDevice, std::wstring& filePath)
 {
 	try
 	{
@@ -13,8 +13,8 @@ bool DomainShader::init(ID3D11Device* pDevice, std::wstring& filePath)
 		errMsg += filePath;
 		THROW_IF_FAILED(hr, wstring_to_string(errMsg));
 
-		hr = pDevice->CreateDomainShader(pBlob->GetBufferPointer(),
-			pBlob->GetBufferSize(), nullptr, &pDomainShader);
+		hr = pDevice->CreateGeometryShader(pBlob->GetBufferPointer(),
+			pBlob->GetBufferSize(), nullptr, &pGeometryShader);
 		THROW_IF_FAILED(hr, "Pixel shader failed to create");
 	}
 	catch (BrianException & e)
@@ -25,7 +25,7 @@ bool DomainShader::init(ID3D11Device* pDevice, std::wstring& filePath)
 	return true;
 }
 
-DomainShader::~DomainShader()
+GeometryShader::~GeometryShader()
 {
-	ReleaseCOM(pDomainShader);
+	ReleaseCOM(pGeometryShader);
 }
