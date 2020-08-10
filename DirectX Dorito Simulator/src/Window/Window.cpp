@@ -126,9 +126,9 @@ LRESULT Window::WndProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
         str.append(L", Height:" + std::to_wstring(newHeight));
         OutputDebugStringW(str.c_str());
         //window->setTitle(str.c_str());
-       // if (window->getGraphics().getDevice())
-       // {
-            //window->getGraphics().onSize(newWidth, newHeight);
+        //if (window->getGraphics().getDevice())
+        //{
+            window->getGraphics().onSize(newWidth, newHeight);
        // }
         break;
     }

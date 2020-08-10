@@ -89,7 +89,8 @@ bool Graphics::init(bool isFullscreen, bool isVsync, unsigned int width, unsigne
 		ReleaseCOM(dxgiAdapter);
 		ReleaseCOM(dxgiFactory);
 
-		//onSize(width, height);
+		onSize(width, height);
+		/*//onSize(width, height);
 		ID3D11Texture2D* BackBuffer; //Create our BackBuffer
 		hr = pSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&BackBuffer));
 		THROW_IF_FAILED(hr, "GetBuffer failed");
@@ -120,7 +121,7 @@ bool Graphics::init(bool isFullscreen, bool isVsync, unsigned int width, unsigne
 		
 		//viewport declared with C for constructor and convience 
 		CD3D11_VIEWPORT viewport(0.0f, 0.0f, static_cast<float>(width), static_cast<float>(height), 0.0f, 1.0f);
-		pContext->RSSetViewports(1u, &viewport);
+		pContext->RSSetViewports(1u, &viewport);*/
 
 		D3D11_RASTERIZER_DESC rsd = {};
 		rsd.FillMode = D3D11_FILL_WIREFRAME;
