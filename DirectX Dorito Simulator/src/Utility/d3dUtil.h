@@ -2,8 +2,8 @@
 
 #include <DirectXMath.h>
 #include <string>
-//#define ReleaseCOM(x) if (x != nullptr) { x->Release(); x = nullptr; }
 
+//#define ReleaseCOM(x) if (x != nullptr) { x->Release(); x = nullptr; }
 template<class T>
 inline void ReleaseCOM(T* pInterface)
 {
@@ -13,6 +13,7 @@ inline void ReleaseCOM(T* pInterface)
 		pInterface = nullptr;
 	}
 }
+
 template<class T>
 inline void ReleaseCOM(T** ppInterface)
 {
@@ -23,7 +24,16 @@ inline void ReleaseCOM(T** ppInterface)
 	}
 }
 
-#define DeletePtr(x) if (x) { delete x; x = nullptr; }
+template<class T>
+inline void DeletePtr(T* pPointer)
+{
+	if (pPointer != nullptr)
+	{
+		delete pPointer;
+		pPointer = nullptr;
+	}
+}
+//#define DeletePtr(x) if (x) { delete x; x = nullptr; }
 
 #define CONFIG_PATH "config.ini"
 

@@ -7,7 +7,7 @@ Timer::Timer()
 	last = steady_clock::now();
 }
 
-float Timer::Mark() 
+float Timer::Reset() 
 {
 	const auto old = last;
 	last = steady_clock::now();
@@ -15,7 +15,7 @@ float Timer::Mark()
 	return frameTime.count();
 }
 
-float Timer::Peek() const 
+float Timer::getElapsed() const 
 {
 	return duration<float>(steady_clock::now() - last).count();
 }

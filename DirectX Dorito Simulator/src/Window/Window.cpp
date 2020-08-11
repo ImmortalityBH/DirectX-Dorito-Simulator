@@ -137,7 +137,7 @@ LRESULT Window::WndProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
     {
         Window* window = reinterpret_cast<Window*>(GetWindowLongPtr(hWnd, GWLP_USERDATA));
         unsigned char keycode = static_cast<unsigned char>(wParam);
-        if (window->kbd.autoRepeatKeys == true)
+        if (window->kbd.getAutoRepeatKeys())
         {
             window->kbd.OnKeyPressed(keycode);
         }
@@ -164,7 +164,7 @@ LRESULT Window::WndProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
     {
         Window* window = reinterpret_cast<Window*>(GetWindowLongPtr(hWnd, GWLP_USERDATA));
         unsigned char keycode = static_cast<unsigned char>(wParam);
-        if (window->kbd.autoRepeatChars == true)
+        if (window->kbd.getAutoRepeatChars())
         {
             window->kbd.OnChar(keycode);
         }
@@ -295,7 +295,7 @@ bool load_config(const char* filePath, bool& isFullscreen, UINT& width, UINT& he
         }
         file.close();
     }
-    catch (const std::exception & e)
+    catch (const std::exception& e)
     {
         ErrorLogger::Log(string_to_wstring(e.what()));
         return false;

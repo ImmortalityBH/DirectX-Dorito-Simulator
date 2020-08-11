@@ -5,14 +5,13 @@
 #include <Utility/Error.h>
 #include <thread>
 #include <cmath>
+#include <random>
 
-//using namespace DirectX;
+using namespace DirectX;
 
 Game::Game()
-	: wnd(),
-	  camera(wnd),
-	  randomNum(0),
-	  taskNum(0)
+	: wnd(), camera(wnd),
+	  randomNum(0), taskNum(0)
 {
 }
 
@@ -32,6 +31,7 @@ bool Game::init()
 		bagModel = std::make_unique<Model>();
 		mtnDewModel = std::make_unique<Model>();
 		coinModel = std::make_unique<Model>();
+		sunModel = std::make_unique<Model>();
 		//DORITO
 		std::vector<Vertex> vertices = {
 			Vertex(0.0f, 0.5f, 0.0f, 0.5f, 1.0f),
@@ -104,8 +104,10 @@ bool Game::init()
 		bagModel->create(wnd.getGraphics().getDevice(), wnd.getGraphics().getContext(), bagVertices, floorIndices);
 		mtnDewModel->create(wnd.getGraphics().getDevice(), wnd.getGraphics().getContext(), bagVertices, floorIndices);
 		coinModel->create(wnd.getGraphics().getDevice(), wnd.getGraphics().getContext(), bagVertices, floorIndices);
+		sunModel->create(wnd.getGraphics().getDevice(), wnd.getGraphics().getContext(), bagVertices, floorIndices);
 		dorito->setPos(0.0f, 0.35f, 1.5f);
 		dorito->setScale(1.0f, 1.0f, 1.0f);
+		setCoinPos();
 	};
 	auto loadTex = [this]() { //no need to check return types handling done in class
 		dorTex.load(wnd.getGraphics().getDevice(), L"res/img/dorito.dds");
@@ -115,7 +117,7 @@ bool Game::init()
 		mtnTex.load(wnd.getGraphics().getDevice(), L"res/img/mtndew.dds");
 		catTex.load(wnd.getGraphics().getDevice(), L"res/img/winkcat.dds");
 		coinTex.load(wnd.getGraphics().getDevice(), L"res/img/coin.dds");
-		intro = std::make_unique<DirectX::SoundEffect>(wnd.aud.get(), L"res/audio/intro.wav");
+		sunTex.load(wnd.getGraphics().getDevice(), L"res/img/sun.dds");
 		coinSound = std::make_unique<DirectX::SoundEffect>(wnd.aud.get(), L"res/audio/coin.wav");
 	};                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
 
@@ -172,58 +174,42 @@ int Game::run(HINSTANCE hInst)
 
 void Game::update()
 {
-	float dTime = timer.Peek();
-	float eTime = elapsedTimer.Peek();
-	timer.Mark();
+	float dTime = timer.getElapsed();
+	float eTime = elapsedTimer.getElapsed();
+	timer.Reset();
 
 	if (!wnd.aud->Update())
 	{
 
 	}
-
 	//std::wstring title = L"Mouse Pos (" + std::to_wstring(wnd.mouse.getPos().x) + L", " + 
 		//std::to_wstring(wnd.mouse.getPos().y) + L", Wheel: " + std::to_wstring(wnd.mouse.getWheelDelta()) + L")";
-
 	//if (elapsedTimer.Peek() > 10.0f)
 	//{
 	//	wnd.setTitle(wnd.kbd.getCharAsString().c_str());
 	//}
-
 	//std::wstring title =  L"Elapsed Time: " + std::to_wstring(elapsedTimer.Peek()) + L", Delta Time: " + std::to_wstring(dTime);
 	//std::wstring forito = L"X: " + std::to_wstring(dorito->transform.position.x) + L", Y:" + std::to_wstring(dorito->transform.position.y);
 	//wnd.setTitle(forito.c_str());
 
-	camera.update(timer.Peek(), wnd);
+	camera.update(elapsedTimer.getElapsed(), wnd);
 	//model->resetMatrix();
 	if (wnd.kbd.isKeyPressed(Keyboard::KeyCode::VK_W) || wnd.kbd.isKeyPressed(VK_UP))
 	{
-		dorito->adjustPos(0.0f, dTime * 0.5f, 0.0f);
+		dorito->adjustPos(0.0f, dTime * 0.85f, 0.0f);
 	} 
-	else if (wnd.kbd.isKeyPressed(Keyboard::KeyCode::VK_S) || wnd.kbd.isKeyPressed(VK_DOWN))
+	if (wnd.kbd.isKeyPressed(Keyboard::KeyCode::VK_S) || wnd.kbd.isKeyPressed(VK_DOWN))
 	{
-		dorito->adjustPos(0.0f, -(dTime * 0.5f), 0.0f);
+		dorito->adjustPos(0.0f, -(dTime * 0.85f), 0.0f);
 	}
-	else if (wnd.kbd.isKeyPressed(Keyboard::KeyCode::VK_A) || wnd.kbd.isKeyPressed(VK_LEFT))
+	if (wnd.kbd.isKeyPressed(Keyboard::KeyCode::VK_A) || wnd.kbd.isKeyPressed(VK_LEFT))
 	{
-		dorito->adjustPos(-(dTime * 0.5f), 0.0f, 0.0f);
+		dorito->adjustPos(-(dTime * 0.85f), 0.0f, 0.0f);
 	}
-	else if (wnd.kbd.isKeyPressed(Keyboard::KeyCode::VK_D) || wnd.kbd.isKeyPressed(VK_RIGHT))
+	if (wnd.kbd.isKeyPressed(Keyboard::KeyCode::VK_D) || wnd.kbd.isKeyPressed(VK_RIGHT))
 	{
-		dorito->adjustPos(dTime * 0.5f, 0.0f, 0.0f);
+		dorito->adjustPos(dTime * 0.85f, 0.0f, 0.0f);
 	}
-
-	/*if (wnd.mouse.isButtonPressed(Mouse::BUTTON_LEFT))
-	{
-		ErrorLogger::Log(L"", L"Left Button Pressed");
-	}
-	else if (wnd.mouse.isButtonPressed(Mouse::BUTTON_RIGHT))
-	{
-		ErrorLogger::Log(L"", L"Right Button Pressed");
-	}
-	else if (wnd.mouse.isButtonPressed(Mouse::BUTTON_MIDDLE))
-	{
-		ErrorLogger::Log(L"", L"Middle Button Pressed");
-	}*/
 
 #pragma region Game code
 /*
@@ -335,8 +321,8 @@ void Game::update()
 	{
 		float joyX = wnd.gamepad.leftStickX;
 		float joyY = wnd.gamepad.leftStickY;
-		dorito->adjustPos(0.0f, joyY * dTime * 0.5f, 0.0f);
-		dorito->adjustPos(joyX * dTime * 0.5f, 0.0f, 0.0f);
+		dorito->adjustPos(0.0f, joyY * dTime * 0.85f, 0.0f);
+		dorito->adjustPos(joyX * dTime * 0.85f, 0.0f, 0.0f);
 	}
 	dorito->adjustRot(0.0f, 1.0f, 0.0f, sin(eTime) * 35.0f);
 	dorito->setScale(1.0f, 1.0f, 1.0f);
@@ -344,10 +330,21 @@ void Game::update()
 	dorito->updateMatrix(camera);
 
 	//coinModel->resetMatrix();
-	coinModel->setPos(-0.6f, 0.35f, 1.55f);
+	//coinModel->setPos(-0.6f, 0.35f, 1.55f);
 	coinModel->adjustRot(0.0f, 1.0f, 0.0f, sin(eTime) * 15.0f);
 	coinModel->setScale(1.0f, 1.0f, 1.0f);
 	coinModel->updateMatrix(camera);
+
+	//sunModel->setPos(1.0f, 1.0f, 3.0f);
+	sunModel->setPos(cos(eTime/2.f) * 5.0f, 2.0f, sin(eTime/2.f) * 5.0f);
+	//XMVECTOR vec = XMVectorSet(sunModel->transform.position.x, sunModel->transform.position.y,
+		//sunModel->transform.position.z, sunModel->transform.position.w);
+	//XMVECTOR zeroVec = XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
+	//XMVECTOR upVec = XMVectorSet(0.0f, 1.0f, 0.0f, 1.0f);
+	//sunModel->rotation = XMMatrixLookAtLH(vec, zeroVec, upVec);
+	sunModel->adjustRot(0.0f, 1.0f, 0.0f, 0.0f);
+	sunModel->setScale(2.0f, 2.0f, 2.0f);
+	sunModel->updateMatrix(camera);
 
 	floorModel->resetMatrix();
 
@@ -384,16 +381,20 @@ void Game::update()
 	
 	if (dorito->isColliding(*coinModel))
 	{
-		if (wnd.gamepad.isButtonPressed(XINPUT_GAMEPAD_A) || wnd.kbd.isKeyPressed(VK_SPACE));
-		{
+		//if (wnd.gamepad.isButtonPressed(XINPUT_GAMEPAD_A) /*|| wnd.kbd.isKeyPressed(Keyboard::KeyCode::VK_X)*/);
+		//{
 			wnd.setTitle(L"YOU PICKED UP A COIN");
 			if (!doOnce)
 			{
 				coinSound->Play();
 				doOnce = true;
+				setCoinPos();
 			}
-			
-		}
+		//}
+	}
+	else
+	{
+		doOnce = false;
 	}
  }
 
@@ -425,6 +426,10 @@ void Game::draw()
 	mtnDewModel->draw();
 	mtnDewModel->unbind();
 
+	sunModel->bind(wnd.getGraphics().vertexShader, wnd.getGraphics().pixelShader, sunTex);
+	sunModel->draw();
+	sunModel->unbind();
+
 	ImGui_ImplDX11_NewFrame();
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
@@ -441,7 +446,7 @@ void Game::draw()
 	ImGui::End();*/
 	
 	ImGui::Begin("Debug");
-	float currentTime = fpsTimer.Mark();
+	float currentTime = fpsTimer.Reset();
 	float framerate = 1.0f / currentTime;
 	ImGui::Text(std::to_string(std::stoi(std::to_string(round((framerate))))).c_str());
 	ImGui::InputText("Window Title", title, IM_ARRAYSIZE(title));
@@ -457,3 +462,16 @@ void Game::draw()
 
 	wnd.getGraphics().End();
 }
+
+float random_num(const float& min, const float& max)
+{
+	return (rand() / (float)RAND_MAX * max) + min;
+}
+
+void Game::setCoinPos()
+{
+	coinModel->transform.position.x = random_num(minX, maxX);
+	coinModel->transform.position.y = random_num(minY, maxY);
+	coinModel->transform.position.z = 1.55f;
+}
+

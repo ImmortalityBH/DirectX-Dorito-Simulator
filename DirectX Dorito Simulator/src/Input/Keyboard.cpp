@@ -2,7 +2,7 @@
 
 Keyboard::Keyboard()
 {
-	for (std::size_t i = 0; i < std::size(keyStates); i++)
+	for (std::size_t i = 0; i < keyStates.size(); i++)
 	{
 		keyStates[i] = false;//init to false
 	}
@@ -34,6 +34,16 @@ void Keyboard::OnChar(const unsigned char keyCode)
 		charBuffer.push_back(keyCode);
 		charBuffer.pop_front();
 	}
+}
+
+inline void Keyboard::setAutoRepeatKeys(bool value)
+{
+	autoRepeatKeys = value;
+}
+
+inline void Keyboard::setAutoRepeatChars(bool value)
+{
+	autoRepeatChars = value;
 }
 
 inline void Keyboard::flush()

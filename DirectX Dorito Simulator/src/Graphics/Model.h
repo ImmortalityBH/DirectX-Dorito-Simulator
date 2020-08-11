@@ -29,6 +29,7 @@ public:
 
 	void bind(VertexShader& vs, PixelShader& ps, Texture& tex);
 	void draw();
+	void drawImGUI() {}
 	void unbind();
 public:
 	void updateMatrix(Camera& camera);
@@ -46,7 +47,9 @@ private:
 	ConstantBuffer<CB_WVP> constantBuffer;
 private:
 	DirectX::XMMATRIX translation;
+public:
 	DirectX::XMMATRIX rotation;
+private:
 	DirectX::XMMATRIX sca;
 	DirectX::XMMATRIX world;
 	DirectX::XMMATRIX WVP;

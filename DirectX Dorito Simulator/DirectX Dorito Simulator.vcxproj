@@ -257,6 +257,7 @@
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Color.h" />
     <ClInclude Include="src\Graphics\Shader\GeometryShader.h" />
     <ClInclude Include="src\Graphics\Shader\DomainShader.h" />
     <ClInclude Include="src\Entity\GameObject.h" />

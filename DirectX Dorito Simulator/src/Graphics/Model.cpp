@@ -14,7 +14,9 @@ Model::~Model()
 
 void Model::create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, std::vector<Vertex>& vertices)
 {
+	//////////////////////////////////////////////////
 	this->pContext = pContext;
+	//////////////////////////////////////////////////
 
 	HRESULT hr = S_OK;
 	

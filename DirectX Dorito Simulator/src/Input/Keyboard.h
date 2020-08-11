@@ -1,6 +1,7 @@
 #pragma once
 
 #include <deque>
+#include <array>
 #include <string>
 
 class Keyboard
@@ -45,22 +46,28 @@ public:
 		VK_Y = 0x59,
 		VK_Z = 0x5A,
 	};
+public:
+	Keyboard();
+	~Keyboard() = default;
+
 	bool isKeyPressed(const unsigned char keyCode);
 	void OnKeyPressed(const unsigned char keyCode);
 	void OnKeyReleased(const unsigned char keyCode);
 	void OnChar(const unsigned char keyCode);
+	void setAutoRepeatKeys(bool value);
+	void setAutoRepeatChars(bool value);
+	bool getAutoRepeatKeys() const { return autoRepeatKeys; }
+	bool getAutoRepeatChars() const { return autoRepeatChars; }
 	void flush();
 
 	std::deque<unsigned char>& getCharBuffer();
 	std::wstring getCharAsString();
-	bool autoRepeatKeys = true;
-	bool autoRepeatChars = false;
-
-	Keyboard();
-	~Keyboard() = default;
 private:
 	static constexpr std::size_t charBufferLimit = 52;
-	bool keyStates[256];
+	static constexpr std::size_t numOfKeys = 256;
+	bool autoRepeatKeys = true;
+	bool autoRepeatChars = false;
+	std::array<bool, numOfKeys> keyStates;
 	std::deque<unsigned char> charBuffer;
 };
 
